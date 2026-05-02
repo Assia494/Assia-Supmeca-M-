@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
+#include<unistd.h>
 
 //#define GRID_SIZE_X 20
 //#define GRID_SIZE_Y 10
 
 #define NB_TOOLS 7  //sans le gant
 #define NB_MALADIE 5 //sans le test_desease
+#define NB_hummeur 3
 //-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
@@ -44,6 +45,7 @@ typedef struct {
 typedef struct {
     int hummeur;
     _maladie maladie;
+    int va_payer;
 } _patient;
 //-----------------
 typedef struct {
@@ -164,9 +166,15 @@ int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {
 	}
 }
 //-----------------------------------------------------------
-void tile_print(_tile tile ,_plateau* plateau_tab ,int taille) {
+void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	if(tile.player == 1) {
-		printf("😷 ");
+	    
+		if((player.glove.type =='h')){
+		    printf("😷 ");
+		}
+		else{
+		    printf("😐 ");    
+		}
 	}
 	else {
 	    if( inter_check(tile.value,'T','Z') ){
@@ -176,7 +184,14 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille) {
 	        for(int i=0;i<taille;i++){
 	            if(plateau_tab[i].id==c){
     	            if(plateau_tab[i].patient != NULL){
-    	                printf("🤒 ");
+    	                if(plateau_tab[i].patient->va_payer==1){
+    	                    printf("🤒 ");
+    	                }
+    	                else{
+    	                    printf("😥 ");    
+    	                }
+    	                
+    	                
     	            }
     	            else{
     	                printf("🪑 ");    
@@ -276,13 +291,13 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille) {
 	}
 }
 //-----------------------------------------------------------
-void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille) {
+void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {
 	exit_if_null_pointer(grid);
 	printf("\n\n");
 	for(int dy=0 ; dy<size_y ; dy++) {
 		printf("       ");
 		for(int dx=0 ; dx<size_x ; dx++) {
-			tile_print(grid[dy][dx] ,plateau_tab ,taille);
+			tile_print(grid[dy][dx] ,plateau_tab ,taille ,player);
 		}
 		printf("\n");
 	}
@@ -321,7 +336,7 @@ void move_player(_tile** grid,int size_x,int size_y,_movement movement) {
 
 }
 //-----------------------------------------------------------
-int cure_if_got_tools(_plateau* plateau ,float* profit){
+int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab){
     _plateau plate;
     plate = *plateau;
     int can_cure = 1;
@@ -338,22 +353,25 @@ int cure_if_got_tools(_plateau* plateau ,float* profit){
             (*plateau).used_tools[i] += plate.patient->maladie.tool_needed[i];
         }  
         
+        printf("Un patient est parti satisfaisant car il est soigné ,il a donné %.2f$\n ",plateau->patient->maladie.profit);
+        hummeur_tab[0] ++;
         *profit += plateau->patient->maladie.profit; 
         free((*plateau).patient);
         (*plateau).patient = NULL;
+        
         return 1;
     }
     return 0;
 }
 //-----------------------------------------------------------
-int try_cure_patient(_plateau* plateau ,float* profit){//verifie si il y a les outils pour soigner
+int try_cure_patient(_plateau* plateau ,float* profit ,int* hummeur_tab){//verifie si il y a les outils pour soigner
     if(plateau->patient!=NULL){
 
-        return cure_if_got_tools(plateau,profit);
+        return cure_if_got_tools(plateau,profit,hummeur_tab);
     }
 }
 //-----------------------------------------------------------
-char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit){
+char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab){
     _tile current_tile;
     int tile_value;
     
@@ -393,7 +411,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
             player->tool.type = 0;    
         }
         //mettre les gants dans la poubelle biologique
-        else if((player->glove.type=='h')&&(player->tool.used==1)){
+        else if((player->glove.type=='h')&&(player->glove.used==1)){
             player->glove.type = 0;     
         }
     }
@@ -411,21 +429,39 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
                 //soigner le patient si possible
                 else if(     (player->glove.used==0)&&(player->tool.type==0)&&(player->glove.type=='h')&&(plateau_tab[i].patient!=NULL)){
                     
-                    if(try_cure_patient(&(plateau_tab[i]) ,profit)){
+                    if(try_cure_patient(&(plateau_tab[i]) ,profit ,hummeur_tab)){
                         player->glove.used = 1;    
                     }
                     break;
                 }
+                //si on tente de soigner un patient mais on n'a pas de gant ou des gants sales
+                else if(    ((player->glove.used==1)||(player->glove.type!='h'))&&(plateau_tab[i].patient!=NULL)&&(player->tool.type==0) ){
+                    //le patient part
+                    free(plateau_tab[i].patient);
+                    plateau_tab[i].patient = NULL;
+                    printf("Un patient est parti furieux par peur de contamination,\nil a contaminé les outils présents sur son plateau, il n'a rien donné\n");
+                    hummeur_tab[2] ++;
+                    //les outils deviennent sales ,par la panique du patient ,par peur de contamination
+                    for(int ind=0;ind<NB_TOOLS;ind++){
+                        if(plateau_tab[i].tools[ind]==1){
+                            plateau_tab[i].tools[ind] = 0;
+                            plateau_tab[i].used_tools[ind] = 1;    
+                        }
+                    }
                     
-                //prendre un outil sale du plateau si possible
-                //recherche d'un outil sale
-                for(int j=0;j<NB_TOOLS;j++){
-                    if(plateau_tab[i].used_tools[j] == 1){
-                        player->tool.type = 'a'+j;
-                        player->tool.clean = 0;
-                        player->tool.used = 1;
-                        plateau_tab[i].used_tools[j] = 0;
-                        break;
+                    
+                }    
+                else{
+                    //prendre un outil sale du plateau si possible
+                    //recherche d'un outil sale
+                    for(int j=0;j<NB_TOOLS;j++){
+                        if(plateau_tab[i].used_tools[j] == 1){
+                            player->tool.type = 'a'+j;
+                            player->tool.clean = 0;
+                            player->tool.used = 1;
+                            plateau_tab[i].used_tools[j] = 0;
+                            break;
+                        }
                     }
                 }
             }
@@ -433,7 +469,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
     }
 } 
 //-----------------------------------------------------------
-void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit) {
+void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ) {
 	char move ;
 	int error = 0;
 	printf("Veuillez saisir votre action-----\n\n");
@@ -475,7 +511,7 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 		//printf("moved left\n");
 		break;
 	case 'g':
-		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit);
+		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab);
 		break;
 	}
 }
@@ -748,14 +784,13 @@ void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g){
     tab[6] = g;
 }
 //-----------------------------------------------------------
-//les profits ,outils necéssaire pour soigner sont paramétrés ici
 _patient* cree_patient(){
     _patient* patient = NULL;
     patient = malloc(sizeof(_patient));
     exit_if_null_pointer(patient);
     
     patient->hummeur = 100;
-    
+    patient->va_payer = 1;
     int desease_index = randint(1,NB_MALADIE);
     switch(desease_index){
         default:
@@ -791,7 +826,7 @@ _patient* cree_patient(){
     }
     
     return patient;
-}
+}  //les profits ,outils necéssaire pour soigner sont paramétrés ici
 //-----------------------------------------------------------
 int get_a_patient(_plateau* plateau_tab ,int taille ,int initial_hapiness){
     exit_if_null_pointer(plateau_tab);
@@ -807,25 +842,45 @@ int get_a_patient(_plateau* plateau_tab ,int taille ,int initial_hapiness){
         do{
             ind = randint(0,taille-1);
         }while(plateau_tab[ind].patient != NULL);
-            plateau_tab[ind].patient = cree_patient();
-            plateau_tab[ind].patient->hummeur = initial_hapiness; 
+        plateau_tab[ind].patient = cree_patient();
+        plateau_tab[ind].patient->hummeur = initial_hapiness; 
+        //verifie si le plateau est propre ou vide  /aucun chose sale
+        for(int j=0;j<NB_TOOLS;j++){
+            if(plateau_tab[ind].used_tools[j] == 1){
+                plateau_tab[ind].patient->va_payer = 0;//le patient ne va pas payer en raison que le plateau n'est pas totalement propre ,de plus il est mécontent
+            }
+        }
+            
+            
+            
+            
         return 1;
     }
     return 0;
 }
 //-----------------------------------------------------------
-void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy ,int* full ,float* profit){
+void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy ,int* full ,float* profit ,int* hummeur_tab){
     int full_var = 1;
     for(int i=0;i<taille;i++){
         if(plateau_tab[i].patient != NULL){
             plateau_tab[i].patient->hummeur--;
             if( (plateau_tab[i].patient->hummeur)<=0  ){
                 
-                *profit += (plateau_tab[i].patient->maladie.profit)*0.5;
-                printf("A patient has left the facility and gave %.2f$\n",(plateau_tab[i].patient->maladie.profit)*0.5); 
-                free(plateau_tab[i].patient);
-                plateau_tab[i].patient = NULL;
-                *all_happy = 0;
+                if(plateau_tab[i].patient->va_payer==1){
+                    *profit += (plateau_tab[i].patient->maladie.profit)*0.5;
+                    printf("Un patient est parti mécontent ,par manque de patience ,il a donné %.2f$\n",(plateau_tab[i].patient->maladie.profit)*0.5); 
+                    hummeur_tab[1]++;
+                    free(plateau_tab[i].patient);
+                    plateau_tab[i].patient = NULL;
+                    *all_happy = 0;
+                }
+                else{
+                    printf("Un patient est parti mécontent ,par manque de patience ,il a rien donné car il est déja mécontent",(plateau_tab[i].patient->maladie.profit)*0.5); 
+                    hummeur_tab[1]++;
+                    free(plateau_tab[i].patient);
+                    plateau_tab[i].patient = NULL;
+                    *all_happy = 0;    
+                }
 
             }
         }
@@ -849,12 +904,12 @@ void patients_spawning_regulation(_plateau* plateau_tab ,int taille ,int min_spa
 	}
 }
 //-----------------------------------------------------------
-int update_patients(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int spawn_time_range ,int* current_patient_spawning_time ,int initial_hapiness ,float* profit){
+int update_patients(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int spawn_time_range ,int* current_patient_spawning_time ,int initial_hapiness ,float* profit ,int* hummeur_tab){
     int full = 0;
     int all_happy = 1;
     
     patients_spawning_regulation(plateau_tab ,taille ,min_spawn_time ,spawn_time_range ,current_patient_spawning_time ,initial_hapiness);
-    update_patients_hapiness(plateau_tab ,taille ,&all_happy ,&full ,profit);
+    update_patients_hapiness(plateau_tab ,taille ,&all_happy ,&full ,profit ,hummeur_tab);
     printf("next patient in %d step(s)\n",*current_patient_spawning_time);
     if(full&(!all_happy)){
         //game Over
@@ -905,6 +960,9 @@ void main() {
     int grid_size_x=0;
     int grid_size_y=0;
     float profit = 0.00f;
+    //tableau pour stocker le nombre de patient en fonction de leur hummeur quand il sont parti
+    int hummeur_tab[NB_hummeur] = {0,0,0}; // 0:satisfait ,1:mécontent ,2:furieux
+    
     //initialisation du joueur
 	_player player;
 	player.tool.type = 0;
@@ -939,19 +997,101 @@ void main() {
         printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         nb_step++;
         
-        if(!update_patients(plateau_tab ,nb_plateau ,patient_minimum_spawn_intervalle ,patient_spawn_range ,&next_patient_time ,patient_spawning_hapiness+randint(0,patient_hapiness_range) ,&profit)){
+        if(!update_patients(plateau_tab ,nb_plateau ,patient_minimum_spawn_intervalle ,patient_spawn_range ,&next_patient_time ,patient_spawning_hapiness+randint(0,patient_hapiness_range) ,&profit ,hummeur_tab)){
             break; //game over
         }
-		print_grid(grid,grid_size_x,grid_size_y,plateau_tab,nb_plateau);
+		print_grid(grid,grid_size_x,grid_size_y,plateau_tab,nb_plateau,player);
 		print_plateau_tab(plateau_tab ,nb_plateau ,patient_spawning_hapiness+patient_hapiness_range ,happy_bar_len);
 		print_player_status(player ,profit);
-		ask_to_do_player_action(grid,grid_size_x,grid_size_y,&player,plateau_tab,nb_plateau,&profit);
+		printf("gant %d \n",player.glove.type);
+		ask_to_do_player_action(grid,grid_size_x,grid_size_y,&player,plateau_tab,nb_plateau,&profit ,hummeur_tab);
 		//sleep(1);
 	    
     }
     color(250,30,30);
-    printf("\n\n        GAME OVER!! The game lasted for %d steps with a %.2f$ profit",nb_step ,profit);
+    printf("\n\n        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux ",nb_step ,profit ,hummeur_tab[0] ,hummeur_tab[1] ,hummeur_tab[2]);
     reset_color();
 
 
 }
+
+/*
+
+11111111111331111111_
+10000000100000030001_
+10000011100111111101_
+100P00jJ100000u4U001_
+100000iI100000v4V001_
+11100111100000y4Y101_
+10000000000000w4W001_
+10abcde0fgh000x4X001_
+11ABCDE1FGH100z4Z001_
+11111111111111111111_@   
+
+010010010010010010010000000000000000000000_
+111111111111111111111111110000000111111111_
+3W4w000iii0jjj000001T1U1V10000000100100iI1_
+1110000iIi0jJj0000014141411111000100000iI1_
+3X4x000iii0jjj000000t0u0v00001000100111101_
+111000011111110000abcde0001001HHH100300001_
+3Y4y00000000000001ABCDE1001000hhh000100001_
+111001011111110000abcde0001001HHH100111111_
+11111100zzz000000000000000000111110010P001_
+00000100zZz0011111111111111111000100000001_
+000001111111110000000000000000000111111111_@
+
+0111AB1131CD111111EF11111333300_
+0100ab0000cd000000ef00000300300_
+0300000000000000000000000333300_
+0300001111110001111110000000100_
+01ii00tttuuu000vvvwww00ii100100_
+01Ii00tTtuUu0P0vVvwWw00iI100100_
+01ii00tttuuu000vvvwww00ii100100_
+1111100000000000000000000000100_
+1JJJ1000000hhhhh00000ggg0000100_
+1jjj0000001HHHHH10000gGg01001PP_
+11111111111111111111111111331PP_@
+
+111111I11111_
+101U4ui00a2A_
+103U4u0P0b2B_
+101U4uhhhc2C_
+1011JjhHhd2D_
+101T4thhhe2E_
+103T4t000f2F_
+101T4ti00g2G_
+131111I11111_@
+
+111111I11111_101U4ui00a2A_103U4u0P0b2B_101U4uhhhc2C_1011JjhHhd2D_101T4thhhe2E_103T4t000f2F_101T4ti00g2G_131111I11111_@
+
+    -----------
+    .player = 1 :😷
+    -------
+    0 :
+    1 :⬛
+    2 :🧊️
+    3 :️🚪
+    -------
+    A :🪛  
+    B :⚙️
+    C :🔩
+    D :🔬
+    E :💉
+    
+    
+    F :🩹
+    G :💭
+    H :🧤
+    ️
+    I :♻️
+    J :☣️
+    
+    
+    
+010010010010010010010000000000000000000000_111111111111111111111111110000000111111111_3W4w000iii0jjj000001T1U1V10000000100100iI1_1110000iIi0jJj0000014141411111000100000iI1_3X4x000iii0jjj000000t0u0v00001000100111101_111000011111110000abcde0001001HHH100300001_3Y4y00000000000001ABCDE1001000hhh000100001_111001011111110000abcde0001001HHH100111111_11111100zzz000000000000000000111110010P001_00000100zZz0011111111111111111000100000001_000001111111110000000000000000000111111111_@    
+    
+    
+*/
+
+
+
