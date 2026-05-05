@@ -49,7 +49,7 @@ typedef struct{
 } Dentiste;
 
 typedef struct{
-    int*   plateau              ; // tableau avec num ustensiles
+    int    plateau[7]              ; // tableau avec num ustensiles
     int    ustensile            ; // 1 ustensile = 1 nombre
     int    pathologie           ; // 1 pathologie = 1 nombre
     float  montant_a_payer      ; // diminue si qualité mauvaise
