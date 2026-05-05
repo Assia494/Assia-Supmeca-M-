@@ -69,7 +69,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     printf("Partie sauvegardée avec succès !\n");
 }
 
-int recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé que l'on récupère
+void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé que l'on récupère
 {
     FILE fichier = NULL;
     
