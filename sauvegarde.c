@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int sauvegarde_existe(){
-}
+
     FILE* fichier = NULL;
     
     fichier = fopen("sauvegarde.txt", "r"); // On essaie d’ouvrir le fichier en lecture car Le fichier doit exister au préalable
