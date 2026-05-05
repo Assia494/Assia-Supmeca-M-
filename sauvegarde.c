@@ -33,7 +33,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     
     // affiche les dentistes
     fputs  ("Le dentiste\n", fichier                              );
-    fprintf(fichier, "%d\n", &jsauv->dentiste->position           ); // revenir dessus
+    //fprintf(fichier, "%d\n", &jsauv->dentiste->position           ); // revenir dessus
     fprintf(fichier, "%d\n", &jsauv->dentiste.gants               );
     fprintf(fichier, "%d\n", &jsauv->patient.ustensile_en_main    );
     fprintf(fichier, "%d\n", &jsauv->patient.main                 );
@@ -42,7 +42,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     // affiche les patients déjà présent
     fputs  ("Le patient\n", fichier                               );
     fprintf(fichier, "%d\n", &jsauv->patient->plateau             );
-    fprintf(fichier, "%d\n", &jsauv->patient.pathologie           );
+    fprintf(fichier, "%c\n", &jsauv->patient.pathologie           );
     fprintf(fichier, "%f\n", &jsauv->patient.montant_a_payer      );
     fprintf(fichier, "%d\n", &jsauv->patient.humeur               );
     // affiche heure_arrive
