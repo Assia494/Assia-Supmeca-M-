@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-
+typedef struct {
+	int value;  //type de case
+	int player; //presence de joueur
+} _tile;
 
 typedef struct{
     int heure                    ;
