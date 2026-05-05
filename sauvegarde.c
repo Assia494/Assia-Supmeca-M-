@@ -33,16 +33,16 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     
     // affiche les dentistes
     fputs  ("Le dentiste\n", fichier                              );
-    fprintf(fichier, "%d\n", &jsauv->dentiste->position.x         );
-    fprintf(fichier, "%d\n", &jsauv->dentiste->position.y         );
+    fprintf(fichier, "%d\n", &jsauv->dentiste.position.x         );
+    fprintf(fichier, "%d\n", &jsauv->dentiste.position.y         );
     fprintf(fichier, "%d\n", &jsauv->dentiste.gants               );
     fprintf(fichier, "%d\n", &jsauv->patient.ustensile_en_main    );
-    fprintf(fichier, "%d\n", &jsauv->patient.main                 );
-    fprintf(fichier, "%d\n", &jsauv->patient.proprete_ustensile   );
+    fprintf(fichier, "%d\n", &jsauv->dentiste.main                );
+    fprintf(fichier, "%d\n", &jsauv->dentiste.proprete_ustensile   );
     
     // affiche les patients déjà présent
     fputs  ("Le patient\n", fichier                               );
-    fprintf(fichier, "%d\n", &jsauv->patient->plateau             );
+    fprintf(fichier, "%d\n", &jsauv->patient.plateau             );
     fprintf(fichier, "%c\n", &jsauv->patient.pathologie           );
     fprintf(fichier, "%f\n", &jsauv->patient.montant_a_payer      );
     fprintf(fichier, "%d\n", &jsauv->patient.humeur               );
@@ -84,15 +84,15 @@ void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé qu
     // on veut récuper une partie sauvegardé dans le fichier
     
     // recupère les dentistes
-    fscanf(fichier, "%d", &jsauv->dentiste->position.x         );
-    fscanf(fichier, "%d", &jsauv->dentiste->position.y         );
+    fscanf(fichier, "%d", &jsauv->dentiste.position.x         );
+    fscanf(fichier, "%d", &jsauv->dentiste.position.y         );
     fscanf(fichier, "%d", &jsauv->dentiste.gants               );
-    fscanf(fichier, "%d", &jsauv->patient.ustensile_en_main    );
-    fscanf(fichier, "%d", &jsauv->patient.main                 );
-    fscanf(fichier, "%d", &jsauv->patient.proprete_ustensile   );
+    fscanf(fichier, "%d", &jsauv->dentiste.ustensile_en_main    );
+    fscanf(fichier, "%d", &jsauv->dentiste.main                 );
+    fscanf(fichier, "%d", &jsauv->detiste.proprete_ustensile   );
     
     // recupère les patients déjà présent
-    fscanf(fichier, "%d", &jsauv->patient->plateau             );
+    fscanf(fichier, "%d", &jsauv->patient.plateau             );
     fscanf(fichier, "%d", &jsauv->patient.pathologie           );
     fscanf(fichier, "%f", &jsauv->patient.montant_a_payer      );
     fscanf(fichier, "%d", &jsauv->patient.humeur               );
