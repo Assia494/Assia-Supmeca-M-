@@ -170,10 +170,10 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	if(tile.player == 1) {
 	    
 		if((player.glove.type =='h')){
-		    printf("😷 ");
+		    printf("😷");
 		}
 		else{
-		    printf("😐 ");    
+		    printf("😐");    
 		}
 	}
 	else {
@@ -185,16 +185,16 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	            if(plateau_tab[i].id==c){
     	            if(plateau_tab[i].patient != NULL){
     	                if(plateau_tab[i].patient->va_payer==1){
-    	                    printf("🤒 ");
+    	                    printf("🤒");
     	                }
     	                else{
-    	                    printf("😥 ");    
+    	                    printf("😥");    
     	                }
     	                
     	                
     	            }
     	            else{
-    	                printf("🪑 ");    
+    	                printf("🪑");    
     	            }
     	            break;
 	            }
@@ -218,42 +218,42 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
     			printf("  ");
     			break;
     		case 1:
-    			printf("⬛ " );
+    			printf("⬛" );
     			break;
     		case 2:
-    			printf("🧊 ");
+    			printf("🧊");
     			break;
     		case 3:
-    			printf("🚪️ ");
+    			printf("🚪️");
     			break;
     		case 4:
-    			printf("🔲️ ");
+    			printf("🔲️");
     			break;
     			
     		case 'A':
-    			printf("🪛 ");
+    			printf("🪛");
     			break;
     		case 'B':
     			printf("⚙️ ");
     			break;
     		case 'C':
-    			printf("🔩 ");
+    			printf("🔩");
     			break;
     		case 'D':
-    			printf("🔬 ");
+    			printf("🔬");
     			break;
     		case 'E':
-    			printf("💉 ");
+    			printf("💉");
     			break;
     			
     		case 'F':
-    			printf("🩹 ");
+    			printf("🩹");
     			break;
     		case 'G':
-    			printf("💭 ");
+    			printf("💭");
     			break;
     		case 'H':
-    			printf("🧤 ");
+    			printf("🧤");
     			break;
     			
     		case 'I':
@@ -685,7 +685,7 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
                 printf("🪛");
                 break;
             case 1:
-                printf("⚙️");
+                printf("⚙️ ");
                 break;
             case 2:
                 printf("🔩");
@@ -717,15 +717,15 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
     printf("\n");
     
     if(plateau.patient!=NULL){
-        printf("    |tools needed for curring : ");
+        printf("    |tools needed for curring :    ");
         //affiche les outils nécessaires
         for(int i=0;i<NB_TOOLS;i++){
-            printf(" ");
+            printf("");
             if(plateau.patient->maladie.tool_needed[i]){
-                printf(" 🔼");   //si outils est nécessaire 
+                printf("🔼   ");   //si outils est nécessaire 
             }
             else{
-                printf(" -");   //si outils est non nécessaire
+                printf("-    ");   //si outils est non nécessaire
             }
             printf("    ");
         }    
@@ -754,7 +754,7 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
                 printf("🟩");
                 //color(50,150,30);
             }
-            printf(" ");
+            printf("");
             nb_box--;
         }
         color(255*(1-percentage),255*percentage,90*(1-percentage));
@@ -971,7 +971,7 @@ void main() {
 	//initialisation du lieu de jeu
 	_tile** grid = NULL;
 	//GRID_SIZE_Y*(GRID_SIZE_X +1)
-    char map_string[5000] = "111111I11111_101U4ui00a2A_103U4u0P0b2B_101U4uhhhc2C_1011JjhHhd2D_101T4thhhe2E_103T4t000f2F_101T4ti00g2G_131111I11111_@";                                                                                                                           
+    char map_string[5000] = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";                                                                                                                           
     get_grid_size_from_string(map_string ,&grid_size_x ,&grid_size_y);
     grid = make_grid_from_string(map_string,grid_size_x,grid_size_y);
 
@@ -989,7 +989,7 @@ void main() {
     int patient_hapiness_range = 25;
     int next_patient_time = patient_minimum_spawn_intervalle + randint(0 ,patient_spawn_range);
 
-    next_patient_time = 20;
+    next_patient_time = 0;
     
     
     int nb_step = -1;
@@ -1016,6 +1016,9 @@ void main() {
 }
 
 /*
+11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@   
+
+
 
 11111111111331111111_
 10000000100000030001_
