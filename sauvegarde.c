@@ -3,7 +3,7 @@
 
 int sauvegarde_existe(){
 }
-    FILE fichier = NULL;
+    FILE* fichier = NULL;
     
     fichier = fopen("sauvegarde.txt", "r"); // On essaie d’ouvrir le fichier en lecture car Le fichier doit exister au préalable
     
@@ -18,7 +18,7 @@ int sauvegarde_existe(){
 }
 
 void sauvegarderPartieTexte(Jeu *jsauv) {
-   FILE fichier = NULL;
+   FILE* fichier = NULL;
     
     fichier = fopen("sauvegarde.txt", "w");
     
@@ -71,7 +71,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
 
 void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé que l'on récupère
 {
-    FILE fichier = NULL;
+    FILE* fichier = NULL;
     
     fichier = fopen("sauvegarde.txt", "r");
     
