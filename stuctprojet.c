@@ -22,6 +22,10 @@ typedef enum{ //choix dif etats
     ROUGE; 
 }Humeur; 
 
+typedef struct {
+	int x;
+	int y;
+} _coord;
 
 typedef enum{
     Satisfait;
@@ -31,12 +35,12 @@ typedef enum{
 
 
 typedef struct{
-    int** position              ; // du dentiste sur plateau
-    int   gants                 ; // mis = 1 pas mis = 0
-    int   ustensile_en_main      ; // num ustensile
-    int   main                  ; // pleine = 1 pas pleine = 0   
-    bool  proprete_ustensile    ; // true=propre false=sale 
-    bool proprete_gants         ;        //
+    _coord position               ; // du dentiste sur plateau
+    int    gants                  ; // mis = 1 pas mis = 0
+    int    ustensile_en_main      ; // num ustensile
+    int    main                   ; // pleine = 1 pas pleine = 0   
+    bool   proprete_ustensile     ; // true=propre false=sale 
+    bool   proprete_gants         ;        //
 } Dentiste;
 
 typedef struct{
