@@ -89,7 +89,7 @@ void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé qu
     fscanf(fichier, "%d", &jsauv->dentiste.gants               );
     fscanf(fichier, "%d", &jsauv->dentiste.ustensile_en_main    );
     fscanf(fichier, "%d", &jsauv->dentiste.main                 );
-    fscanf(fichier, "%d", &jsauv->detiste.proprete_ustensile   );
+    fscanf(fichier, "%d", &jsauv->dentiste.proprete_ustensile   );
     
     // recupère les patients déjà présent
     fscanf(fichier, "%d", &jsauv->patient.plateau             );
