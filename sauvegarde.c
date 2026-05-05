@@ -41,7 +41,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     
     // affiche les patients déjà présent
     fputs  ("Le patient\n", fichier                               );
-    fprintf(fichier, "%d\n", &jsauv->patient->plateau             );
+    fprintf(fichier, "%d\n", &jsauv->patient->plateau             ); //
     fprintf(fichier, "%c\n", &jsauv->patient.pathologie           );
     fprintf(fichier, "%f\n", &jsauv->patient.montant_a_payer      );
     fprintf(fichier, "%d\n", &jsauv->patient.humeur               );
