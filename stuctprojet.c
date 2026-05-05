@@ -22,9 +22,9 @@ typedef struct{
 } Jeu;
 
 typedef enum{ //choix dif etats 
-    VERT; 
-    ORANGE; 
-    ROUGE; 
+    VERT, 
+    ORANGE, 
+    ROUGE, 
 }Humeur; 
 
 typedef struct {
