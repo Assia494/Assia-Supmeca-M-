@@ -36,7 +36,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     fprintf(fichier, "%d\n", &jsauv->dentiste.position.x         );
     fprintf(fichier, "%d\n", &jsauv->dentiste.position.y         );
     fprintf(fichier, "%d\n", &jsauv->dentiste.gants               );
-    fprintf(fichier, "%d\n", &jsauv->patient.ustensile_en_main    );
+    fprintf(fichier, "%d\n", &jsauv->dentiste.ustensile_en_main    );
     fprintf(fichier, "%d\n", &jsauv->dentiste.main                );
     fprintf(fichier, "%d\n", &jsauv->dentiste.proprete_ustensile   );
     
