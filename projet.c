@@ -15,9 +15,9 @@ typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 typedef enum {TEST_DESEASE=0,DESEASE_A=1,DESEASE_B=2,DESEASE_C=3,DESEASE_D=4,DESEASE_E=5} _maladie_type;
 //-----------------
 typedef struct {
-	int value;  //type de case
+	int value;  //type de case  
 	int player; //presence de joueur
-} _tile;
+} _tile;     //case 
 //-----------------
 typedef struct {
 	int x;
@@ -52,40 +52,40 @@ typedef struct {
     int tools[NB_TOOLS] ;     //{a,b,c,d,e,f,g}
     int used_tools[NB_TOOLS] ;
     _patient* patient;
-    int id;
+    int id;   //noms possible des plateaux (t u v w x y z)
 } _plateau;
 //-----------------------------------------------------------
-void color(unsigned char r, unsigned char g, unsigned char b){
-	printf("\x1B[38;2;%d;%d;%dm", r, g, b);
+void color(unsigned char r, unsigned char g, unsigned char b){    //couleur affichage
+	printf("\x1B[38;2;%d;%d;%dm", r, g, b);                       // red, green ,blue
 }
 //-----------------------------------------------------------
 void reset_color(){
-	printf("\x1B[0m");
+	printf("\x1B[0m");                                           // revenir a la couleur par defaut
 }
 //-----------------------------------------------------------
-int randint(int a,int b) {
+int randint(int a,int b) {                                        // nombre entre intervalle pour pathologie et ustensiles...
 	return rand()%(b-a+1) +a;
 }
 //-----------------------------------------------------------
-int inter_check(int nb,int a,int b) {
+int inter_check(int nb,int a,int b) {                             //verifier si c dans une bon intervalle (si le deplacement est dans a taille de tableau
 	return (a<=nb)&&(nb<=b);
 }
 //-----------------------------------------------------------
-void exit_if_null_pointer(void* pointer) {
+void exit_if_null_pointer(void* pointer) {                       //apres malloc 
 	if(pointer == NULL) {
 		printf(">>Got a NULL pointer\n");
 		exit(1);
 	}
 }
 //-----------------------------------------------------------
-_tile cree_tile() {
-	_tile new_tile;
+_tile cree_tile() {                                              //creer case dans la grille                                    
+	_tile new_tile;  
 	new_tile.value = 0;
 	new_tile.player = 0;
 	return new_tile;
 }
 //-----------------------------------------------------------
-_tile** cree_grid(int size_x,int size_y) {
+_tile** cree_grid(int size_x,int size_y) {                       //tab 2D
 
 	_tile** new_grid = NULL;
 	new_grid = malloc( size_y * sizeof(_tile*) );
@@ -104,13 +104,13 @@ _tile** cree_grid(int size_x,int size_y) {
 
 }
 //-----------------------------------------------------------
-_coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {
+_coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {        //deplacer dans chauque case de la grille si la case player est 1 : retrourner la position -> utile pr en cas de reinitialisation. 
 	_coord pos;
 	pos.x = -1;
 	pos.y = -1;
 	exit_if_null_pointer(grid);
-	for(int dy=0 ; dy<size_y ; dy++) {
-		for(int dx=0 ; dx<size_x ; dx++) {
+	for(int dy=0 ; dy<size_y ; dy++) {                                     //parcours ligne
+		for(int dx=0 ; dx<size_x ; dx++) { b                               //parcours colonne
 			if(grid[dy][dx].player == 1) {
 				pos.x = dx;
 				pos.y = dy;
@@ -118,10 +118,10 @@ _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {
 			}
 		}
 	}
-	return pos;
+	return pos;              
 }
 //-----------------------------------------------------------
-_coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element) {
+_coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element) {         //deplacer dans chauque case de la grille si la case value est 1 : retrourner la position -> utile pr en cas de reinitialisation. 
 	_coord pos;
 	pos.x = -1;
 	pos.y = -1;
@@ -138,24 +138,24 @@ _coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element)
 	return pos;
 }
 //-----------------------------------------------------------
-_tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {
+_tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {      // a partir d une position on veut recup la case
 	exit_if_null_pointer(grid);
 
-	if(!inter_check(x,0,size_x) + !inter_check(x,0,size_x)) {
-		printf("Got incoherent value  size=(x=%d/y=%d) ,position=(x=%d/y=%d)",size_x,size_y,x,y);
+	if(!inter_check(x,0,size_x) + !inter_check(x,0,size_x)) {                                  
+		printf("Got incoherent value  size=(x=%d/y=%d) ,position=(x=%d/y=%d)",size_x,size_y,x,y);         // pr pas que la case choisie ne soit pas negative ou en dehors du tableau
 		exit(1);
 	}
 	return grid[y][x];
 
 }
 //-----------------------------------------------------------
-int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {
+int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {             //position d arriver x et y 
 	int tile_value = 0;
 	_tile tile;
 
-	tile = get_tile_from_pos(grid,size_x,size_y,x,y) ;
+	tile = get_tile_from_pos(grid,size_x,size_y,x,y) ;                         // a partir du type de case est ce que  le joueur peut sy rendre
 	tile_value = tile.value;
-	if(inter_check(tile_value,'a','z')){
+	if(inter_check(tile_value,'a','z')){                                      // a z cases actiuons 
 	    return 1;
 	}
 	switch(tile_value) {
@@ -179,7 +179,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	else {
 	    if( inter_check(tile.value,'T','Z') ){
 	        
-	        char c;
+	        char c;                                               //c->convertit en minuscules T et Z les values
 	        c = tile.value -'T' +'t';
 	        for(int i=0;i<taille;i++){
 	            if(plateau_tab[i].id==c){
@@ -291,7 +291,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	}
 }
 //-----------------------------------------------------------
-void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {
+void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille 
 	exit_if_null_pointer(grid);
 	printf("\n\n");
 	for(int dy=0 ; dy<size_y ; dy++) {
@@ -381,7 +381,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         exit(2);
     }
     current_tile = get_tile_from_pos(grid ,size_x ,size_y ,player->pos.x ,player->pos.y);
-    tile_value = current_tile.value;
+    tile_value = current_tile.value;                                                            //case actuelle dentiste
     
     if((tile_value=='h')&&(player->glove.type==0)){
         //prendre des gants si le joueur n'a pas des gants
@@ -1068,8 +1068,8 @@ void main() {
     .player = 1 :😷
     -------
     0 :
-    1 :⬛
-    2 :🧊️
+    1 :⬛  mur
+    2 :🧊️  
     3 :️🚪
     -------
     A :🪛  
