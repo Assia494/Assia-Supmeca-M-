@@ -6,7 +6,7 @@ void gestion_fichier_patient(Patient p)
 {
   FILE fichier = NULL;
 
-  fichier = fopen("pathologie_client.txt", "r");
+  fichier = fopen("pathologie_client.txt", "w");
 
   if (fichier == NULL){
      printf("Ouverture du fichier impossible\n");
