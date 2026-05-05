@@ -110,7 +110,7 @@ _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {        //d
 	pos.y = -1;
 	exit_if_null_pointer(grid);
 	for(int dy=0 ; dy<size_y ; dy++) {                                     //parcours ligne
-		for(int dx=0 ; dx<size_x ; dx++) { b                               //parcours colonne
+		for(int dx=0 ; dx<size_x ; dx++) {                              //parcours colonne
 			if(grid[dy][dx].player == 1) {
 				pos.x = dx;
 				pos.y = dy;
