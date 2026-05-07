@@ -15,7 +15,7 @@ typedef struct{
 typedef struct{    
     Dentiste  dentiste           ; // on peut augmenter au bout d'un montant
     Temps     temps_debut_partie ;   
-    Patient   patient            ;  //mettre tableau de patient 
+    Patient   patient[7]         ;  //mettre tableau de patient 
     int       nb_client          ; // depuis le debut de la parti
     float     argent_cabinet     ; // ensemble argent gagné
     Humeur    humeur             ; //nb patient mecontent, content et furieux
