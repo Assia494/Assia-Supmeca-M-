@@ -9,6 +9,7 @@
 #define NB_TOOLS 7  //sans le gant
 #define NB_MALADIE 5 //sans le test_desease
 #define NB_hummeur 3
+
 //-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
@@ -54,6 +55,36 @@ typedef struct {
     _patient* patient;
     int id;   //noms possible des plateaux (t u v w x y z)
 } _plateau;
+
+typedef struct {
+    //tableau pour stocker le nombre de patient en fonction de leur hummeur quand il sont parti
+    int hummeur_tab[NB_hummeur] ; // index 0:satisfait ,index 1:mécontent ,index 2:furieux
+    
+    //initialisation du joueur
+	_player player ;
+	float profit ;
+	
+	//initialisation du lieu de jeu
+	int grid_size_x ;
+    int grid_size_y ;
+	_tile** grid ;
+    //char map_string[5000] ;
+
+    //initialisation des plateaux
+    int happy_bar_len ;
+    int nb_plateau ;
+    _plateau* plateau_tab ;
+
+    //initialisation des paramètre des patients
+    int patient_minimum_spawn_intervalle ;
+    int patient_spawn_range ;
+    int patient_spawning_hapiness ;
+    int patient_hapiness_range;
+    int next_patient_time ;
+    
+    int nb_step ;
+    int a;
+} _jeu ;
 //-----------------------------------------------------------
 void color(unsigned char r, unsigned char g, unsigned char b){    //couleur affichage
 	printf("\x1B[38;2;%d;%d;%dm", r, g, b);                       // red, green ,blue
@@ -953,71 +984,76 @@ void get_grid_size_from_string(char map_string[] ,int* size_x ,int* size_y){
     *size_y = new_size_y;
 }
 //-----------------------------------------------------------
+_jeu creer_jeu(){
+    _jeu new_jeu;
+    new_jeu.a = 9;
+     //initialisation du joueur
+	new_jeu.player.tool.type = 0;
+	new_jeu.player.glove.type = 0;
+    new_jeu.profit = 0.00f;
+    
+    //initialisation de la grille de jeu
+	new_jeu.grid_size_x = 0;
+    new_jeu.grid_size_y = 0;
+	new_jeu.grid = NULL;
+    char map_string[5000] = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";
+    get_grid_size_from_string(map_string ,&(new_jeu.grid_size_x) ,&(new_jeu.grid_size_y));
+    new_jeu.grid = make_grid_from_string(map_string   ,new_jeu.grid_size_x    ,new_jeu.grid_size_y);
+
+    //initialisation des plateaux
+    new_jeu.happy_bar_len = 32;
+    new_jeu.nb_plateau = 0;
+    new_jeu.plateau_tab = NULL ;
+    new_jeu.plateau_tab = get_plateau_tab(new_jeu.grid ,new_jeu.grid_size_x ,new_jeu.grid_size_y ,&(new_jeu.nb_plateau));
+    
+    //initialisation des paramètre des patients
+    new_jeu.hummeur_tab[0] = 0;
+    new_jeu.hummeur_tab[1] = 0;
+    new_jeu.hummeur_tab[2] = 0;
+    new_jeu.patient_minimum_spawn_intervalle = 25;
+    new_jeu.patient_spawn_range = 20 ;
+    new_jeu.patient_spawning_hapiness = 100;
+    new_jeu.patient_hapiness_range = 25;
+    new_jeu.next_patient_time = new_jeu.patient_minimum_spawn_intervalle + randint(0 ,new_jeu.patient_spawn_range);
+    //----------
+    new_jeu.nb_step = -1;
+    //----------
+    
+    return new_jeu;
+}
+//-----------------------------------------------------------
 void main() {
     srand(time(NULL));
     printf("Running program\n");
+    _jeu game;
+    game = creer_jeu();
     
-    int grid_size_x=0;
-    int grid_size_y=0;
-    float profit = 0.00f;
-    //tableau pour stocker le nombre de patient en fonction de leur hummeur quand il sont parti
-    int hummeur_tab[NB_hummeur] = {0,0,0}; // 0:satisfait ,1:mécontent ,2:furieux
-    
-    //initialisation du joueur
-	_player player;
-	player.tool.type = 0;
-	player.glove.type = 0;
-	
-	//initialisation du lieu de jeu
-	_tile** grid = NULL;
-	//GRID_SIZE_Y*(GRID_SIZE_X +1)
-    char map_string[5000] = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";                                                                                                                           
-    get_grid_size_from_string(map_string ,&grid_size_x ,&grid_size_y);
-    grid = make_grid_from_string(map_string,grid_size_x,grid_size_y);
-
-    //initialisation des plateaux
-    int happy_bar_len = 32;
-    int nb_plateau = 0;
-    _plateau* plateau_tab = NULL;
-    plateau_tab = get_plateau_tab(grid ,grid_size_x ,grid_size_y ,&nb_plateau);
-
-    //print_grid(grid,grid_size_x,grid_size_y,plateau_tab,nb_plateau);
-    //initialisation des paramètre des patients
-    int patient_minimum_spawn_intervalle = 25;
-    int patient_spawn_range = 20;
-    int patient_spawning_hapiness = 100;
-    int patient_hapiness_range = 25;
-    int next_patient_time = patient_minimum_spawn_intervalle + randint(0 ,patient_spawn_range);
-
-    next_patient_time = 0;
-    
-    
-    int nb_step = -1;
-    while(1){
-        printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-        nb_step++;
-        
-        if(!update_patients(plateau_tab ,nb_plateau ,patient_minimum_spawn_intervalle ,patient_spawn_range ,&next_patient_time ,patient_spawning_hapiness+randint(0,patient_hapiness_range) ,&profit ,hummeur_tab)){
-            break; //game over
+    if(1){
+        while(1){
+            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+            game.nb_step++;
+            
+            if(!update_patients(game.plateau_tab ,game.nb_plateau ,game.patient_minimum_spawn_intervalle ,game.patient_spawn_range ,&(game.next_patient_time) ,game.patient_spawning_hapiness+randint(0,game.patient_hapiness_range) ,&(game.profit) ,game.hummeur_tab)){
+                break; //game over
+            }
+    		print_grid(game.grid,game.grid_size_x,game.grid_size_y,game.plateau_tab,game.nb_plateau,game.player);
+    		print_plateau_tab(game.plateau_tab ,game.nb_plateau ,game.patient_spawning_hapiness+game.patient_hapiness_range ,game.happy_bar_len);
+    		print_player_status(game.player ,game.profit);
+    		printf("gant %d \n",game.player.glove.type);
+    		ask_to_do_player_action(game.grid,game.grid_size_x,game.grid_size_y,&(game.player),game.plateau_tab,game.nb_plateau,&(game.profit) ,game.hummeur_tab);
+    		//sleep(1);
+    	    
         }
-		print_grid(grid,grid_size_x,grid_size_y,plateau_tab,nb_plateau,player);
-		print_plateau_tab(plateau_tab ,nb_plateau ,patient_spawning_hapiness+patient_hapiness_range ,happy_bar_len);
-		print_player_status(player ,profit);
-		printf("gant %d \n",player.glove.type);
-		ask_to_do_player_action(grid,grid_size_x,grid_size_y,&player,plateau_tab,nb_plateau,&profit ,hummeur_tab);
-		//sleep(1);
-	    
+        color(250,30,30);
+        printf("\n\n        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux ",game.nb_step ,game.profit ,game.hummeur_tab[0] ,game.hummeur_tab[1] ,game.hummeur_tab[2]);
+        reset_color();
     }
-    color(250,30,30);
-    printf("\n\n        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux ",nb_step ,profit ,hummeur_tab[0] ,hummeur_tab[1] ,hummeur_tab[2]);
-    reset_color();
-
+    printf("program ended\n");
 
 }
 
 /*
 11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@   
-
 
 
 11111111111331111111_
@@ -1095,6 +1131,4 @@ void main() {
     
     
 */
-
-
 
