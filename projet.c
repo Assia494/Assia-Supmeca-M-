@@ -15,6 +15,10 @@ typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
 typedef enum {TEST_DESEASE=0,DESEASE_A=1,DESEASE_B=2,DESEASE_C=3,DESEASE_D=4,DESEASE_E=5} _maladie_type;
 //-----------------
+typedef enum {satisfait=0,mecontant=1,furieux=2} _etat;
+//-----------------
+typedef enum {new_jeu=0,select_menu=1,scoreboard=2,save=3,continu=4,quit=5} _menu;
+//-----------------
 typedef struct {
 	int value;  //type de case  
 	int player; //presence de joueur
@@ -46,7 +50,7 @@ typedef struct {
 typedef struct {
     int hummeur;
     _maladie maladie;
-    int va_payer;
+    _etat etat;
 } _patient;
 //-----------------
 typedef struct {
@@ -55,8 +59,10 @@ typedef struct {
     _patient* patient;
     int id;   //noms possible des plateaux (t u v w x y z)
 } _plateau;
-
+//-----------------
 typedef struct {
+    
+    int play; //est ce que la partie a commencé?
     //tableau pour stocker le nombre de patient en fonction de leur hummeur quand il sont parti
     int hummeur_tab[NB_hummeur] ; // index 0:satisfait ,index 1:mécontent ,index 2:furieux
     
@@ -215,7 +221,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	        for(int i=0;i<taille;i++){
 	            if(plateau_tab[i].id==c){
     	            if(plateau_tab[i].patient != NULL){
-    	                if(plateau_tab[i].patient->va_payer==1){
+    	                if(plateau_tab[i].patient->etat==satisfait){
     	                    printf("🤒");
     	                }
     	                else{
@@ -374,19 +380,36 @@ int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab){
     
     for(int i=0;i<NB_TOOLS;i++){
         if(plate.tools[i]<plate.patient->maladie.tool_needed[i]){
-            can_cure = 0;    
+            can_cure = 0;
+            break;
         }
     }
-    if(can_cure){
-        
+    if(can_cure){//si soigné le patient est possible
+
         for(int i=0;i<NB_TOOLS;i++){
             (*plateau).tools[i] -= plate.patient->maladie.tool_needed[i];
             (*plateau).used_tools[i] += plate.patient->maladie.tool_needed[i];
-        }  
+        } 
         
-        printf("Un patient est parti satisfaisant car il est soigné ,il a donné %.2f$\n ",plateau->patient->maladie.profit);
-        hummeur_tab[0] ++;
-        *profit += plateau->patient->maladie.profit; 
+        //si patient satisfaisant est soigné
+        if(plate.patient->etat == satisfait){
+            printf("Un patient est parti satisfait car il a été soigné, il a donné %.2f$\n",plateau->patient->maladie.profit);
+            hummeur_tab[0]++;
+            *profit += plateau->patient->maladie.profit;
+        }
+        //sinon si un patient mécontant est soigné
+        else {
+            if(plateau->patient->maladie.profit != 0){//si il doit payé plus que 0$
+                printf("Un patient est parti mécontent car il a été soigné et il a attendue longtemps, il a donné %.2f$\n",0.5*(plateau->patient->maladie.profit));
+                hummeur_tab[1]++;
+                *profit += 0.5*(plateau->patient->maladie.profit);
+            }
+            else{//il n'a pas besoin de payé <=> le plateau est sale lors de son arrivé
+                printf("Un patient est parti mécontent car il a été soigné et le plateau a été sale lors de son arrivé, il a donné 0.0$\n");
+                hummeur_tab[1]++;
+            }
+        }
+        // le patient part
         free((*plateau).patient);
         (*plateau).patient = NULL;
         
@@ -402,7 +425,7 @@ int try_cure_patient(_plateau* plateau ,float* profit ,int* hummeur_tab){//verif
     }
 }
 //-----------------------------------------------------------
-char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab){
+char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab){ //pour les actions autre que les déplacements
     _tile current_tile;
     int tile_value;
     
@@ -418,13 +441,18 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         //prendre des gants si le joueur n'a pas des gants
         player->glove.type = 'h';
         player->glove.clean = 0 ;
-        player->glove.used = 0 ;    
+        player->glove.used = 0 ; 
+        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
+        printf("1.2$ du profit est dépensé pour avoir des gants\n");
     }
     if(inter_check(tile_value,'a','g')&&(player->tool.type==0)){
         //prendre un objet si le joueur n'a pas d'outil
         player->tool.type = tile_value;
         player->tool.clean = (player->glove.type=='h')&&(player->glove.used==0) ;
         player->tool.used = 0 ;
+        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
+        printf("1.2$ du profit est dépensé pour avoir un outil\n");
+        
     }
     else if(tile_value=='i'){
         //mettre les outils dans la poubelle de recyclage
@@ -443,7 +471,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         }
         //mettre les gants dans la poubelle biologique
         else if((player->glove.type=='h')&&(player->glove.used==1)){
-            player->glove.type = 0;     
+            player->glove.type = 0;   
         }
     }
     else if(inter_check(tile_value,'t','z')){
@@ -500,17 +528,18 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
     }
 } 
 //-----------------------------------------------------------
-void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ) {
+void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ,int* playing) {
 	char move ;
 	int error = 0;
 	printf("Veuillez saisir votre action-----\n\n");
 	printf("- type de déplacement\n");
 	printf(" |  z:vers le haut\n");
-	printf(" |  q:vers la droite\n");
+	printf(" |  d:vers la droite\n");
 	printf(" |  s:vers le bas\n");
-	printf(" |  d:vers la gauche\n");
+	printf(" |  q:vers la gauche\n");
 	printf("- action\n");
-	printf(" |  g:faire un action\n");
+	printf(" |  g:faire un action (si aucun action est possible rien se passe)\n");
+	printf(" |  h:retour au menu principal (la partie n'est pas perdu)\n");
 	do {
 		error = scanf(" %c",&move);
 		if(!error){
@@ -518,10 +547,11 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 		    do{
 		    }while(!scanf("%c"),&move);
 		}
-		if((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')) {
+		if((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')&&(move!='h')) {
 			printf("L'action saisi est incorrect,veuillez recommencez\n");
 		}
-	} while((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g'));
+	} while((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')&&(move!='h'));
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	switch(move) {
 	default:
 		break;
@@ -544,6 +574,9 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 	case 'g':
 		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab);
 		break;
+	case 'h':
+		*playing = 0;
+		break;
 	}
 }
 //-----------------------------------------------------------
@@ -559,25 +592,20 @@ void print_red_green(int a){
 void print_player_status(_player player ,float profit){
     color(190,175,30);
     printf("\n----------------Le joueur-------------------\n");
-    
-    printf("    |current profit : %.2f$ \n",profit);
-    
-    printf("    |le joueur possède des gants?   :");
-    print_red_green(player.glove.type=='h');
-    printf("-----\n");
-    
+    printf("    |💵 %.2f$",profit);
+    //si le joueur a des gants
     if(player.glove.type=='h'){
-        printf("        |des gants usées?       :");
-        print_red_green(player.glove.used==1);
-        printf("-----\n");
+        printf("    |🧤 ");
+        if(player.glove.used==0){
+            printf("🟩");//porpre
+        }
+        else{
+            printf("🟫");//sale
+        }
     }
-    
-    printf("    |le joueur possède des outils?  :");
-    print_red_green(player.tool.type != 0);
-    printf("-----\n");
-    
-    if(player.tool.type!= 0 ){
-        printf("        |type d'outils?         : ");
+     //si le joueur a un outil
+    if(player.tool.type!=0){
+        printf("    |");
         switch(player.tool.type){
             default:
                 printf("...");
@@ -586,7 +614,7 @@ void print_player_status(_player player ,float profit){
                 printf("🪛");
                 break;
             case 'b':
-                printf("⚙️");
+                printf("⚙️ ");
                 break;
             case 'c':
                 printf("🔩");
@@ -604,15 +632,16 @@ void print_player_status(_player player ,float profit){
                 printf("💭");
                 break;
         }
-        printf("\n");
-        printf("        |des outils propres?    :");
-        print_red_green(player.tool.clean);
-        printf("-----\n");
-    
-        printf("        |des outils usées?      :");
-        print_red_green(player.tool.used);
-        printf("-----\n");
+        if(player.tool.used==0){
+            printf(" 🟩");//porpre
+        }
+        else{
+            printf(" 🟫");//sale
+        }
     }
+    
+    
+    
     printf("\n");
     reset_color();
 }
@@ -704,9 +733,10 @@ _plateau* get_plateau_tab(_tile** grid,int size_x,int size_y,int* taille){
 //-----------------------------------------------------------
 void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
     color(190,175,30);
-    printf("-------------------------------------plateau %c -------------------------------------------\n",plateau.id);
+    //printf("-------------------------------------plateau %c -------------------------------------------\n",plateau.id);
+    printf("  <plateau %c > ",plateau.id);
     //affichage des outils present sur le plateau
-    printf("    |tools :                    ");
+    //printf("    |tools :    ");
     for(int i=0;i<NB_TOOLS;i++){
         switch(i){
             default:
@@ -734,37 +764,51 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
                 printf("💭");
                 break;
         }
-        if(plateau.tools[i]){
-            printf(" 🟩");   //si outils present est propre 
+        if(plateau.tools[i]){ //si outils present est propre
+            if(plateau.patient != NULL){
+                if (plateau.patient->maladie.tool_needed[i]){
+                    printf(" ✅"); //si l'outils present est nécessaires 
+                }
+                else{
+                    printf(" 🟩");
+                }
+            }
+            else{
+                printf(" 🟩"); 
+            }
         }
-        else if(plateau.used_tools[i]){
-            printf(" 🟫");  //si outils present est utilisée 
+        else if(plateau.used_tools[i]){ //si outils present est utilisée(sale) 
+            if(plateau.patient != NULL){
+                if (plateau.patient->maladie.tool_needed[i]){
+                    printf(" 🚫"); //si l'outils present est nécessaires mais il est sale
+                }
+                else{
+                    printf(" 🟫"); 
+                }
+            }
+            else{
+                printf(" 🟫"); 
+            }
+        }
+        else if(plateau.patient != NULL){
+            if (plateau.patient->maladie.tool_needed[i]){
+                printf(" ⬜");  //si l'outils present est nécessaires et doit être ramené au plateau
+            }
+            else{
+                printf(" 🟥");
+            }
         }
         else{
-            printf(" 🟥");  //pas d'outils present est utilisée    
+            printf(" 🟥"); //l'outils n'est pas present sur le plateau  
         }
         printf("    ");
     }    
-    printf("\n");
+    //printf("\n");
     
     if(plateau.patient!=NULL){
-        printf("    |tools needed for curring :    ");
-        //affiche les outils nécessaires
-        for(int i=0;i<NB_TOOLS;i++){
-            printf("");
-            if(plateau.patient->maladie.tool_needed[i]){
-                printf("🔼   ");   //si outils est nécessaire 
-            }
-            else{
-                printf("-    ");   //si outils est non nécessaire
-            }
-            printf("    ");
-        }    
-        printf("\n");
-    
         float percentage = 1.0*(plateau.patient->hummeur)/max_happiness;
         int nb_box = percentage*happy_bar_len;
-        printf("    |hummeur  ");
+        printf("|hummeur  ");
         for(int i=0;i<happy_bar_len;i++){
             if(nb_box<1){
                 printf("⬛");
@@ -785,20 +829,22 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
                 printf("🟩");
                 //color(50,150,30);
             }
-            printf("");
+            //printf(" ");
             nb_box--;
         }
         color(255*(1-percentage),255*percentage,90*(1-percentage));
-        printf("    %.2f%\n",percentage*100);
+        printf("    %.2f%",percentage*100);
         ///🟥🟧🟧🟨🟨🟨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬛⬛
-        
-        
     }
+    printf("\n");
     reset_color();
     
 }    
 //-----------------------------------------------------------
 void print_plateau_tab(_plateau* plateau_tab ,int taille ,int max_happiness ,int happy_bar_len){
+    color(190,175,30);
+    printf("------------------------------------- informations des plateaux --------------------------------------------------------------------------------\n");
+    reset_color();
     for(int i=0;i<taille;i++){
         print_plateau(plateau_tab[i] ,max_happiness ,happy_bar_len);    
     }    
@@ -821,7 +867,7 @@ _patient* cree_patient(){
     exit_if_null_pointer(patient);
     
     patient->hummeur = 100;
-    patient->va_payer = 1;
+    patient->etat = satisfait;
     int desease_index = randint(1,NB_MALADIE);
     switch(desease_index){
         default:
@@ -868,50 +914,46 @@ int get_a_patient(_plateau* plateau_tab ,int taille ,int initial_hapiness){
             break;
         }    
     }
-    if(more_patient){
+    if(more_patient){//si il y a un plateau libre
         int ind = 0; 
         do{
             ind = randint(0,taille-1);
         }while(plateau_tab[ind].patient != NULL);
+        printf("Un patient s'est installé sur un plateau\n");
         plateau_tab[ind].patient = cree_patient();
         plateau_tab[ind].patient->hummeur = initial_hapiness; 
-        //verifie si le plateau est propre ou vide  /aucun chose sale
+        
+        //vérifie si le plateau n'a pas d'outils sale sinon il ne va pas payer
         for(int j=0;j<NB_TOOLS;j++){
             if(plateau_tab[ind].used_tools[j] == 1){
-                plateau_tab[ind].patient->va_payer = 0;//le patient ne va pas payer en raison que le plateau n'est pas totalement propre ,de plus il est mécontent
+                printf("le patient ne va pas payer car le plateau n'est pas totalement propre\n");
+                plateau_tab[ind].patient->maladie.profit = 0;//le patient ne va pas payer en raison que le plateau n'est pas totalement propre ,de plus il est mécontent
+                plateau_tab[ind].patient->etat = mecontant;
+                break;
             }
-        }
-            
-            
-            
-            
+        } 
         return 1;
     }
     return 0;
 }
 //-----------------------------------------------------------
-void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy ,int* full ,float* profit ,int* hummeur_tab){
+void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy ,int* full ,float* profit ,int* hummeur_tab ,int max_happiness){
     int full_var = 1;
     for(int i=0;i<taille;i++){
         if(plateau_tab[i].patient != NULL){
             plateau_tab[i].patient->hummeur--;
+            
+            if (plateau_tab[i].patient->hummeur <= 0.45*max_happiness){
+                plateau_tab[i].patient->etat = mecontant;    
+            }
+            
+            
             if( (plateau_tab[i].patient->hummeur)<=0  ){
-                
-                if(plateau_tab[i].patient->va_payer==1){
-                    *profit += (plateau_tab[i].patient->maladie.profit)*0.5;
-                    printf("Un patient est parti mécontent ,par manque de patience ,il a donné %.2f$\n",(plateau_tab[i].patient->maladie.profit)*0.5); 
-                    hummeur_tab[1]++;
-                    free(plateau_tab[i].patient);
-                    plateau_tab[i].patient = NULL;
-                    *all_happy = 0;
-                }
-                else{
-                    printf("Un patient est parti mécontent ,par manque de patience ,il a rien donné car il est déja mécontent",(plateau_tab[i].patient->maladie.profit)*0.5); 
-                    hummeur_tab[1]++;
-                    free(plateau_tab[i].patient);
-                    plateau_tab[i].patient = NULL;
-                    *all_happy = 0;    
-                }
+                printf("Un patient est parti furieux par manque de patience ,il a rien donné\n"); 
+                hummeur_tab[2]++;
+                free(plateau_tab[i].patient);
+                plateau_tab[i].patient = NULL;
+                *all_happy = 0;
 
             }
         }
@@ -940,14 +982,13 @@ int update_patients(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int s
     int all_happy = 1;
     
     patients_spawning_regulation(plateau_tab ,taille ,min_spawn_time ,spawn_time_range ,current_patient_spawning_time ,initial_hapiness);
-    update_patients_hapiness(plateau_tab ,taille ,&all_happy ,&full ,profit ,hummeur_tab);
+    update_patients_hapiness(plateau_tab ,taille ,&all_happy ,&full ,profit ,hummeur_tab ,min_spawn_time+spawn_time_range);
     printf("next patient in %d step(s)\n",*current_patient_spawning_time);
     if(full&(!all_happy)){
         //game Over
         return 0;
     }
     return 1;
-    
 }
 //-----------------------------------------------------------
 void decrease_if_to_much(int* var ,int min){
@@ -986,7 +1027,7 @@ void get_grid_size_from_string(char map_string[] ,int* size_x ,int* size_y){
 //-----------------------------------------------------------
 _jeu creer_jeu(){
     _jeu new_jeu;
-    new_jeu.a = 9;
+    new_jeu.play = 0;
      //initialisation du joueur
 	new_jeu.player.tool.type = 0;
 	new_jeu.player.glove.type = 0;
@@ -1010,10 +1051,10 @@ _jeu creer_jeu(){
     new_jeu.hummeur_tab[0] = 0;
     new_jeu.hummeur_tab[1] = 0;
     new_jeu.hummeur_tab[2] = 0;
-    new_jeu.patient_minimum_spawn_intervalle = 25;
-    new_jeu.patient_spawn_range = 20 ;
-    new_jeu.patient_spawning_hapiness = 100;
-    new_jeu.patient_hapiness_range = 25;
+    new_jeu.patient_minimum_spawn_intervalle = 1+ 0*20;
+    new_jeu.patient_spawn_range = 0*15 ;
+    new_jeu.patient_spawning_hapiness = 20 + 0*130;
+    new_jeu.patient_hapiness_range = 0*25;
     new_jeu.next_patient_time = new_jeu.patient_minimum_spawn_intervalle + randint(0 ,new_jeu.patient_spawn_range);
     //----------
     new_jeu.nb_step = -1;
@@ -1021,33 +1062,198 @@ _jeu creer_jeu(){
     
     return new_jeu;
 }
+// la page menu
+//-----------------------------------------------------------
+int play_a_game(_jeu* game){
+    game->play = 1;
+    int playing = 1;
+    while(playing){
+        game->nb_step++;
+        
+        if(!update_patients(game->plateau_tab ,game->nb_plateau ,game->patient_minimum_spawn_intervalle ,game->patient_spawn_range ,&(game->next_patient_time) ,game->patient_spawning_hapiness+randint(0,game->patient_hapiness_range) ,&(game->profit) ,game->hummeur_tab)){
+            color(250,30,30);//game over
+            printf("\n\n");
+            printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+            printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n ",game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);
+            printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+            reset_color();
+            sleep(2);
+            /*
+            char c = 'a';
+            int error = 0;
+            do{
+                error = scanf("%c",&c);
+                printf("%d\n",error);
+		    }while(!error && c != '\n');
+		    */
+            return 0; 
+        }
+    	print_grid(game->grid,game->grid_size_x,game->grid_size_y,game->plateau_tab,game->nb_plateau,game->player);
+    	print_plateau_tab(game->plateau_tab ,game->nb_plateau ,game->patient_spawning_hapiness+(game->patient_hapiness_range) ,game->happy_bar_len);
+    	print_player_status(game->player ,game->profit);
+    	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing);
+    }
+    return 1;
+} //return 0 <=> partie terminer    , return 1 <=> partie non terminer mais il est mis en pause 
+//-----------------------------------------------------------
+void int_swap(int* a,int* b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+//-----------------------------------------------------------
+void bubble_sort(int* tab ,int taille){
+    for(int i=0;i<taille-1;i++){
+        for(int j=0;j<taille-1-i;j++){
+            if(tab[j]>tab[j+1]){
+                int_swap(tab+j,tab+j+1);
+            }
+        }
+    }
+    
+}
+//-----------------------------------------------------------
+int* cree_tab(int size){
+    //(temporaire)
+    int* tab =NULL;
+    tab = malloc(size*sizeof(int));
+    exit_if_null_pointer(tab);
+    for(int i=0;i<size;i++){
+        tab[i] = randint(100,10000);   
+    }
+    
+    return tab;
+}
+//-----------------------------------------------------------
+void print_scoreboard(){
+    //temporaire
+    int size = 50;
+    int* tab = NULL;
+    tab = cree_tab(size);
+    bubble_sort(tab ,size);
+    
+    printf("-----------------------------------------\n");
+    printf("--------------scoreboard-----------------\n");
+    for(int i=0;i<size;i++){
+        if(i<10){
+            printf("    |  0%d  |    %d\n",i,tab[i]); 
+        }
+        else{
+            printf("    |  %d  |    %d\n",i,tab[i]);    
+        }
+    }
+    printf("\n\nPress and enter anything to return to the main menu\n");
+    char c;
+    int error = 0;
+    error = scanf(" %c",&c);
+    if(!error){
+        do{
+        }while(!scanf("%c"),&c);
+	}
+}
+//-----------------------------------------------------------
+_menu ask_menu(_jeu* current_game ,_menu current_menu) {
+	char menu ;
+	int menu_choice_correct = 0;
+	int error = 0;
+	printf("    Veuillez choisir l'une des options suivantes\n\n");
+	if(current_menu == select_menu){
+    	if(current_game->play==1){
+    	    printf("         |  save current game (press s)(not ready)  \n");
+    	    printf("         |  continue  current game(press d)  \n");
+    	}
+    	printf("         |  play a new game  (press f)  \n");
+        printf("         |  scoreboard   (press g)(not complete)  \n");
+	}
+	else{
+	    printf("         |  go to menu   (press q)  \n");
+	}
+    printf("         |  quit program (press h)  \n");
+    printf("\n\n\n\n");
+	do {
+		error = scanf(" %c",&menu);
+		menu_choice_correct = ((current_menu == select_menu)&&((((menu=='s')||(menu=='d'))&&(current_game->play==1))||(menu=='f')||(menu=='g')||(menu=='h'))) || ((current_menu != select_menu)&&((menu=='h')||(menu=='q')));  //savoir si le menu choisi est correct en fonction du menu actuel
+		if(!error){
+		    printf("input went wrong,flushing scanf()\n");
+		    do{
+		    }while(!scanf("%c"),&menu);
+		}
+		if(!menu_choice_correct) {
+			printf("Le menu choisi est incorrect,veuillez recommencez\n");
+		}
+	} while(!menu_choice_correct);
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	switch(menu) {
+    	default:
+    		break;
+    	case 'q':
+    	    return select_menu;
+    	case 's':
+    	    return save;
+    	case 'd':
+    	    return continu;
+    	case 'f':
+    	    return new_jeu;
+    	case 'g':
+    		return scoreboard;
+        case 'h':
+    		return quit;
+	}
+
+}
+//-----------------------------------------------------------
+void start(){
+    _menu current_menu = select_menu;
+    _jeu current_game;
+    while(1){
+        //Projet Cavity taskforce
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("         ####                                  #####                                                                                     \n");
+        printf("         #    ####  #   # ###  ### #   #         #   ####  #### # ## #### #### #### ### ####            made by:-Assia                   \n");
+        printf("         #    #  #  #   #  #    #   # #          #   #  #  ##   ##   #    #  # #  # #   ####                    -Catherine               \n");
+        printf("         #    ####   # #   #    #    #           #   ####    ## # #  ###  #  # ###  #   #                       -Théo R.                 \n");
+        printf("         #### #  #    #   ###   #    #           #   #  #  #### #  # #    #### #  # ### ####                                             \n");
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("__________________________________________________menu principal_________________________________________________________________________\n");
+        
+        
+        //typedef enum {new_jeu=0,select_menu=1,scoreboard=2,save=3,continu=4,quit=5} _menu;
+        current_menu = ask_menu(&current_game ,current_menu);
+        switch(current_menu){
+            default:
+        		break;
+            case new_jeu://jouer une parti
+                current_game = creer_jeu();
+            case continu:
+                if(!play_a_game(&current_game)){
+                    current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
+                };
+        	    break;
+            case scoreboard:
+                print_scoreboard(); //(pas complet)
+        	    break;
+        	case save://sauvegarder une partie
+        	    //  (rien pour le momment)        
+        	    break;
+        	case quit://quitter le programme
+        	    break;
+        }
+        if(current_menu == quit){
+            break;
+        }
+        current_menu = select_menu;
+    }
+    
+}
 //-----------------------------------------------------------
 void main() {
     srand(time(NULL));
-    printf("Running program\n");
-    _jeu game;
-    game = creer_jeu();
+    printf("Running program\n\n\n\n");
     
-    if(1){
-        while(1){
-            printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            game.nb_step++;
-            
-            if(!update_patients(game.plateau_tab ,game.nb_plateau ,game.patient_minimum_spawn_intervalle ,game.patient_spawn_range ,&(game.next_patient_time) ,game.patient_spawning_hapiness+randint(0,game.patient_hapiness_range) ,&(game.profit) ,game.hummeur_tab)){
-                break; //game over
-            }
-    		print_grid(game.grid,game.grid_size_x,game.grid_size_y,game.plateau_tab,game.nb_plateau,game.player);
-    		print_plateau_tab(game.plateau_tab ,game.nb_plateau ,game.patient_spawning_hapiness+game.patient_hapiness_range ,game.happy_bar_len);
-    		print_player_status(game.player ,game.profit);
-    		printf("gant %d \n",game.player.glove.type);
-    		ask_to_do_player_action(game.grid,game.grid_size_x,game.grid_size_y,&(game.player),game.plateau_tab,game.nb_plateau,&(game.profit) ,game.hummeur_tab);
-    		//sleep(1);
-    	    
-        }
-        color(250,30,30);
-        printf("\n\n        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux ",game.nb_step ,game.profit ,game.hummeur_tab[0] ,game.hummeur_tab[1] ,game.hummeur_tab[2]);
-        reset_color();
-    }
+    start();
+   
+    
     printf("program ended\n");
 
 }
@@ -1131,4 +1337,3 @@ void main() {
     
     
 */
-
