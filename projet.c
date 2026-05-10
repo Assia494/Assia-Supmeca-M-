@@ -9,7 +9,7 @@
 #define NB_TOOLS 7  //sans le gant
 #define NB_MALADIE 5 //sans le test_desease
 #define NB_hummeur 3
-
+#define MAX_map_string 5000
 //-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
@@ -661,6 +661,12 @@ void print_player_status(_player player ,float profit){//affiche les information
     reset_color();
 }
 //-----------------------------------------------------------
+void print_total_patient(int* hummeur_tab){//affiche la quantité de patient selon leur etat qui sont partis
+    color(190,175,30);
+    printf("    |patient score:  |%d 🟩    |%d 🟨    |%d 🟥  \n\n",hummeur_tab[0],hummeur_tab[1],hummeur_tab[2]);
+    reset_color();
+}
+//-----------------------------------------------------------
 _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
     _tile** new_grid = NULL;
     new_grid = cree_grid(max_size_x ,max_size_y);
@@ -956,6 +962,12 @@ void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy 
             if( (plateau_tab[i].patient->hummeur)<=0  ){ //si il ne plus de patience le patience part furieux
                 printf("Un patient est parti furieux par manque de patience ,il a rien donné\n"); 
                 hummeur_tab[2]++;
+                //les outils present deviennent sales (usées)
+                for(int ind=0;ind<NB_TOOLS;ind++){
+                    plateau_tab[i].used_tools[ind] += plateau_tab[i].tools[ind];
+                    plateau_tab[i].tools[ind] = 0;
+                }
+                
                 free(plateau_tab[i].patient);
                 plateau_tab[i].patient = NULL;
                 *all_happy = 0; //il y a au moins un patient furieux
@@ -1031,6 +1043,33 @@ void get_grid_size_from_string(char map_string[] ,int* size_x ,int* size_y){    
     *size_y = new_size_y;
 }
 //-----------------------------------------------------------
+char* get_random_map_string(){// avoir la chaine de caractère de la map au choix de manière aleratoire
+    //allocation de la chaine de caractère
+    char* map_string = NULL;
+    map_string = malloc(MAX_map_string*sizeof(char));
+    exit_if_null_pointer(map_string);
+    //choix aleratoire
+    switch(randint(0,4)){
+        //avoir la chaine de caractère
+        default:
+            map_string = "001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0000u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@";
+            return map_string;
+        case 1:
+            map_string = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";
+            return map_string;
+        case 2:
+            map_string = "010010010010010010010000000000000000000000_111111111111111111111111110000000111111111_3W4w000iii0jjj000001T1U1V10000000100100iI1_1110000iIi0jJj0000014141411111000100000iI1_3X4x000iii0jjj000000t0u0v00001000100111101_111000011111110000abcde0001001HHH100300001_3Y4y00000000000001ABCDE1001000hhh000100001_111001011111110000abcde0001001HHH100111111_11111100zzz000000000000000000111110010P001_00000100zZz0011111111111111111000100000001_000001111111110000000000000000000111111111_@";
+            return map_string;
+        case 3:
+            map_string = "111111I11111_101U4ui00a2A_103U4u0P0b2B_101U4uhhhc2C_1011JjhHhd2D_101T4thhhe2E_103T4t000f2F_101T4ti00g2G_131111I11111_@";
+            return map_string;
+        case 4:
+            map_string = "0111AB1131CD111111EF11111333300_0100ab0000cd000000ef00000300300_0300000000000000000000000333300_0300001111110001111110000000100_01ii00tttuuu000vvvwww00ii100100_01Ii00tTtuUu0P0vVvwWw00iI100100_01ii00tttuuu000vvvwww00ii100100_1111100000000000000000000000100_1JJJ1000000hhhhh00000ggg0000100_1jjj0000001HHHHH10000gGg01001PP_11111111111111111111111111331PP_@";
+            return map_string;
+        
+    }
+}
+//-----------------------------------------------------------
 _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur la partie de jeu
     _jeu new_jeu;
     new_jeu.play = 0;
@@ -1043,7 +1082,7 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
 	new_jeu.grid_size_x = 0;
     new_jeu.grid_size_y = 0;
 	new_jeu.grid = NULL;
-    char map_string[5000] = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";
+    char* map_string = get_random_map_string();
     get_grid_size_from_string(map_string ,&(new_jeu.grid_size_x) ,&(new_jeu.grid_size_y));
     new_jeu.grid = make_grid_from_string(map_string   ,new_jeu.grid_size_x    ,new_jeu.grid_size_y);
 
@@ -1057,11 +1096,11 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
     new_jeu.hummeur_tab[0] = 0;
     new_jeu.hummeur_tab[1] = 0;
     new_jeu.hummeur_tab[2] = 0;
-    new_jeu.patient_minimum_spawn_intervalle = 1+ 0*20;
-    new_jeu.patient_spawn_range = 0*15 ;
-    new_jeu.patient_spawning_hapiness = 20 + 0*130;
-    new_jeu.patient_hapiness_range = 0*25;
-    new_jeu.next_patient_time = new_jeu.patient_minimum_spawn_intervalle + randint(0 ,new_jeu.patient_spawn_range);
+    new_jeu.patient_minimum_spawn_intervalle = 4*(new_jeu.nb_plateau);
+    new_jeu.patient_spawn_range = 10 ;
+    new_jeu.patient_spawning_hapiness = 37*(new_jeu.nb_plateau);
+    new_jeu.patient_hapiness_range = 7*(new_jeu.nb_plateau);
+    new_jeu.next_patient_time = 13 + 0*(new_jeu.patient_minimum_spawn_intervalle + randint(0 ,new_jeu.patient_spawn_range));
     //----------
     new_jeu.nb_step = -1;
     //----------
@@ -1100,6 +1139,7 @@ int play_a_game(_jeu* game){
     	print_grid(game->grid,game->grid_size_x,game->grid_size_y,game->plateau_tab,game->nb_plateau,game->player);
     	print_plateau_tab(game->plateau_tab ,game->nb_plateau ,game->patient_spawning_hapiness+(game->patient_hapiness_range) ,game->happy_bar_len);
     	print_player_status(game->player ,game->profit);
+    	print_total_patient(game->hummeur_tab);
     	//demande d'action
     	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing);
     }
@@ -1278,7 +1318,21 @@ void main() {//fonction main
 10000000000000w4W001_
 10abcde0fgh000x4X001_
 11ABCDE1FGH100z4Z001_
-11111111111111111111_@   
+11111111111111111111_@  
+
+001111111000_
+001BCADE1000_
+001222221100_
+111bcade0111_
+1F2f0000t4T3_
+1G2g00000111_
+1H2h0000u4U3_
+111000000111_
+3W4wi0j0v4V3_
+1111I1J11111_
+000111110000_@
+
+001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0000u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@
 
 010010010010010010010000000000000000000000_
 111111111111111111111111110000000111111111_
@@ -1292,6 +1346,8 @@ void main() {//fonction main
 00000100zZz0011111111111111111000100000001_
 000001111111110000000000000000000111111111_@
 
+010010010010010010010000000000000000000000_111111111111111111111111110000000111111111_3W4w000iii0jjj000001T1U1V10000000100100iI1_1110000iIi0jJj0000014141411111000100000iI1_3X4x000iii0jjj000000t0u0v00001000100111101_111000011111110000abcde0001001HHH100300001_3Y4y00000000000001ABCDE1001000hhh000100001_111001011111110000abcde0001001HHH100111111_11111100zzz000000000000000000111110010P001_00000100zZz0011111111111111111000100000001_000001111111110000000000000000000111111111_@
+
 0111AB1131CD111111EF11111333300_
 0100ab0000cd000000ef00000300300_
 0300000000000000000000000333300_
@@ -1303,6 +1359,8 @@ void main() {//fonction main
 1JJJ1000000hhhhh00000ggg0000100_
 1jjj0000001HHHHH10000gGg01001PP_
 11111111111111111111111111331PP_@
+
+0111AB1131CD111111EF11111333300_0100ab0000cd000000ef00000300300_0300000000000000000000000333300_0300001111110001111110000000100_01ii00tttuuu000vvvwww00ii100100_01Ii00tTtuUu0P0vVvwWw00iI100100_01ii00tttuuu000vvvwww00ii100100_1111100000000000000000000000100_1JJJ1000000hhhhh00000ggg0000100_1jjj0000001HHHHH10000gGg01001PP_11111111111111111111111111331PP_@
 
 111111I11111_
 101U4ui00a2A_
