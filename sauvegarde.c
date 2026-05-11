@@ -5,7 +5,7 @@ int sauvegarde_existe(){
 
     FILE* fichier = NULL;
     
-    fichier = fopen("sauvegarde.txt", "r"); // On essaie d’ouvrir le fichier en lecture car Le fichier doit exister au préalable
+    fichier = fopen("sauvegarde.dat", "rb"); // On essaie d’ouvrir le fichier en lecture car Le fichier doit exister au préalable en binaire + rapide
     
     if(fichier!= NULL){ // verifie si le fichier existe
         fclose(fichier); 
@@ -20,7 +20,7 @@ int sauvegarde_existe(){
 void sauvegarderPartieTexte(Jeu *jsauv) {
    FILE* fichier = NULL;
     
-    fichier = fopen("sauvegarde.txt", "w");
+    fichier = fopen("sauvegarde.dat", "wb");
     
     if (fichier == NULL){
        printf("Ouverture du fichier impossible\n");
@@ -29,8 +29,9 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
        exit(1);
     }
 
+     fwrite(jsauv, sizeof(jsauv), 1, fichier);
+  /
     // Écriture ligne par ligne
-    
     // affiche les dentistes
     fputs  ("Le dentiste\n", fichier                              );
     fprintf(fichier, "%d\n", jsauv->dentiste.position.x         );
@@ -63,7 +64,7 @@ void sauvegarderPartieTexte(Jeu *jsauv) {
     fprintf(fichier, "%f\n", jsauv->argent_cabinet               );
     fputs  ("Nombre de client partie par catégorie\n", fichier    );
     fprintf(fichier, "%d\n", jsauv->humeur                       );
-
+   /. 
     fclose(fichier);
 
     printf("Partie sauvegardée avec succès !\n");
@@ -73,7 +74,7 @@ void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé qu
 {
     FILE* fichier = NULL;
     
-    fichier = fopen("sauvegarde.txt", "r");
+    fichier = fopen("sauvegarde.dat", "rb");
     
     if (fichier == NULL){
        printf("Ouverture du fichier impossible\n");
@@ -82,7 +83,9 @@ void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé qu
        exit(1);
     }
     // on veut récuper une partie sauvegardé dans le fichier
-    
+
+   fread(jsauv, sizeof(jsauv), 1, fichier);
+   /
     // recupère les dentistes
     fscanf(fichier, "%d", &jsauv->dentiste.position.x         );
     fscanf(fichier, "%d", &jsauv->dentiste.position.y         );
@@ -109,7 +112,7 @@ void recuperation_de_sauvegarde(Jeu *jsauv) //jsauv est la partie sauvegardé qu
     // recupère argent_cabinetnt et nb de client partie et leur humeur
     fscanf(fichier, "%f", &jsauv->argent_cabinet               );
     fscanf(fichier, "%d", &jsauv->humeur                       );
-    
+    /.
     fclose(fichier);
     return 0;
 }
