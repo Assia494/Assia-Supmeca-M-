@@ -330,13 +330,12 @@ void charger_pathologies(...)
 
 void sauvegarder_partie(...)
 
-
-
+                                  FAIT
 
 void charger_partie(...)
 
 
-
+                                FAIT
 
 
 
