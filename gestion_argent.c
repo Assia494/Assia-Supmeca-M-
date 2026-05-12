@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 
-Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
+Jeu fonction_gestion_argent_cabinet(_jeu j) // j variable de type Jeu, d dentiste
 {
 
 float argent_ustensile=0; 
@@ -26,19 +26,17 @@ float argent_ustensile=0;
         exit(1);
     }
     
-    if (j.dentiste.gants == 0){
+    if (j.player.glove.type == 0){
         printf("Il faut mettre ses gants!");
     }
     
-    else{
-        
-        
+    else{                
         int number = 0;
         for(int i=0;i<8;i++){
        		fscanf(fichier, "%f %d" , & argent_ustensile ,&number);
-       		if(number == j.dentiste.ustensile_en_main){
-       			j.argent_cabinet -= argent_ustensile;
-       			fprintf(fichier2, "%f", j.argent_cabinet);
+       		if(number == j.player.tool.type-'a'){
+       			j.profit -= argent_ustensile;
+       			fprintf(fichier2, "%f", j.profit);
        			break;
        		}
         }   
@@ -56,9 +54,9 @@ Jeu argent;
 Jeu j;
 
 printf("Entrer valeurs\n"); 
-scanf("%f", &j.argent_cabinet); 
+scanf("%f", &j.profit); 
 printf("main:\n"); 
-scanf("%d", &j.dentiste.gants); 
+scanf("%d", &j.j.player.glove.type); 
 
 j.dentiste.ustensile_en_main =5; 
 
