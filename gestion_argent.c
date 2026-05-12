@@ -29,7 +29,7 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
     
     else{
         
-        switch(d.ustensiles){
+        switch(d.ustensile){
         
         case 1:
             fscanf(fichier, "%f" , &argent_ustensile);
