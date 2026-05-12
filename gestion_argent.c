@@ -8,7 +8,7 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
     FILE fichier2 = NULL ;
     
     fichier = fopen ("ustensiles.txt", "r");
-    fichier = fopen ("pathologie_client.txt",w)
+    fichier = fopen ("pathologie_client.txt",w);
     
     if (fichier == NULL){
         printf("Ouverture du fichier impossible\n");
