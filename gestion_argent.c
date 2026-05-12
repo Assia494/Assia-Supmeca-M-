@@ -92,6 +92,8 @@ Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
 Jeu Gestion_argent_par_patient(Jeu j, Patient p){
     FILE* fichier  = NULL ;
 
+     fichier = fopen ("pathologie_client.txt", "w" );
+
     if (fichier == NULL){
         printf("Ouverture du fichier impossible\n");
         printf("code d'erreur = %d \n", errno );
