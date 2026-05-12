@@ -4,8 +4,8 @@
 
 Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu, d dentiste
 {
-    FILE fichier  = NULL ;
-    FILE fichier2 = NULL ;
+    FILE* fichier  = NULL ;
+    FILE* fichier2 = NULL ;
     
     fichier  = fopen ("ustensiles.txt", "r");
     fichier2 = fopen ("pathologie_client.txt", "w" );
