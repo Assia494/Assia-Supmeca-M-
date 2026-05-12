@@ -21,12 +21,6 @@ typedef struct{
     int       humeur[3]          ; //nb patient mecontent, content et furieux
 } Jeu;
 
-typedef enum{ //choix dif etats 
-    VERT, 
-    ORANGE, 
-    ROUGE, 
-}Humeur; 
-
 typedef struct {
 	int x;
 	int y;
@@ -53,7 +47,7 @@ typedef struct{
     int    ustensile            ; // 1 ustensile = 1 nombre
     int    pathologie           ; // 1 pathologie = 1 nombre
     float  montant_a_payer      ; // diminue si qualité mauvaise
-    Humeur    humeur           ; // jauge
+    Humeur humeur            ; // jauge
     int    fauteuil             ; //vide ou non
     Temps  heure_arrive         ; // a partir du moment où il est dans le  fauteuil
     EtatPatient etat            ; //mecontent, furieux, heureux
