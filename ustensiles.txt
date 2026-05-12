@@ -1,8 +1,8 @@
-1-0.95-gants
-2-1.95-seringue
-3-1.0-compresse
-4-2.0-pince
-5-2.5-roulette
-6-3.95-pompe
-7-8.3-detartreur
-8-5.2-camera
+7 8.3 detartreur
+5 2.5 roulette
+4 2.0 maintien
+8 5.2 microscope
+2 1.95 seringue
+6 3.95 pensement
+3 1.0 compresse
+1 0.95 gants
