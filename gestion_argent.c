@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu, d dentiste
+Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
 {
     FILE* fichier  = NULL ;
     FILE* fichier2 = NULL ;
@@ -29,7 +29,7 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
     
     else{
         
-        switch(d.ustensil){
+        switch(j.dentiste.ustensile_en_main){
         
         case 1:
             fscanf(fichier, "%f" , &argent_ustensile);
