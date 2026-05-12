@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
 {
