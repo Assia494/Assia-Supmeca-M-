@@ -30,41 +30,6 @@ void sauvegarderPartieTexte(Jeu jsauv) {
     }
 
      fwrite(&jsauv, sizeof(Jeu), 1, fichier);
-  /*
-    // Écriture ligne par ligne
-    // affiche les dentistes
-    fputs  ("Le dentiste\n", fichier                              );
-    fprintf(fichier, "%d\n", jsauv->dentiste.position.x         );
-    fprintf(fichier, "%d\n", jsauv->dentiste.position.y         );
-    fprintf(fichier, "%d\n", jsauv->dentiste.gants               );
-    fprintf(fichier, "%d\n", jsauv->dentiste.ustensile_en_main    );
-    fprintf(fichier, "%d\n", jsauv->dentiste.main                );
-    fprintf(fichier, "%d\n", jsauv->dentiste.proprete_ustensile   );
-    
-    // affiche les patients déjà présent
-    fputs  ("Le patient\n", fichier                               );
-    fprintf(fichier, "%d\n", jsauv->patient.plateau             );
-    fprintf(fichier, "%c\n", jsauv->patient.pathologie           );
-    fprintf(fichier, "%f\n", jsauv->patient.montant_a_payer      );
-    fprintf(fichier, "%d\n", jsauv->patient.humeur               );
-    // affiche heure_arrive
-    fputs  ("Heure arrivé du patient\n", fichier                  );
-    fprintf(fichier, "%d\n", jsauv->patient.heure_arrive.heure   );
-    fprintf(fichier, "%d\n", jsauv->patient.heure_arrive.minute  );
-    fprintf(fichier, "%d\n", jsauv->patient.heure_arrive.seconde );
-    
-    // affiche temps de le debut de la partie
-    fputs  ("Temps de la partie\n", fichier                       );
-    fprintf(fichier, "%d\n", jsauv->temps_debut_partie.heure     );
-    fprintf(fichier, "%d\n", jsauv->temps_debut_partie.minute    );
-    fprintf(fichier, "%d\n", jsauv->temps_debut_partie.seconde   );
-    
-    // affiche argent_cabinet et nb de client partie et leur humeur
-    fputs  ("Argent cabinet\n", fichier                           );
-    fprintf(fichier, "%f\n", jsauv->argent_cabinet               );
-    fputs  ("Nombre de client partie par catégorie\n", fichier    );
-    fprintf(fichier, "%d\n", jsauv->humeur                       );
-   */ 
     fclose(fichier);
 
     printf("Partie sauvegardée avec succès !\n");
@@ -84,37 +49,9 @@ void recuperation_de_sauvegarde(Jeu jsauv) //jsauv est la partie sauvegardé que
     }
     // on veut récuper une partie sauvegardé dans le fichier
 
-   fread(&jsauv, sizeof(Jeu), 1, fichier);
-   /*
-    // recupère les dentistes
-    fscanf(fichier, "%d", &jsauv->dentiste.position.x         );
-    fscanf(fichier, "%d", &jsauv->dentiste.position.y         );
-    fscanf(fichier, "%d", &jsauv->dentiste.gants               );
-    fscanf(fichier, "%d", &jsauv->dentiste.ustensile_en_main    );
-    fscanf(fichier, "%d", &jsauv->dentiste.main                 );
-    fscanf(fichier, "%d", &jsauv->dentiste.proprete_ustensile   );
-    
-    // recupère les patients déjà présent
-    fscanf(fichier, "%d", &jsauv->patient.plateau             );
-    fscanf(fichier, "%d", &jsauv->patient.pathologie           );
-    fscanf(fichier, "%f", &jsauv->patient.montant_a_payer      );
-    fscanf(fichier, "%d", &jsauv->patient.humeur               );
-    // recupère heure_arrive
-    fscanf(fichier, "%d", &jsauv->patient.heure_arrive.heure   );
-    fscanf(fichier, "%d", &jsauv->patient.heure_arrive.minute  );
-    fscanf(fichier, "%d", &jsauv->patient.heure_arrive.seconde );
-    
-    // recupère temps du debut de la partie
-    fscanf(fichier, "%d", &jsauv->temps_debut_partie.heure     );
-    fscanf(fichier, "%d", &jsauv->temps_debut_partie.minute    );
-    fscanf(fichier, "%d", &jsauv->temps_debut_partie.seconde   );
-    
-    // recupère argent_cabinetnt et nb de client partie et leur humeur
-    fscanf(fichier, "%f", &jsauv->argent_cabinet               );
-    fscanf(fichier, "%d", &jsauv->humeur                       );
-    */
+    fread(&jsauv, sizeof(Jeu), 1, fichier);
     fclose(fichier);
-    return 0;
+ return 0;
 }
 
 
