@@ -88,3 +88,21 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
     fclose(fichier2) ; 
     return j;
 }
+
+
+int main(){
+Jeu argent; 
+Jeu j; 
+Dentiste d; 
+
+//printf("Entrer valeurs\n"); 
+//scanf("%f", &j.argent_cabinet); 
+//printf("main:\n"); 
+//scanf("%d", &d.main); 
+
+//d.ustensile_en_main = 2; 
+
+argent= fonction_gestion_argent_cabinet( j, d);
+return 0; 
+}
+
