@@ -17,8 +17,8 @@ typedef struct{
     Temps     temps_debut_partie ;   
     Patient   patient            ;  //mettre tableau de patient 
     int       nb_client          ; // depuis le debut de la parti
-    float     argent_cabinet     ; // ensemble argent gagné
-    Humeur    humeur             ; //nb patient mecontent, content et furieux
+    float     argent_cabinet     ; // ensemble argent gagne
+    int       humeur[3]          ; //nb patient mecontent, content et furieux
 } Jeu;
 
 typedef enum{ //choix dif etats 
@@ -53,7 +53,7 @@ typedef struct{
     int    ustensile            ; // 1 ustensile = 1 nombre
     int    pathologie           ; // 1 pathologie = 1 nombre
     float  montant_a_payer      ; // diminue si qualité mauvaise
-    Huemeur    humeur           ; // jauge
+    Humeur    humeur           ; // jauge
     int    fauteuil             ; //vide ou non
     Temps  heure_arrive         ; // a partir du moment où il est dans le  fauteuil
     EtatPatient etat            ; //mecontent, furieux, heureux
