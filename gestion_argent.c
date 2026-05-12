@@ -104,9 +104,18 @@ Jeu Gestion_argent_par_patient(Jeu j, Patient p){
     }
 
     else{
-        switch(){
-            
+        switch(p.humeur){
+            case VERT:
 
+            break;
+
+            case ORANGE:
+
+            break;
+
+            case ROUGE:
+
+            break;
           
             default:
                 printf("Le client n'est vraiment pas content!");
