@@ -105,17 +105,19 @@ Jeu Gestion_argent_par_patient(Jeu j, Patient p){
 
     else{
         switch(p.etat){
-            case VERT:
-                j.argent_cabinet = j.argent_cabinet - argent_humeur;
+            case  Satisfait:
+                j.argent_cabinet = j.argent_cabinet + p.montant_a_payer;
                 fprintf(fichier, "%f", j.argent_cabinet);
             break;
 
-            case ORANGE:
-               
+            case Mecontent:
+               j.argent_cabinet = j.argent_cabinet + p.montant_a_payer/2;
+                fprintf(fichier, "%f", j.argent_cabinet);
             break;
 
-            case ROUGE:
-
+            case Furieux:
+                 j.argent_cabinet = j.argent_cabinet;
+                fprintf(fichier, "%f", j.argent_cabinet);
             break;
           
             default:
