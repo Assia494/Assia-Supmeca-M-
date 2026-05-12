@@ -33,42 +33,49 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
         case 1:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf();
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 2:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 3:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 4:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 5:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 6:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 7:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         case 8:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf(fichier2, "%f", j.argent_cabinet);
         break;
         
         default:
@@ -77,5 +84,6 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
     }
     
     fclose(fichier) ;
+    fclose(fichier2) ; 
     return j;
 }
