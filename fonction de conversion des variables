@@ -40,7 +40,7 @@ void project_var_conversion(Jeu* jeuA , _jeu* jeuB){ //version de Théo converti
             jeuA->patient[plate_id].pathologie      = jeuB->plateau_tab[ind_plateau].patient->maladie.type; 
             jeuA->patient[plate_id].montant_a_payer = jeuB->plateau_tab[ind_plateau].patient->maladie.profit; //(à modifier) reste à modifier la quantité en fonction de l'état du patient
             //jeuA->patient.heure_arrive            = (à complété)
-            //jeuA->patient.etat                    = (à complété)
+            jeuA->patient.etat                      = jeuB->plateau_tab[ind_plateau].patient->etat
             /*----------------------------------
                 serait mieux si le variable hummeur du structure patient (celui d'Assia et de Catherine) est un int sinon lors d'un sauvegarde du jeu puis chargement du jeu la bar de 
                 jauge peut etre chargé uniquement trois état que plusieurs int donc la précision est perdu de plus les joueurs pourront abusé ce system de sauvegardepour sauvé la 
