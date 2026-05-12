@@ -10,6 +10,7 @@
 #define NB_MALADIE 5 //sans le test_desease
 #define NB_hummeur 3
 #define MAX_map_string 5000
+#define username_SIZE 101
 //-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
@@ -89,6 +90,13 @@ typedef struct { //structure qui stock les informations d'un partie de jeu
     int patient_hapiness_range;            //la patience additionelle maximum pour un patient qui vient d'apparaitre
     int next_patient_time ;                //le temps restant avant le prochain patient aparait (si il n'y a plus de place pour un nouveau patient le temps restera à 0)
 } _jeu ;
+//-----------------
+typedef struct {
+	int nb_step;
+    int hummeur_tab[NB_hummeur];
+    float profit;
+    char username[username_SIZE];
+} _score;
 //-----------------------------------------------------------
 void color(unsigned char r, unsigned char g, unsigned char b){    //couleur affichage           r ,g ,b apartient à l'intervalle [0,255]
 	printf("\x1B[38;2;%d;%d;%dm", r, g, b);                       // red, green ,blue
@@ -841,7 +849,7 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){ //af
             nb_box--;
         }
         color(255*(1-percentage),255*percentage,90*(1-percentage));
-        printf("    %.2f%",percentage*100);
+        printf("    %.2f % ",percentage*100);
         ///🟥🟧🟧🟨🟨🟨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬛⬛
     }
     printf("\n");
@@ -1052,7 +1060,7 @@ char* get_random_map_string(){// avoir la chaine de caractère de la map au choi
     switch(randint(0,4)){
         //avoir la chaine de caractère
         default:
-            map_string = "001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0000u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@";
+            map_string = "001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0P00u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@";
             return map_string;
         case 1:
             map_string = "11111111111331111111_10000000100000030001_10000011100111111101_100P00jJ100000u4U001_100000iI100000v4V001_11100111100000y4Y101_10000000000000w4W001_10abcde0fgh000x4X001_11ABCDE1FGH100z4Z001_11111111111111111111_@";
@@ -1109,8 +1117,14 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
 }
 // la page menu
 //-----------------------------------------------------------
-int play_a_game(_jeu* game){
-    game->play = 1;
+int play_a_game(_jeu* game ,char* username){
+	if(game->play==1){
+		game->next_patient_time++;
+	}
+	else{
+    	game->play = 1;
+    }
+    
     int playing = 1;//est cec que le joueur veut continuer la partie 
     while(playing){
         game->nb_step++;
@@ -1119,7 +1133,7 @@ int play_a_game(_jeu* game){
             color(250,30,30);//game over
             printf("\n\n");
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n ",game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);
+            printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n ",game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);                                                                  
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             reset_color();
             sleep(2);
@@ -1133,6 +1147,16 @@ int play_a_game(_jeu* game){
                 printf("%d\n",error);
 		    }while(!error && c != '\n');
 		    */
+		    //ajouter le score au ficher
+		    FILE* score_file = NULL; 
+		    score_file = fopen("scoreboard.txt","a+");
+		    exit_if_null_pointer(score_file);
+		    fprintf(score_file,"%s %d %.2f %d %d %d\n",username ,game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);
+		    fclose(score_file);
+		    
+		    
+		    
+		    
             return 0;//la partie est terminer 
         }
         //affichage du jeu
@@ -1218,6 +1242,9 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
     printf("--------------scoreboard-----------------\n");
     for(int i=1;i<nb_ligne;i++){
     	color(175,120,50);
+    	if(i>10){
+    		break;
+    	}
         if(i<10){
             printf("    |  0%d  |",i);// name:%s time(in step):%d score:%.2f satisfait:%d mecontant:%d furieux:%d		\n",i,score_tab[i].username ,score_tab[i].nb_step ,score_tab[i].profit ,score_tab[i].hummeur_tab[0] ,score_tab[i].hummeur_tab[1] ,score_tab[i].hummeur_tab[2]					);  
         }
@@ -1308,6 +1335,8 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 void start(){ //affichage du menu principal et gere quelle est le menu active
     _menu current_menu = select_menu;
     _jeu current_game;
+    
+    char* username = NULL;
     while(1){
         //Projet Cavity taskforce
         printf("_________________________________________________________________________________________________________________________________________\n");
@@ -1320,30 +1349,42 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
         printf("_________________________________________________________________________________________________________________________________________\n");
         printf("__________________________________________________menu principal_________________________________________________________________________\n");
         
-        current_menu = ask_menu(&current_game ,current_menu);
-        switch(current_menu){
-            default:
-        		break;
-            case new_jeu://jouer une parti
-                current_game = creer_jeu();
-            case continu:
-                if(!play_a_game(&current_game)){
-                    current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
-                };
-        	    break;
-            case scoreboard:
-                print_scoreboard(); //(pas complet)
-        	    break;
-        	case save://sauvegarder une partie
-        	    //  (rien pour le momment)        
-        	    break;
-        	case quit://quitter le programme
-        	    break;
+        if(username == NULL){
+        	username = malloc(username_SIZE*sizeof(char));
+        	exit_if_null_pointer(username);
+        	printf("Veuillez saisir le nom de votre joueur\n");
+        	scanf(" %s",username);
+        	username[username_SIZE-1] = '\0'; 
+        	printf("%s\n",username);
+        
+        
         }
-        if(current_menu == quit){
-            break;
-        }
-        current_menu = select_menu;
+        else{
+		    current_menu = ask_menu(&current_game ,current_menu);
+		    switch(current_menu){
+		        default:
+		    		break;
+		        case new_jeu://jouer une parti
+		            current_game = creer_jeu();
+		        case continu:
+		            if(!play_a_game(&current_game ,username)){
+		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
+		            };
+		    	    break;
+		        case scoreboard:
+		            print_scoreboard(); //(pas complet)
+		    	    break;
+		    	case save://sauvegarder une partie
+		    	    //  (rien pour le momment)        
+		    	    break;
+		    	case quit://quitter le programme
+		    	    break;
+		    }
+		    if(current_menu == quit){
+		        break;
+		    }
+		    current_menu = select_menu;
+		}
     }
     
 }
@@ -1384,7 +1425,7 @@ void main() {//fonction main
 1111I1J11111_
 000111110000_@
 
-001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0000u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@
+001111111000_001BCADE1000_001222221100_111bcade0111_1F2f0000t4T3_1G2g00000111_1H2h0P00u4U3_111000000111_3W4wi0j0v4V3_1111I1J11111_000111110000_@
 
 010010010010010010010000000000000000000000_
 111111111111111111111111110000000111111111_
