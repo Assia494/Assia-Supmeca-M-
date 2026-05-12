@@ -116,3 +116,20 @@ void recuperation_de_sauvegarde(Jeu jsauv) //jsauv est la partie sauvegardé que
     fclose(fichier);
     return 0;
 }
+
+
+int main(){
+
+Jeu jsauv; 
+
+	if(sauvegarde_existe==1){
+                    	
+                          recuperation_de_sauvegarde(jsauv); 
+                    }
+                    else{
+                          sauvegarderPartieTexte(jsauv); 
+                          }
+                          
+return 0; 
+}
+	
