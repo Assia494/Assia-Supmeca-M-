@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu, d dentiste
+Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
 {
     FILE* fichier  = NULL ;
     FILE* fichier2 = NULL ;
@@ -23,7 +23,7 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
         exit(1);
     }
     
-    if (d.main == 0){
+    if (j.dentistes.gants == 0){
         printf("Il faut mettre ses gants!");
     }
     
