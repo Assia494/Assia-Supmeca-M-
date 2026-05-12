@@ -89,47 +89,6 @@ Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
     return j;
 }
 
-Jeu Gestion_argent_par_patient(Jeu j, Patient p){
-    FILE* fichier  = NULL ;
-
-     fichier = fopen ("pathologie_client.txt", "w" );
-
-    if (fichier == NULL){
-        printf("Ouverture du fichier impossible\n");
-        printf("code d'erreur = %d \n", errno );
-        printf("Message d'erreur = %s \n", strerror(errno) );
-        exit(1);
-    }
-
-    if (j.dentistes.gants == 0){
-        printf("Il faut mettre ses gants!");
-    }
-
-    else{
-        switch(p.etat){
-            case  Satisfait:
-                j.argent_cabinet = j.argent_cabinet + p.montant_a_payer;
-                fprintf(fichier, "%f", j.argent_cabinet);
-            break;
-
-            case Mecontent:
-               j.argent_cabinet = j.argent_cabinet + p.montant_a_payer/2;
-                fprintf(fichier, "%f", j.argent_cabinet);
-            break;
-
-            case Furieux:
-                 j.argent_cabinet = j.argent_cabinet;
-                fprintf(fichier, "%f", j.argent_cabinet);
-            break;
-          
-            default:
-                printf("Le client n'est vraiment pas content!");
-            break;
-         }
-    
-    retrun j;
-}
-
 int main(){
 Jeu argent; 
 Jeu j; 
