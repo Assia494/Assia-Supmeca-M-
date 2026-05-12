@@ -4,22 +4,24 @@
 
 Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
 {
-    FILE* fichier  = NULL ;
-    FILE* fichier2 = NULL ;
-    
-    fichier  = fopen ("ustensiles.txt", "r");
-    fichier2 = fopen ("pathologie_client.txt", "w" );
+
+float argent_ustensile=0; 
+
+    FILE *fichier  = NULL ;
+    FILE *fichier2 = NULL ;
+        fichier2 = fopen ("pathologie_clien.txt", "w" );
+        fichier =fopen("ustensiles.txt","r"); 
     
     if (fichier == NULL){
         printf("Ouverture du fichier impossible\n");
         printf("code d'erreur = %d \n", errno );
-        printf("Message d'erreur = %s \n", strerror(errno) );
+        //printf("Message d'erreur = %s \n", strerror(errno) );
         exit(1);
     }
     if (fichier2 == NULL){
         printf("Ouverture du fichier impossible\n");
         printf("code d'erreur = %d \n", errno );
-        printf("Message d'erreur = %s \n", strerror(errno) );
+        //printf("Message d'erreur = %s \n", strerror(errno) );
         exit(1);
     }
     
@@ -29,59 +31,17 @@ Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
     
     else{
         
-        switch(j.dentiste.ustensile_en_main){
         
-        case 1:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 2:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 3:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 4:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 5:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 6:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 7:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        case 8:
-            fscanf(fichier, "%f" , &argent_ustensile);
-            j.argent_cabinet = j.argent_cabinet - argent_ustensile;
-            fprintf(fichier2, "%f", j.argent_cabinet);
-        break;
-        
-        default:
-        printf("Problème rencontrez !");
-        break;
+        int number = 0;
+        for(int i=0;i<8;i++){
+       		fscanf(fichier, "%f %d" , & argent_ustensile ,&number);
+       		if(number == j.dentiste.ustensile_en_main){
+       			j.argent_cabinet -= argent_ustensile;
+       			fprintf(fichier2, "%f", j.argent_cabinet);
+       			break;
+       		}
+        }   
+       
     }
     
     fclose(fichier) ;
@@ -89,19 +49,19 @@ Jeu fonction_gestion_argent_cabinet(Jeu j) // j variable de type Jeu, d dentiste
     return j;
 }
 
+
 int main(){
 Jeu argent; 
-Jeu j; 
-Dentiste d; 
+Jeu j;
 
-//printf("Entrer valeurs\n"); 
-//scanf("%f", &j.argent_cabinet); 
-//printf("main:\n"); 
-//scanf("%d", &d.main); 
+printf("Entrer valeurs\n"); 
+scanf("%f", &j.argent_cabinet); 
+printf("main:\n"); 
+scanf("%d", &j.dentiste.gants); 
 
-//d.ustensile_en_main = 2; 
+j.dentiste.ustensile_en_main =5; 
 
-argent= fonction_gestion_argent_cabinet( j, d);
+argent= fonction_gestion_argent_cabinet( j);
 return 0; 
 }
 
