@@ -17,7 +17,7 @@ int sauvegarde_existe(){
     return 0; // sinon il n'existe pas
 }
 
-void sauvegarderPartieTexte(Jeu jsauv) {
+void sauvegarderPartieTexte(_jeu jsauv) {
    FILE* fichier = NULL;
     
     fichier = fopen("sauvegarde.dat", "wb");
@@ -29,13 +29,13 @@ void sauvegarderPartieTexte(Jeu jsauv) {
        exit(1);
     }
 
-     fwrite(&jsauv, sizeof(Jeu), 1, fichier);
+     fwrite(&jsauv, sizeof(_jeu), 1, fichier);
     fclose(fichier);
 
     printf("Partie sauvegardée avec succès !\n");
 }
 
-void recuperation_de_sauvegarde(Jeu jsauv) //jsauv est la partie sauvegardé que l'on récupère
+void recuperation_de_sauvegarde(_jeu jsauv) //jsauv est la partie sauvegardé que l'on récupère
 {
     FILE* fichier = NULL;
     
@@ -49,7 +49,7 @@ void recuperation_de_sauvegarde(Jeu jsauv) //jsauv est la partie sauvegardé que
     }
     // on veut récuper une partie sauvegardé dans le fichier
 
-    fread(&jsauv, sizeof(Jeu), 1, fichier);
+    fread(&jsauv, sizeof(_jeu), 1, fichier);
     fclose(fichier);
  return 0;
 }
@@ -57,7 +57,7 @@ void recuperation_de_sauvegarde(Jeu jsauv) //jsauv est la partie sauvegardé que
 
 int main(){
 
-Jeu jsauv; 
+_jeu jsauv; 
 
 	if(sauvegarde_existe==1){
                     	
