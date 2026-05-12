@@ -4,11 +4,18 @@
 
 Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu, d dentiste
 {
-    FILE fichier = NULL ;
+    FILE fichier  = NULL ;
+    FILE fichier2 = NULL ;
     
-    fichier = fopen ("ustensiles.txt", "r") ;
+    fichier = fopen ("ustensiles.txt", "r")
     
     if (fichier == NULL){
+        printf("Ouverture du fichier impossible\n");
+        printf("code d'erreur = %d \n", errno );
+        printf("Message d'erreur = %s \n", strerror(errno) );
+        exit(1);
+    }
+    if (fichier2 == NULL){
         printf("Ouverture du fichier impossible\n");
         printf("code d'erreur = %d \n", errno );
         printf("Message d'erreur = %s \n", strerror(errno) );
@@ -26,6 +33,7 @@ Jeu fonction_gestion_argent_cabinet(Jeu j, Dentiste d) // j variable de type Jeu
         case 1:
             fscanf(fichier, "%f" , &argent_ustensile);
             j.argent_cabinet = j.argent_cabinet - argent_ustensile;
+            fprintf();
         break;
         
         case 2:
