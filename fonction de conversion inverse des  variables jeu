@@ -1,0 +1,78 @@
+void project_var_revert_conversion(Jeu* jeuA , _jeu* jeuB){ //version de Théo convertie en version d'Assia et de Catherine
+    //_____________________________________________________________________________________________________________________
+    //player  --  dentiste      ___________________________________________________________________________________________
+    
+    //enlever le joueur de la grille
+    _cord player_pos = get_player_pos_from_grid(jeuB->grid ,jeuB->grid_size_x ,jeuB->grid_size_y);
+    jeuB->grid[player_pos.y][player_pos.x].player = 0;
+    //mettre le joueur à la bonne case de la grille
+    player_pos = jeuA->dentiste.position;
+    jeuB->grid[player_pos.y][player_pos.x].player = 1;
+    
+    jeuB->player.glove.type =  'h'*(jeuA->dentiste.gants == 1) ;              
+	jeuB->player.glove.used = !(jeuA->dentiste.proprete_gants); 
+	
+	
+	
+	
+    if(jeuA->dentiste.ustensile_en_main == 1){
+        jeuB->player.tool.type   = jeuA->dentiste.ustensile_en_main + 'a';  // 0,1,2,3,4,5,6 <- a,b,c,d,e,f,g (à revoir car l'ordre n'est pas le même)
+    }
+    else{
+        jeuB->player.tool.type = 0;
+    }
+    
+    jeuB->player.tool.used = !(jeuA->dentiste.proprete_ustensile);
+    
+    //_____________________________________________________________________________________________________________________
+    //  Autre                   ___________________________________________________________________________________________
+    //jeuA->temps_debut_partie   = (à complété)
+    //jeuA->nb_client            = (jeuB->hummeur_tab[0]) + (jeuB->hummeur_tab[1]) + (jeuB->hummeur_tab[2]);   //on peut pas separé les client une fois convertit
+    jeuB->hummeur_tab = {0,0,0}; //temporaire
+    jeuB->profit = jeuA->argent_cabinet;
+    
+    //_____________________________________________________________________________________________________________________
+    //patient --  patient       ___________________________________________________________________________________________
+    int plate_id = 0;
+    for(int ind_plateau = 0;ind_plateau<jeuB->nb_plateau;ind_plateau++){
+                 //  0:fauteuil vide ,1:fauteuil non vide
+        plate_id = jeuB->plateau_tab[ind_plateau].id - 't';
+        jeuA->patient[plate_id].ustensile = 0;
+        for(int i=0;i<NB_TOOLS;i++){
+        	//il n'y pas de variable pour différencier un outil propre/sale donc temporairement tous les outils seront chargé en tant que sale
+        	jeuB->plateau_tab[ind_plateau].used_tools[i] = jeuA->patient[plate_id].plateaux[i]; //(temporaire) + (à revoir)
+        	jeuB->plateau_tab[ind_plateau].tools[i] = 0;										//(temporaire) + (à revoir)
+        }
+        
+        
+        
+        if(jeuA->patient[plate_id].fauteuil == 1){
+        	_patient new_patient = cree_patient();
+        	jeuB->plateau_tab[ind_plateau].patient = &new_patient;
+        	
+        	jeuB->plateau_tab[ind_plateau].patient->maladie.type = jeuA->patient[plate_id].pathologie; 
+            jeuA->patient[plate_id].montant_a_payer = jeuB->plateau_tab[ind_plateau].patient->maladie.profit; //(à modifier) reste à modifier la quantité en fonction de l'état du patient
+            jeuB->plateau_tab[ind_plateau].patient->etat = jeuA->patient.etat ;    
+            
+            switch(jeuA->patient.hummeur){ //(à changé quand jeuA->patient.hummeur est un int pour plus de précision)
+            	default:
+            		jeuB->plateau_tab[ind_plateau].patient->hummeur = 0.6*(game.patient_spawning_hapiness+game.patient_hapiness_range);
+            		break;
+            	case VERT:
+            		jeuB->plateau_tab[ind_plateau].patient->hummeur = 0.6*(game.patient_spawning_hapiness+game.patient_hapiness_range);
+            		break;
+            	case ORANGE:
+            		jeuB->plateau_tab[ind_plateau].patient->hummeur = 0.45*(game.patient_spawning_hapiness+game.patient_hapiness_range);
+            		break;
+            	case ROUGE:
+            		jeuB->plateau_tab[ind_plateau].patient->hummeur = 0.22*(game.patient_spawning_hapiness+game.patient_hapiness_range);
+            		break;
+            
+            
+            
+            	}         
+        	}
+        }
+    //_____________________________________________________________________________________________________________________
+    //_____________________________________________________________________________________________________________________
+}
