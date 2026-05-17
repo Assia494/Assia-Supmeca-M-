@@ -1248,7 +1248,7 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
         
         
     }
-    
+    free(score_tab);
     printf("\n\nPress and enter anything to return to the main menu\n"); //attendre le joueur pour retourner au menu principal
     char c;
     int error = 0;
