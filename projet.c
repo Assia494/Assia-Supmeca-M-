@@ -1109,7 +1109,7 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
 }
 // la page menu
 //-----------------------------------------------------------
-int play_a_game(_jeu* game){
+int play_a_game(_jeu* game ,char* username){
     game->play = 1;
     int playing = 1;//est cec que le joueur veut continuer la partie 
     while(playing){
@@ -1314,6 +1314,7 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 void start(){ //affichage du menu principal et gere quelle est le menu active
     _menu current_menu = select_menu;
     _jeu current_game;
+	char* username = NULL;
     while(1){
         //Projet Cavity taskforce
         printf("_________________________________________________________________________________________________________________________________________\n");
@@ -1325,7 +1326,13 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
         printf("         #### #  #    #   ###   #    #           #   #  #  #### #  # #    #### #  # ### ####                                             \n");
         printf("_________________________________________________________________________________________________________________________________________\n");
         printf("__________________________________________________menu principal_________________________________________________________________________\n");
-        
+        if(username == NULL){
+	        username = malloc(username_SIZE*sizeof(char));
+	        exit_if_null_pointer(username);
+	        printf("Veuillez saisir le nom de votre joueur\n");
+	        scanf(" %s",username);
+	        username[username_SIZE-1] = '\0';
+			
         current_menu = ask_menu(&current_game ,current_menu);
         switch(current_menu){
             default:
