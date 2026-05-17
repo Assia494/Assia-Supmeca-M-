@@ -9,7 +9,7 @@
 #define NB_MALADIE 5
 #define NB_hummeur 3
 #define MAX_map_string 5000
-
+ #define username_SIZE 50
 //-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
 //-----------------
@@ -77,6 +77,7 @@ typedef struct {
     int patient_spawning_hapiness;
     int patient_hapiness_range;
     int next_patient_time;
+    char username[50];
 } _jeu;
 //-----------------
 typedef struct {
@@ -165,14 +166,30 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {
 
 void save_game(_jeu *jeu, const char *filename)
 {
+    
     FILE *f = fopen(filename, "wb");
 
+    if (!f){
+         printf("Erreur ouverture save.dat\n");
+    return;
+    }
+
+    printf("Sauvegarde en cours...\n");
     if (!f) return;
 
     fwrite(&jeu->nb_step, sizeof(int), 1, f);
     fwrite(&jeu->play, sizeof(int), 1, f);
     fwrite(&jeu->profit, sizeof(float), 1, f);
 
+    fwrite(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f);
+    fwrite(&jeu->patient_spawn_range, sizeof(int), 1, f);
+    fwrite(&jeu->patient_spawning_hapiness, sizeof(int), 1, f);
+    fwrite(&jeu->patient_hapiness_range, sizeof(int), 1, f);
+    fwrite(&jeu->next_patient_time, sizeof(int), 1, f);
+
+    fwrite(&jeu->nb_plateau, sizeof(int), 1, f);
+
+    fwrite(jeu->username, sizeof(char), username_SIZE, f);
     fwrite(&jeu->grid_size_x, sizeof(int), 1, f);
     fwrite(&jeu->grid_size_y, sizeof(int), 1, f);
 
@@ -188,27 +205,23 @@ void save_game(_jeu *jeu, const char *filename)
                f);
     }
 
-    fwrite(&jeu->nb_plateau, sizeof(int), 1, f);
+  
 
-    for (int i = 0; i < jeu->nb_plateau; i++)
-    {
-        fwrite(&jeu->plateau_tab[i],
-               sizeof(_plateau),
-               1,
-               f);
+    for (int i = 0; i < jeu->nb_plateau; i++){
+    fwrite(jeu->plateau_tab[i].tools,sizeof(int),NB_TOOLS,f);
 
-        int has_patient = (jeu->plateau_tab[i].patient != NULL);
+    fwrite(jeu->plateau_tab[i].used_tools,sizeof(int),NB_TOOLS,f);
 
-        fwrite(&has_patient, sizeof(int), 1, f);
+    fwrite(&jeu->plateau_tab[i].id,sizeof(int),1,f);
 
-        if (has_patient)
-        {
-            fwrite(jeu->plateau_tab[i].patient,
-                   sizeof(_patient),
-                   1,
-                   f);
-        }
+    int has_patient = (jeu->plateau_tab[i].patient != NULL);
+
+    fwrite(&has_patient, sizeof(int), 1, f);
+
+    if (has_patient){
+        fwrite(jeu->plateau_tab[i].patient,sizeof(_patient),1,f);
     }
+}
 
     fclose(f);
 }
@@ -218,6 +231,17 @@ void load_game(_jeu *jeu, const char *filename)
     FILE *f = fopen(filename, "rb");
 
     if (!f) return;
+
+    fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f);
+    fread(&jeu->patient_spawn_range, sizeof(int), 1, f);
+    fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f);
+    fread(&jeu->patient_hapiness_range, sizeof(int), 1, f);
+    fread(&jeu->next_patient_time, sizeof(int), 1, f);
+
+    fread(&jeu->nb_plateau, sizeof(int), 1, f);
+
+    fread(jeu->username, sizeof(char), username_SIZE, f);
+    jeu->username[username_SIZE - 1] = '\0';
 
     fread(&jeu->nb_step, sizeof(int), 1, f);
     fread(&jeu->play, sizeof(int), 1, f);
@@ -242,36 +266,33 @@ void load_game(_jeu *jeu, const char *filename)
               f);
     }
 
-    fread(&jeu->nb_plateau, sizeof(int), 1, f);
 
     jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
 
     for (int i = 0; i < jeu->nb_plateau; i++)
+{
+    fread(jeu->plateau_tab[i].tools,sizeof(int),NB_TOOLS,f);
+
+    fread(jeu->plateau_tab[i].used_tools,sizeof(int),NB_TOOLS,f);
+
+    fread(&jeu->plateau_tab[i].id,sizeof(int),1,f);
+
+    int has_patient;
+
+    fread(&has_patient, sizeof(int), 1, f);
+
+    if (has_patient)
     {
-        fread(&jeu->plateau_tab[i],
-              sizeof(_plateau),
-              1,
-              f);
+        jeu->plateau_tab[i].patient =
+            malloc(sizeof(_patient));
 
-        int has_patient;
-
-        fread(&has_patient, sizeof(int), 1, f);
-
-        if (has_patient)
-        {
-            jeu->plateau_tab[i].patient =
-                malloc(sizeof(_patient));
-
-            fread(jeu->plateau_tab[i].patient,
-                  sizeof(_patient),
-                  1,
-                  f);
-        }
-        else
-        {
-            jeu->plateau_tab[i].patient = NULL;
-        }
+        fread(jeu->plateau_tab[i].patient,sizeof(_patient),1,f);
     }
+    else
+    {
+        jeu->plateau_tab[i].patient = NULL;
+    }
+}
 
     fclose(f);
 }
@@ -282,7 +303,7 @@ _jeu fonction_gestion_argent_cabinet(_jeu j)
 
     FILE *fichier  = NULL;
     FILE *fichier2 = NULL;
-    fichier2 = fopen ("pathologie_clien.txt", "w" );
+    fichier2 = fopen ("pathologie_client.txt", "w" );
     fichier =fopen("ustensiles.txt","r");
 
     if (fichier == NULL){
@@ -1131,7 +1152,8 @@ _jeu creer_jeu(){
     return new_jeu;
 }
 //-----------------------------------------------------------
-int play_a_game(_jeu* game){
+int play_a_game(_jeu* game, char *username){
+
     game->play = 1;
     int playing = 1;
     while(playing){
@@ -1144,6 +1166,12 @@ int play_a_game(_jeu* game){
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             reset_color();
             sleep(2);
+            
+            FILE* score_file=fopen("scoreboard.txt", "a+"); 
+            exit_if_null_pointer(score_file); 
+            fprintf(score_file,"%s %d %.2f %d %d %d\n",game->username, game->nb_step,game->profit,game->hummeur_tab[0], game->hummeur_tab[1],game->hummeur_tab[2]);
+            fclose(score_file); 
+                   
             return 0;
         }
         print_grid(game->grid,game->grid_size_x,game->grid_size_y,game->plateau_tab,game->nb_plateau,game->player);
@@ -1311,12 +1339,13 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {
 }
 //-----------------------------------------------------------
 void start(){
+
     _menu current_menu = select_menu;
     _jeu current_game;
     current_game.play = 0;
     current_game.grid = NULL;
     current_game.plateau_tab = NULL;
-
+    char* username =NULL; 
     while(1){
         printf("_________________________________________________________________________________________________________________________________________\n");
         printf("_________________________________________________________________________________________________________________________________________\n");
@@ -1328,6 +1357,17 @@ void start(){
         printf("_________________________________________________________________________________________________________________________________________\n");
         printf("__________________________________________________menu principal_________________________________________________________________________\n");
 
+    if (username == NULL) {
+           username = malloc(username_SIZE*sizeof(char));
+           exit_if_null_pointer(username);
+
+          printf("Veuillez saisir le nom de votre joueur\n");
+          scanf(" %49s", username);
+
+          strncpy(current_game.username, username, username_SIZE - 1);
+          current_game.username[username_SIZE - 1] = '\0';
+     }
+
         current_menu = ask_menu(&current_game ,current_menu);
         switch(current_menu)
         {
@@ -1336,18 +1376,20 @@ void start(){
 
         case new_jeu:
             current_game = creer_jeu();
-            if(!play_a_game(&current_game))
+            if(!play_a_game(&current_game, username))
             {
                 current_game = creer_jeu();
             }
             break;
 
         case continu:
-            if(!play_a_game(&current_game))
-            {
-                current_game = creer_jeu();
-            }
-            break;
+            
+            load_game(&current_game, "save.dat");
+
+                        if(!play_a_game(&current_game,username)){
+                              current_game = creer_jeu();
+                        }
+             break;
 
         case scoreboard:
             print_scoreboard();
@@ -1359,6 +1401,7 @@ void start(){
             break;
 
         case quit:
+        free(username); 
             break;
         }
 
