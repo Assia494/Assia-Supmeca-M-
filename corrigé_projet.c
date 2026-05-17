@@ -163,19 +163,14 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {
     return grid[y][x];
 }
 //-----------------------------------------------------------
-
-void save_game(_jeu *jeu, const char *filename)
+ 
+    void save_game(_jeu *jeu, const char *filename)
 {
-    
     FILE *f = fopen(filename, "wb");
-
-    if (!f){
-         printf("Erreur ouverture save.dat\n");
-    return;
+    if (!f) {
+        printf("Erreur ouverture save.dat\n");
+        return;
     }
-
-    printf("Sauvegarde en cours...\n");
-    if (!f) return;
 
     fwrite(&jeu->nb_step, sizeof(int), 1, f);
     fwrite(&jeu->play, sizeof(int), 1, f);
@@ -190,47 +185,58 @@ void save_game(_jeu *jeu, const char *filename)
     fwrite(&jeu->nb_plateau, sizeof(int), 1, f);
 
     fwrite(jeu->username, sizeof(char), username_SIZE, f);
+
+    // --- GRID SIZE ---
     fwrite(&jeu->grid_size_x, sizeof(int), 1, f);
     fwrite(&jeu->grid_size_y, sizeof(int), 1, f);
 
+    // --- PLAYER ---
     fwrite(&jeu->player, sizeof(_player), 1, f);
 
+    // --- HUMEUR ---
     fwrite(jeu->hummeur_tab, sizeof(int), NB_hummeur, f);
 
-    for (int y = 0; y < jeu->grid_size_y; y++)
-    {
-        fwrite(jeu->grid[y],
-               sizeof(_tile),
-               jeu->grid_size_x,
-               f);
+    // --- GRID ---
+    for (int y = 0; y < jeu->grid_size_y; y++) {
+        fwrite(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f);
     }
 
-  
+    // --- PLATEAUX ---
+    for (int i = 0; i < jeu->nb_plateau; i++) {
 
-    for (int i = 0; i < jeu->nb_plateau; i++){
-    fwrite(jeu->plateau_tab[i].tools,sizeof(int),NB_TOOLS,f);
+        fwrite(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f);
+        fwrite(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f);
+        fwrite(&jeu->plateau_tab[i].id, sizeof(int), 1, f);
 
-    fwrite(jeu->plateau_tab[i].used_tools,sizeof(int),NB_TOOLS,f);
+        int has_patient = (jeu->plateau_tab[i].patient != NULL);
+        fwrite(&has_patient, sizeof(int), 1, f);
 
-    fwrite(&jeu->plateau_tab[i].id,sizeof(int),1,f);
-
-    int has_patient = (jeu->plateau_tab[i].patient != NULL);
-
-    fwrite(&has_patient, sizeof(int), 1, f);
-
-    if (has_patient){
-        fwrite(jeu->plateau_tab[i].patient,sizeof(_patient),1,f);
+        if (has_patient) {
+            fwrite(jeu->plateau_tab[i].patient, sizeof(_patient), 1, f);
+        }
     }
-}
 
     fclose(f);
 }
 
+
+
+
 void load_game(_jeu *jeu, const char *filename)
 {
     FILE *f = fopen(filename, "rb");
+    if (!f) {
+        printf("Impossible d'ouvrir save.dat\n");
+        return;
+    }
 
-    if (!f) return;
+    // IMPORTANT : reset propre
+    memset(jeu, 0, sizeof(_jeu));
+
+    // --- GAME STATE ---
+    fread(&jeu->nb_step, sizeof(int), 1, f);
+    fread(&jeu->play, sizeof(int), 1, f);
+    fread(&jeu->profit, sizeof(float), 1, f);
 
     fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f);
     fread(&jeu->patient_spawn_range, sizeof(int), 1, f);
@@ -243,59 +249,53 @@ void load_game(_jeu *jeu, const char *filename)
     fread(jeu->username, sizeof(char), username_SIZE, f);
     jeu->username[username_SIZE - 1] = '\0';
 
-    fread(&jeu->nb_step, sizeof(int), 1, f);
-    fread(&jeu->play, sizeof(int), 1, f);
-    fread(&jeu->profit, sizeof(float), 1, f);
-
+    // --- GRID SIZE ---
     fread(&jeu->grid_size_x, sizeof(int), 1, f);
     fread(&jeu->grid_size_y, sizeof(int), 1, f);
 
+    // --- PLAYER ---
     fread(&jeu->player, sizeof(_player), 1, f);
 
+    // --- HUMEUR ---
     fread(jeu->hummeur_tab, sizeof(int), NB_hummeur, f);
 
+    // --- GRID ALLOCATION ---
     jeu->grid = malloc(sizeof(_tile*) * jeu->grid_size_y);
-
-    for (int y = 0; y < jeu->grid_size_y; y++)
-    {
+    for (int y = 0; y < jeu->grid_size_y; y++) {
         jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
-
-        fread(jeu->grid[y],
-              sizeof(_tile),
-              jeu->grid_size_x,
-              f);
+        fread(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f);
     }
 
-
+    // --- PLATEAUX ---
     jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
 
-    for (int i = 0; i < jeu->nb_plateau; i++)
-{
-    fread(jeu->plateau_tab[i].tools,sizeof(int),NB_TOOLS,f);
+    for (int i = 0; i < jeu->nb_plateau; i++) {
 
-    fread(jeu->plateau_tab[i].used_tools,sizeof(int),NB_TOOLS,f);
+        fread(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f);
+        fread(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f);
+        fread(&jeu->plateau_tab[i].id, sizeof(int), 1, f);
 
-    fread(&jeu->plateau_tab[i].id,sizeof(int),1,f);
+        int has_patient = 0;
+        fread(&has_patient, sizeof(int), 1, f);
 
-    int has_patient;
-
-    fread(&has_patient, sizeof(int), 1, f);
-
-    if (has_patient)
-    {
-        jeu->plateau_tab[i].patient =
-            malloc(sizeof(_patient));
-
-        fread(jeu->plateau_tab[i].patient,sizeof(_patient),1,f);
+        if (has_patient) {
+            jeu->plateau_tab[i].patient = malloc(sizeof(_patient));
+            fread(jeu->plateau_tab[i].patient, sizeof(_patient), 1, f);
+        } else {
+            jeu->plateau_tab[i].patient = NULL;
+        }
     }
-    else
-    {
-        jeu->plateau_tab[i].patient = NULL;
-    }
-}
 
     fclose(f);
+
+    // IMPORTANT : recalcul position joueur après load
+    jeu->player.pos = get_player_pos_from_grid(
+        jeu->grid,
+        jeu->grid_size_x,
+        jeu->grid_size_y
+    );
 }
+
 
 _jeu fonction_gestion_argent_cabinet(_jeu j)
 {
