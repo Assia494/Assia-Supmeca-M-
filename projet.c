@@ -1122,7 +1122,13 @@ int play_a_game(_jeu* game){
             printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n ",game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             reset_color();
-            sleep(2);
+            //ajouter le score au ficher
+			FILE* score_file = NULL;
+			score_file = fopen("scoreboard.txt","a+");
+			exit_if_null_pointer(score_file);
+			fprintf(score_file,"%s %d %.2f %d %d %d\n",username ,game->nb_step ,game->profit ,game->hummeur_tab[0] ,game->hummeur_tab[1] ,game->hummeur_tab[2]);
+			fclose(score_file);
+			sleep(2);
             /*
             //vider le scanf() 
             
