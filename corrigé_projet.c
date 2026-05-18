@@ -439,21 +439,53 @@ void tile_print(_tile tile, _plateau* plateau_tab, int taille, _player player) {
             }
         } else {
             switch (tile.value) {
-                case 0:  printf("  "); break;
-                case 1:  printf("⬛"); break;
-                case 2:  printf("🧊"); break;
-                case 3:  printf("🚪️"); break;
-                case 4:  printf("🔲️"); break;
-                case 'A': printf("🪛"); break;
-                case 'B': printf("⚙️ "); break;
-                case 'C': printf("🔩"); break;
-                case 'D': printf("🔬"); break;
-                case 'E': printf("💉"); break;
-                case 'F': printf("🩹"); break;
-                case 'G': printf("💭"); break;
-                case 'H': printf("🧤"); break;
-                case 'I': printf("♻️ "); break;
-                case 'J': printf("☣️ "); break;
+                case 0:  
+                    printf("  "); 
+                    break;
+                case 1:  
+                    printf("⬛"); 
+                    break;
+                case 2:  
+                    printf("🧊"); 
+                    break;
+                case 3:  
+                    printf("🚪️"); 
+                    break;
+                case 4:  
+                    printf("🔲️"); 
+                    break;
+                
+                case 'A': 
+                    printf("🪛"); 
+                    break;
+                case 'B': 
+                    printf("⚙️ "); 
+                    break;
+                case 'C': 
+                    printf("🔩"); 
+                    break;
+                case 'D': 
+                    printf("🔬"); 
+                    break;
+                case 'E': 
+                    printf("💉"); 
+                    break;
+                case 'F': 
+                    printf("🩹"); 
+                    break;
+                case 'G': 
+                    printf("💭"); 
+                    break;
+                case 'H': 
+                    printf("🧤"); 
+                    break;
+                case 'I': 
+                    printf("♻️ "); 
+                    break;
+                case 'J': 
+                    printf("☣️ "); 
+                    break;
+                
                 default:
                     if (inter_check(tile.value, 't', 'z')) {
                         printf(" %c", tile.value);
@@ -469,7 +501,7 @@ void tile_print(_tile tile, _plateau* plateau_tab, int taille, _player player) {
 }
 
 void print_grid(_tile** grid, int size_x, int size_y, _plateau* plateau_tab, int taille, _player player) {
-    if (grid == NULL) return;
+    if (grid == NULL){ return;}
     
     printf("\n\n");
     for (int dy = 0; dy < size_y; dy++) {
@@ -684,14 +716,30 @@ void print_player_status(_player player, float profit) {
     if (player.tool.type != 0) {
         printf("    |");
         switch (player.tool.type) {
-            case 'a': printf("🪛"); break;
-            case 'b': printf("⚙️ "); break;
-            case 'c': printf("🔩"); break;
-            case 'd': printf("🔬"); break;
-            case 'e': printf("💉"); break;
-            case 'f': printf("🩹"); break;
-            case 'g': printf("💭"); break;
-            default: printf("..."); break;
+            case 'a': 
+                printf("🪛"); 
+                break;
+            case 'b': 
+                printf("⚙️ "); 
+                break;
+            case 'c': 
+                printf("🔩"); 
+                break;
+            case 'd': 
+                printf("🔬"); 
+                break;
+            case 'e': 
+                printf("💉"); 
+                break;
+            case 'f': 
+                printf("🩹"); 
+                break;
+            case 'g': 
+                printf("💭"); 
+                break;
+            default: 
+                printf("..."); 
+                break;
         }
         printf(player.tool.used == 0 ? " 🟩" : " 🟫");
     }
@@ -1048,15 +1096,11 @@ int play_a_game(_jeu* game) {
         
         int initial_hapiness = game->patient_spawning_hapiness + randint(0, game->patient_hapiness_range);
         
-        if (!update_patients(game->plateau_tab, game->nb_plateau, 
-                            game->patient_minimum_spawn_intervalle, game->patient_spawn_range,
-                            &game->next_patient_time, initial_hapiness,
-                            &game->profit, game->hummeur_tab)) {
+        if (!update_patients(game->plateau_tab, game->nb_plateau, game->patient_minimum_spawn_intervalle, game->patient_spawn_range, &game->next_patient_time, initial_hapiness, &game->profit, game->hummeur_tab)) {
             color(250, 30, 30);
             printf("\n\n");
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n",
-                   game->nb_step, game->profit, game->hummeur_tab[0], game->hummeur_tab[1], game->hummeur_tab[2]);
+            printf("        GAME OVER!! Le jeu a duré pour %d pas avec: un profit de %.2f$ ,%d patient(s) satisfait(s) ,%d patient(s) mécontent(s) ,%d patient(s) furieux\n\n",game->nb_step, game->profit, game->hummeur_tab[0], game->hummeur_tab[1], game->hummeur_tab[2]);
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             reset_color();
             sleep(2);
@@ -1072,13 +1116,10 @@ int play_a_game(_jeu* game) {
         }
         
         print_grid(game->grid, game->grid_size_x, game->grid_size_y, game->plateau_tab, game->nb_plateau, game->player);
-        print_plateau_tab(game->plateau_tab, game->nb_plateau, 
-                         game->patient_spawning_hapiness + game->patient_hapiness_range, game->happy_bar_len);
+        print_plateau_tab(game->plateau_tab, game->nb_plateau, game->patient_spawning_hapiness + game->patient_hapiness_range, game->happy_bar_len);
         print_player_status(game->player, game->profit);
         print_total_patient(game->hummeur_tab);
-        ask_to_do_player_action(game->grid, game->grid_size_x, game->grid_size_y, 
-                               &game->player, game->plateau_tab, game->nb_plateau,
-                               &game->profit, game->hummeur_tab, &playing);
+        ask_to_do_player_action(game->grid, game->grid_size_x, game->grid_size_y, &game->player, game->plateau_tab, game->nb_plateau,&game->profit, game->hummeur_tab, &playing);
     }
     return 1;
 }
@@ -1120,13 +1161,7 @@ void print_scoreboard() {
     int actual_count = 0;
     for (int i = 0; i < nb_ligne; i++) {
         // Limite la lecture du username à 49 caractères
-        if (fscanf(score_file, "%49s %d %f %d %d %d",
-                   score_tab[actual_count].username,
-                   &score_tab[actual_count].nb_step,
-                   &score_tab[actual_count].profit,
-                   &score_tab[actual_count].hummeur_tab[0],
-                   &score_tab[actual_count].hummeur_tab[1],
-                   &score_tab[actual_count].hummeur_tab[2]) == 6) {
+        if (fscanf(score_file, "%49s %d %f %d %d %d",score_tab[actual_count].username,&score_tab[actual_count].nb_step,&score_tab[actual_count].profit,&score_tab[actual_count].hummeur_tab[0],&score_tab[actual_count].hummeur_tab[1],&score_tab[actual_count].hummeur_tab[2]) == 6) {
             score_tab[actual_count].username[USERNAME_SIZE - 1] = '\0';
             actual_count++;
         }
@@ -1207,8 +1242,7 @@ _menu ask_menu(_jeu* current_game, _menu current_menu) {
         }
         
         if (current_menu == select_menu) {
-            valid = ((menu == 's' || menu == 'd') && current_game->play == 1) ||
-                    menu == 'f' || menu == 'g' || menu == 'h';
+            valid = ((menu == 's' || menu == 'd') && current_game->play == 1) ||menu == 'f' || menu == 'g' || menu == 'h';
         } else {
             valid = (menu == 'h' || menu == 'q');
         }
@@ -1221,13 +1255,20 @@ _menu ask_menu(_jeu* current_game, _menu current_menu) {
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     
     switch (menu) {
-        case 'q': return select_menu;
-        case 's': return save;
-        case 'd': return continu;
-        case 'f': return new_jeu;
-        case 'g': return scoreboard;
-        case 'h': return quit;
-        default: return select_menu;
+        case 'q': 
+            return select_menu;
+        case 's':
+            return save;
+        case 'd': 
+            return continu;
+        case 'f': 
+            return new_jeu;
+        case 'g': 
+            return scoreboard;
+        case 'h': 
+            return quit;
+        default: 
+            return select_menu;
     }
 }
 
