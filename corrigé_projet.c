@@ -111,6 +111,47 @@ void exit_if_null_pointer(void* pointer) {
     }
 }
 //-----------------------------------------------------------
+
+void free_game(_jeu *jeu)
+{
+    if (jeu == NULL) {
+        return;
+    }
+
+    // Libération des patients
+    if (jeu->plateau_tab != NULL) {
+
+        for (int i = 0; i < jeu->nb_plateau; i++) {
+
+            if (jeu->plateau_tab[i].patient != NULL) {
+                free(jeu->plateau_tab[i].patient);
+                jeu->plateau_tab[i].patient = NULL;
+            }
+        }
+
+        free(jeu->plateau_tab);
+        jeu->plateau_tab = NULL;
+    }
+
+    // Libération de la grille
+    if (jeu->grid != NULL) {
+
+        for (int y = 0; y < jeu->grid_size_y; y++) {
+
+            if (jeu->grid[y] != NULL) {
+                free(jeu->grid[y]);
+            }
+        }
+
+        free(jeu->grid);
+        jeu->grid = NULL;
+    }
+
+    jeu->nb_plateau = 0;
+    jeu->grid_size_x = 0;
+    jeu->grid_size_y = 0;
+}
+//-----------------------------------------------------------
 _tile cree_tile() {
     _tile new_tile;
     new_tile.value = 0;
@@ -1434,47 +1475,6 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {
     return select_menu;
 }
 //-----------------------------------------------------------
-
-void free_game(_jeu *jeu)
-{
-    if (jeu == NULL) {
-        return;
-    }
-
-    // Libération des patients
-    if (jeu->plateau_tab != NULL) {
-
-        for (int i = 0; i < jeu->nb_plateau; i++) {
-
-            if (jeu->plateau_tab[i].patient != NULL) {
-                free(jeu->plateau_tab[i].patient);
-                jeu->plateau_tab[i].patient = NULL;
-            }
-        }
-
-        free(jeu->plateau_tab);
-        jeu->plateau_tab = NULL;
-    }
-
-    // Libération de la grille
-    if (jeu->grid != NULL) {
-
-        for (int y = 0; y < jeu->grid_size_y; y++) {
-
-            if (jeu->grid[y] != NULL) {
-                free(jeu->grid[y]);
-            }
-        }
-
-        free(jeu->grid);
-        jeu->grid = NULL;
-    }
-
-    jeu->nb_plateau = 0;
-    jeu->grid_size_x = 0;
-    jeu->grid_size_y = 0;
-}
-
 void start(){
 
     _menu current_menu = select_menu;
