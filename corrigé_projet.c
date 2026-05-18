@@ -231,6 +231,7 @@ void load_game(_jeu *jeu, const char *filename)
     }
 
     // IMPORTANT : reset propre
+    free_game(jeu);
     memset(jeu, 0, sizeof(_jeu));
 
     // --- GAME STATE ---
