@@ -192,104 +192,71 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {
         return;
     }
 
-    if (fwrite(&jeu->patient_minimum_spawn_intervalle,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->patient_minimum_spawn_intervalle, sizeof(int),1, f) != 1) {
         printf("Erreur sauvegarde patient_minimum_spawn_intervalle\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->patient_spawn_range,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->patient_spawn_range, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde patient_spawn_range\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->patient_spawning_hapiness,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->patient_spawning_hapiness, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde patient_spawning_hapiness\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->patient_hapiness_range,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->patient_hapiness_range, sizeof(int), 1,  f) != 1) {
         printf("Erreur sauvegarde patient_hapiness_range\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->next_patient_time,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->next_patient_time, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde next_patient_time\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->nb_plateau,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde nb_plateau\n");
         fclose(f);
         return;
     }
 
     // --- USERNAME ---
-    if (fwrite(jeu->username,
-               sizeof(char),
-               username_SIZE,
-               f) != username_SIZE) {
+    if (fwrite(jeu->username, sizeof(char), username_SIZE,f) != username_SIZE) {
         printf("Erreur sauvegarde username\n");
         fclose(f);
         return;
     }
 
     // --- GRID SIZE ---
-    if (fwrite(&jeu->grid_size_x,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->grid_size_x, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde grid_size_x\n");
         fclose(f);
         return;
     }
 
-    if (fwrite(&jeu->grid_size_y,
-               sizeof(int),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->grid_size_y, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde grid_size_y\n");
         fclose(f);
         return;
     }
 
     // --- PLAYER ---
-    if (fwrite(&jeu->player,
-               sizeof(_player),
-               1,
-               f) != 1) {
+    if (fwrite(&jeu->player, sizeof(_player), 1, f) != 1) {
         printf("Erreur sauvegarde player\n");
         fclose(f);
         return;
     }
 
     // --- HUMEUR ---
-    if (fwrite(jeu->hummeur_tab,
-               sizeof(int),
-               NB_hummeur,
-               f) != NB_hummeur) {
+    if (fwrite(jeu->hummeur_tab, sizeof(int), NB_hummeur,f) != NB_hummeur) {
         printf("Erreur sauvegarde hummeur_tab\n");
         fclose(f);
         return;
