@@ -1556,12 +1556,12 @@ void start(){
             printf("Partie sauvegardee !\n");
             break;
 
-        case quit:
-
-           free_game(&current_game);
-           free(username);
-
-        break;
+       case quit:
+           {
+             free_game(&current_game);
+             free(username);
+        return;
+            }
 
         if(current_menu == quit)
         {
