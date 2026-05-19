@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <structprojet.h>
-#include <sauvergarde.h>
+#include <game.h>
 #include <fonctionutile.h>
 
 void save_game(_jeu *jeu, const char *filename){
