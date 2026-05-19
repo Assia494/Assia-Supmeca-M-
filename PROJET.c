@@ -95,6 +95,7 @@ typedef struct { //structure qui stock les informations d'un partie de jeu
     int patient_spawning_hapiness ;        //la patience minimum d'un patient qui vient d'apparaitre
     int patient_hapiness_range;            //la patience additionelle maximum pour un patient qui vient d'apparaitre
     int next_patient_time ;                //le temps restant avant le prochain patient aparait (si il n'y a plus de place pour un nouveau patient le temps restera à 0)
+    char username[username_SIZE];
 } _jeu ;
 //-----------------
 typedef struct {
