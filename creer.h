@@ -1,11 +1,13 @@
-rofit = 3.49f;
-            break;
-        case 5:
-            patient->maladie.type = DESEASE_E;
-            make_tool_tab(patient->maladie.tool_needed,0,1,1,0,0,0,1);
-            patient->maladie.profit = 5.65f;
-            break;
-    }
-    
-    return patient;
-}
+#include <stdio.h>
+#include <stdlib.h>
+#include <structprojet.h>
+#include <fonctionutile.h>
+
+
+_tile cree_tile();
+_tile** cree_grid(int size_x,int size_y);
+_plateau cree_plateau(int new_id);
+void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g);
+_patient* cree_patient();
+
+#endif
