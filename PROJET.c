@@ -452,8 +452,7 @@ void load_game(_jeu *jeu, const char *filename)
 
     for (int i = 0; i < jeu->nb_plateau; i++) {
 
-        if (fread(jeu->plateau_tab[i].tools, sizeof(int),
-                  NB_TOOLS, f) != NB_TOOLS)
+        if (fread(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS)
         {
             printf("Erreur lecture tools\n");
             fclose(f);
@@ -461,8 +460,7 @@ void load_game(_jeu *jeu, const char *filename)
             return;
         }
 
-        if (fread(jeu->plateau_tab[i].used_tools, sizeof(int),
-                  NB_TOOLS, f) != NB_TOOLS)
+        if (fread(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS)
         {
             printf("Erreur lecture used_tools\n");
             fclose(f);
@@ -511,7 +509,7 @@ void load_game(_jeu *jeu, const char *filename)
     );
 
     printf("Partie chargee avec succes !\n");
-
+}
 
 _jeu fonction_gestion_argent_cabinet(_jeu j){
 	float argent_ustensile=0;
