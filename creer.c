@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <structprojet.h>
+#include <fonctionutile.h>
+
+
 _tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
 	_tile new_tile;  
 	new_tile.value = 0;
