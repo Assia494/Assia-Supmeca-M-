@@ -14,5 +14,7 @@ void      make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g);
 _patient* cree_patient();
 _jeu      creer_jeu();
 int*      cree_tab(int size);
+_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y);
+
 
 #endif
