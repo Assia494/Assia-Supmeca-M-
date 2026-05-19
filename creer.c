@@ -45,6 +45,17 @@ _plateau cree_plateau(int new_id){ //crée un variable plateau
 }
 
 
+void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g){
+    tab[0] = a;
+    tab[1] = b;
+    tab[2] = c;
+    tab[3] = d;
+    tab[4] = e;
+    tab[5] = f;
+    tab[6] = g;
+}
+
+
 
 _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     _patient* patient = NULL;
