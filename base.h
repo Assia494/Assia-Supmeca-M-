@@ -1,5 +1,5 @@
-#ifndef  BASE.H
-  #define BASE.H
+#ifndef  BASE_H
+  #define BASE_H
 
 #include "strutprojet.h"
 #include "fonctionutile"
