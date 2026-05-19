@@ -12,4 +12,4 @@ int inter_check(int nb,int a,int b);
 void exit_if_null_pointer(void* pointer);
 _tile cree_tile();
 
-#enddef
+#endif
