@@ -150,3 +150,49 @@ int* cree_tab(int size){//cree un tableau
     
     return tab;
 }
+
+
+_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
+    _tile** new_grid = NULL;
+    new_grid = cree_grid(max_size_x ,max_size_y);
+    int string_ind = 0;
+    char c ;
+    char c2[2];
+    c2[1] = '\0';
+    for(int dy=0;dy<max_size_y;dy++){
+        for(int dx=0 ;dx<1+max_size_x ;dx++){
+            
+            c = string[string_ind];
+            if(c=='_'){
+                dx = 0;
+                dy ++;
+                string_ind++;
+            }
+            //printf("c\n");
+            c = string[string_ind];
+            //printf("%c\n",c);
+            if(string_ind < max_size_y*(1+max_size_x)){
+                if(c!='P'){
+                    if(inter_check(c,'0','9')){
+                        c2[0] = c;
+                        new_grid[dy][dx].value = atoi(c2);
+                    }
+                    else{
+                        new_grid[dy][dx].value = c;
+                    }
+                }
+                else{
+                    new_grid[dy][dx].value  = 0;   
+                    new_grid[dy][dx].player = 1;    
+                }
+                
+                
+                
+            }
+            string_ind++;
+            
+    }
+    
+    return new_grid;
+}
+}
