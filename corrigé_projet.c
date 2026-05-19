@@ -77,6 +77,7 @@ typedef struct {
     int patient_spawning_hapiness;
     int patient_hapiness_range;
     int next_patient_time;
+    char username[username_SIZE];
 } _jeu;
 //-----------------
 typedef struct {
@@ -363,6 +364,7 @@ void load_game(_jeu *jeu, const char *filename)
 
     // IMPORTANT : reset propre
     free_game(jeu);
+    memset(jeu, 0, sizeof(_jeu));
 
     // --- GAME STATE ---
     fread(&jeu->nb_step, sizeof(int), 1, f);
