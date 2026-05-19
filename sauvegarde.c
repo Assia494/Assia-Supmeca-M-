@@ -4,7 +4,7 @@
 void save_game(_jeu jeu, const char* filename){
 	//printf("%d octet \n",sizeof(jeu));
 	
-	FILE *file = fopen(filename, "w+");
+	FILE *file = fopen(filename, "w");
 	exit_if_null_pointer(file);
 	printf("saving game\n");
 	fprintf(file ,"savefile 1\n");
