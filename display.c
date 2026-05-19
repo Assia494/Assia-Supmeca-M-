@@ -1,6 +1,6 @@
-#include <structprojet.h>
-#include <display.h>
-#include <fonctionutile.h>
+#include "structprojet.h"
+#include "display.h"
+#include "fonctionutile.h"
 
 
 void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
