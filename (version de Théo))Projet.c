@@ -108,45 +108,7 @@ typedef struct {
 
 _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
 
-_jeu fonction_gestion_argent_cabinet(_jeu j){
-	float argent_ustensile=0;
 
-	FILE *fichier = NULL;
-	FILE *fichier2 = NULL;
-	fichier2 = fopen ("pathologie_client.txt", "w" );
-	fichier =fopen("ustensiles.txt","r");
-
-	if (fichier == NULL){
-		printf("Ouverture du fichier impossible\n");
-		printf("code d'erreur = %d \n", errno );
-		exit(1);
-	}
-	if (fichier2 == NULL){
-		printf("Ouverture du fichier impossible\n");
-		printf("code d'erreur = %d \n", errno );
-		fclose(fichier);
-		exit(1);
-	}
-
-	if (j.player.glove.type == 0){
-		printf("Il faut mettre ses gants!");
-	}
-	else{
-		int number = 0;
-		for(int i=0;i<NB_TOOLS;i++){
-			fscanf(fichier, "%f %d" , &argent_ustensile ,&number);
-			if(number == j.player.tool.type-'a'){
-				j.profit -= argent_ustensile;
-				fprintf(fichier2, "%f", j.profit);
-				break;
-			}
-		}
-	}
-
-	fclose(fichier);
-	fclose(fichier2);
-	return j;
-}
 
 
 //-----------------------------------------------------------
@@ -212,44 +174,7 @@ void free_game(_jeu *jeu){
 		}
 
 		free(jeu->grid);
-		jeu->grid = NULL;void free_game(_jeu *jeu){
-	if (jeu == NULL) {
-		return;
-	}
-
-	// Libération des patients
-	if (jeu->plateau_tab != NULL){
-
-		for (int i = 0; i < jeu->nb_plateau; i++){
-
-			if (jeu->plateau_tab[i].patient != NULL){
-				free(jeu->plateau_tab[i].patient);
-				jeu->plateau_tab[i].patient = NULL;
-			}
-		}
-
-		free(jeu->plateau_tab);
-		jeu->plateau_tab = NULL;
-	}
-
-	// LibÃ©ration de la grille
-	if (jeu->grid != NULL) {
-
-	for (int y = 0; y < jeu->grid_size_y; y++) {
-
-		if (jeu->grid[y] != NULL) {
-			free(jeu->grid[y]);
-			}
-		}
-
-		free(jeu->grid);
 		jeu->grid = NULL;
-	}
-
-	jeu->nb_plateau = 0;
-	jeu->grid_size_x = 0;
-	jeu->grid_size_y = 0;
-} 
 	}
 
 	jeu->nb_plateau = 0;

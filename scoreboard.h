@@ -1,13 +1,9 @@
 #ifndef  BASE_H
   #define BASE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
 
-#include <strutprojet.h>
+#include "structprojet.h"
+#include "fonctionutile.h"
 
 void score_swap(_score* a,_score* b);
 void print_scoreboard();

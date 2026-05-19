@@ -1,8 +1,8 @@
 #ifndef PATIENT_H
 #define PATIENT_H
 
-#include <game.h>
-#include <fonctionutile.h>
+#include "game.h"
+#include "fonctionutile.h"
 
 void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g);
 _patient* cree_patient();

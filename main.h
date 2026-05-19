@@ -12,7 +12,7 @@
 #include "grid.h"
 #include "game.h"
 #include "display.h"
-#include "economi.h"
+#include "economy.h"
 #include "patient.h"
 #include "base.h"
 #include "plateau.h"

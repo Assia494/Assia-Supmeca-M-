@@ -1,14 +1,9 @@
 #ifndef  GAME_H
   #define GAME_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
-
 #include "structprojet.h"
 #include "fonctionutile.h"
+#include "grid.h"
 
 void free_game(_jeu *jeu);
 void save_game(_jeu *jeu, const char *filename);

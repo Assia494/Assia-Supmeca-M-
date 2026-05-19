@@ -151,6 +151,9 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 
 }
 
+
+
+
 void start(){ //affichage du menu principal et gere quelle est le menu active
     _menu current_menu = select_menu;
     _jeu current_game;

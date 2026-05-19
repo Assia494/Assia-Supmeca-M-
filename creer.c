@@ -1,6 +1,8 @@
 #include "structprojet.h"
 #include "fonctionutile.h"
-
+#include "map.h"
+#include "grid.h"
+#include "plateau.h"
 
 _tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
 	_tile new_tile;  
@@ -27,7 +29,7 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
 		}
 	}
 	return new_grid;
-
+}
 
 
 _plateau cree_plateau(int new_id){ //crée un variable plateau
@@ -189,8 +191,8 @@ _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //
             }
             string_ind++;
             
+    	}
     }
-    
     return new_grid;
-}
+
 }

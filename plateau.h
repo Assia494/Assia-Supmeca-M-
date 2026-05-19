@@ -1,15 +1,9 @@
 #ifndef  BASE_H
   #define BASE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
+#include "structprojet.h"
 
-#include <strutprojet.h>
-
-
+#include "grid.h"
 
 _plateau cree_plateau(int new_id); 
 int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab); 

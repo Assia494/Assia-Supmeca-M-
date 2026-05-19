@@ -1,7 +1,8 @@
 #ifndef  CREER_H
   #define CREER_H
 
-#include "strutprojet.h"
+#include "structprojet.h"
+#include "grid.h"
 
 _tile** cree_grid(int size_x, int size_y);
 _tile cree_tile();
