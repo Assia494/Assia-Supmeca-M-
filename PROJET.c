@@ -1791,16 +1791,18 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
 		            };
 		            
 		    	    break;
-		        case scoreboard:
-		            print_scoreboard(); //(pas complet)
-		    	    break;
-		    	case save://sauvegarder une partie
-		    	    //  (rien pour le momment) 
-		    	    save_game(&current_game,filename) ;
-		    	    free_game(&current_game) ;     
-		    	    break;
-		    	case quit://quitter le programme
-		    	    break;
+		         case scoreboard:
+                              print_scoreboard();
+                            break;
+
+                         case save:
+                              save_game(&current_game, "save.dat");
+                         break;
+
+                         case quit:
+                              free_game(&current_game);
+                              free(username);
+                         break;
 		    }
 		    if(current_menu == quit){
 		        break;
