@@ -1,4 +1,4 @@
-#include "structprojet.h"
+#include "fonctionutile.h"
 
 void color(unsigned char r, unsigned char g, unsigned char b){            //couleur affichage           r ,g ,b apartient à l'intervalle [0,255]
 	printf("\x1B[38;2;%d;%d;%dm", r, g, b);                                // red, green ,blue
