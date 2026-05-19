@@ -1,5 +1,5 @@
-#ifndef  BASE.H
-  #define BASE.H
+#ifndef  FONCTIONUTILE_H
+  #define FONCTIONUTILE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <time.h>
 
-#include <strutprojet.h>
+#include "strutprojet.h"
 
 int randint(int a, int b);
 int inter_check(int nb, int a, int b);
