@@ -212,7 +212,44 @@ void free_game(_jeu *jeu){
 		}
 
 		free(jeu->grid);
+		jeu->grid = NULL;void free_game(_jeu *jeu){
+	if (jeu == NULL) {
+		return;
+	}
+
+	// Libération des patients
+	if (jeu->plateau_tab != NULL){
+
+		for (int i = 0; i < jeu->nb_plateau; i++){
+
+			if (jeu->plateau_tab[i].patient != NULL){
+				free(jeu->plateau_tab[i].patient);
+				jeu->plateau_tab[i].patient = NULL;
+			}
+		}
+
+		free(jeu->plateau_tab);
+		jeu->plateau_tab = NULL;
+	}
+
+	// LibÃ©ration de la grille
+	if (jeu->grid != NULL) {
+
+	for (int y = 0; y < jeu->grid_size_y; y++) {
+
+		if (jeu->grid[y] != NULL) {
+			free(jeu->grid[y]);
+			}
+		}
+
+		free(jeu->grid);
 		jeu->grid = NULL;
+	}
+
+	jeu->nb_plateau = 0;
+	jeu->grid_size_x = 0;
+	jeu->grid_size_y = 0;
+} 
 	}
 
 	jeu->nb_plateau = 0;
