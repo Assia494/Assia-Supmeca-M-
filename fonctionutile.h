@@ -1,5 +1,13 @@
-#ifndef UTILS_H
-	#define UTILS_H
+#ifndef  BASE.H
+  #define BASE.H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <time.h>
+
+#include <strutprojet.h>
 
 int randint(int a, int b);
 int inter_check(int nb, int a, int b);
