@@ -1,3 +1,8 @@
+#include <structprojet.h>
+#include <display.h>
+#include <fonctionutile.h>
+
+
 void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	if(tile.player == 1) { // si le joueur est présent
 	    
