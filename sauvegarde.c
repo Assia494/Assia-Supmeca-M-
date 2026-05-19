@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <structprojet.h>
+#include <sauvergarde.h>
+#include <fonctionutile.h>
 
 void free_game(_jeu *jeu){
 	if (jeu == NULL) {
@@ -279,8 +281,7 @@ void load_game(_jeu *jeu, const char *filename)
         jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
         exit_if_null_pointer(jeu->grid[y]);
 
-        if (fread(jeu->grid[y], sizeof(_tile),
-                  jeu->grid_size_x, f) != jeu->grid_size_x)
+        if (fread(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f) != jeu->grid_size_x)
         {
             printf("Erreur lecture grid\n");
             fclose(f);
