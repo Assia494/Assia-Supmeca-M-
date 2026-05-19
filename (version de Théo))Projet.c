@@ -24,7 +24,7 @@ typedef enum {TEST_DESEASE=0,DESEASE_A=1,DESEASE_B=2,DESEASE_C=3,DESEASE_D=4,DES
 //-----------------
 typedef enum {satisfait=0,mecontant=1,furieux=2} _etat;
 //-----------------
-typedef enum {new_jeu=0,select_menu=1,scoreboard=2,save=3,continu=4,quit=5} _menu;
+typedef enum {new_jeu=0,select_menu=1,scoreboard=2,save=3,continu=4,quit=5,load=6} _menu;
 //-----------------
 typedef struct {
 	int value;  //type de case  
@@ -107,8 +107,8 @@ typedef struct {
 
 
 _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
-
-
+_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y);
+_patient* cree_patient();
 
 
 //-----------------------------------------------------------
@@ -201,326 +201,190 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
 
 }
 //-----------------------------------------------------------
-void save_game(_jeu *jeu, const char *filename){
-	printf("%d octet \n",sizeof(*jeu));
-	FILE *f = fopen(filename, "wb");
+void save_game(_jeu jeu, const char* filename){
+	//printf("%d octet \n",sizeof(jeu));
+	
+	FILE *file = fopen(filename, "w+");
+	exit_if_null_pointer(file);
+	printf("saving game\n");
+	//fprintf(file ,"savefile 1\n");
 
-	if (f == NULL) {
-	printf("Erreur ouverture %s\n", filename);
-	return;
-	}
-
-	// --- GAME STATE ---
-	if (fwrite(&jeu->nb_step, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde nb_step\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->play, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde play\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->profit, sizeof(float), 1, f) != 1) {
-		printf("Erreur sauvegarde profit\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->patient_minimum_spawn_intervalle, sizeof(int),1, f) != 1) {
-		printf("Erreur sauvegarde patient_minimum_spawn_intervalle\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->patient_spawn_range, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde patient_spawn_range\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->patient_spawning_hapiness, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde patient_spawning_hapiness\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->patient_hapiness_range, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde patient_hapiness_range\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->next_patient_time, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde next_patient_time\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->happy_bar_len, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde taille du jauge\n");
-		fclose(f);
-		//return;
-	}
-
-
-
-
-
-	if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde nb_plateau\n");
-		fclose(f);
-		//return;
-	}
-
-	// --- USERNAME ---
-/*
-	if (fwrite(jeu->username, sizeof(char), username_SIZE,f) != username_SIZE) {
-		printf("Erreur sauvegarde username\n");
-		fclose(f);
-		return;
-	}
-*/
-	// --- GRID SIZE ---
-	if (fwrite(&jeu->grid_size_x, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde grid_size_x\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->grid_size_y, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde grid_size_y\n");
-		fclose(f);
-		//return;
-	}
-
-	// --- PLAYER ---
-	if (fwrite(&jeu->player, sizeof(_player), 1, f) != 1) {
-		printf("Erreur sauvegarde player\n");
-		fclose(f);
-		//return;
-	}
-
-	// --- HUMEUR ---
-	if (fwrite(jeu->hummeur_tab, sizeof(int), NB_hummeur,f) != NB_hummeur) {
-		printf("Erreur sauvegarde hummeur_tab\n");
-		fclose(f);
-		//return;
-	}
-
-	// --- GRID ---
-	for (int y = 0; y < jeu->grid_size_y; y++) {
-	if (fwrite(jeu->grid[y], sizeof(_tile), jeu->grid_size_x,f) != jeu->grid_size_x) {
-		printf("Erreur sauvegarde grid\n");
-		fclose(f);
-		//return;
-	}
-	}
-
-	// --- PLATEAUX ---
-	for (int i = 0; i < jeu->nb_plateau; i++) {
-
-	if (fwrite(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS) {
-		printf("Erreur sauvegarde tools\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS) {
-		printf("Erreur sauvegarde used_tools\n");
-		fclose(f);
-		//return;
-	}
-
-	if (fwrite(&jeu->plateau_tab[i].id, sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde id\n");
-		fclose(f);
-		//return;
-	}
-
-	int has_patient = (jeu->plateau_tab[i].patient != NULL);
-
-	if (fwrite(&has_patient,sizeof(int), 1, f) != 1) {
-		printf("Erreur sauvegarde has_patient\n");
-		fclose(f);
-		//return;
-	}
-
-	if (has_patient) {
-		if (fwrite(jeu->plateau_tab[i].patient,sizeof(_patient), 1, f) != 1) {
-			printf("Erreur sauvegarde patient\n");
-			fclose(f);
-			//return;
+	
+	// les paramètres du jeu
+	fprintf(file ,"happy_bar_len %d\n",jeu.happy_bar_len);
+	fprintf(file ,"patient_minimum_spawn_intervalle %d\n",jeu.patient_minimum_spawn_intervalle);
+	fprintf(file ,"patient_spawn_range %d\n",jeu.patient_spawn_range);
+	fprintf(file ,"patient_spawning_hapiness %d\n",jeu.patient_spawning_hapiness);
+	fprintf(file ,"patient_hapiness_range %d\n",jeu.patient_hapiness_range);
+	fprintf(file ,"next_patient_time %d\n",jeu.next_patient_time);
+	fprintf(file ,"hummeur_tab %d %d %d\n",jeu.hummeur_tab[0],jeu.hummeur_tab[1],jeu.hummeur_tab[2]);
+	fprintf(file ,"nb_step %d\n",jeu.nb_step);
+	
+	//fprintf(file ,"\n\n");
+	// les informations du joueur
+	fprintf(file ,"tool_type %d\n",jeu.player.tool.type);
+	fprintf(file ,"tool_clean %d\n",jeu.player.tool.clean);
+	fprintf(file ,"tool_used %d\n",jeu.player.tool.used);
+	fprintf(file ,"glove_type %d\n",jeu.player.glove.type);
+	fprintf(file ,"glove_used %d\n",jeu.player.glove.used);
+	
+	//fprintf(file ,"\n\n");
+	// les informations de la grille de jeu
+	fprintf(file ,"grid_size_x %d\n",jeu.grid_size_x);
+	fprintf(file ,"grid_size_y %d\n",jeu.grid_size_y);
+	_tile tile;
+	for(int dy=0;dy<jeu.grid_size_y;dy++){
+		for(int dx=0;dx<jeu.grid_size_x;dx++){
+			tile = jeu.grid[dy][dx];
+			//printf("grid(%d,%d)   max(%d,%d)\n",dy,dx,jeu.grid_size_y,jeu.grid_size_x);
+			if(tile.player == 1){
+				fputc('P',file);
+			}
+			else if(inter_check(tile.value,'a','z')||inter_check(tile.value,'A','Z')){
+				fputc(tile.value ,file);
+			}
+			else if(inter_check(tile.value,0,9)){
+				fputc(tile.value + '0' ,file);
+			}
+			else{
+				printf("Il y a une erreur dans la sauvegarde de la grille du jeu");
 			}
 		}
+		fputc('_',file);
 	}
-
-	fclose(f);
-	//printf("Partie sauvegardee avec succes !\n");
+	fputs("@\n",file);
+	
+	//fprintf(file ,"\n\n");
+	// les informations sur les plateaux
+	printf("1\n");
+	fprintf(file ,"nb_plateau %d\n",jeu.nb_plateau);
+	
+	for(int plateau_ind=0;plateau_ind<jeu.nb_plateau;plateau_ind++){
+		fprintf(file ,"plateau_id %d\n",jeu.plateau_tab[plateau_ind].id);
+		fprintf(file ,"plateau_tool");
+		for(int i=0;i<NB_TOOLS;i++){
+			fprintf(file ," %d",jeu.plateau_tab[plateau_ind].tools[i]);
+		}
+		fputc('\n',file);
+		fprintf(file ,"plateau_used_tool");
+		for(int i=0;i<NB_TOOLS;i++){
+			fprintf(file ," %d",jeu.plateau_tab[plateau_ind].used_tools[i]);
+		}
+		fputc('\n',file);
+		fprintf(file ,"has_patient %d\n",jeu.plateau_tab[plateau_ind].patient != NULL);
+		if(jeu.plateau_tab[plateau_ind].patient != NULL){
+			fprintf(file ,"|hummeur %d\n",jeu.plateau_tab[plateau_ind].patient->hummeur);
+			fprintf(file ,"|etat %d\n",jeu.plateau_tab[plateau_ind].patient->etat);
+			fprintf(file ,"|maladie_type %d\n",jeu.plateau_tab[plateau_ind].patient->maladie.type);
+			fprintf(file ,"|profit %f\n",jeu.plateau_tab[plateau_ind].patient->maladie.profit);
+			fprintf(file ,"|tool_needed");
+			for(int i=0;i<NB_TOOLS;i++){
+				fprintf(file ," %d",jeu.plateau_tab[plateau_ind].patient->maladie.tool_needed[i]);
+			}
+			fputc('\n',file);
+		}
+	}
+	printf("saving game done\n");
+    fclose(file);
 }
 
-void load_game(_jeu *jeu, const char *filename)
-{
-    FILE *f = fopen(filename, "rb");
-    if (f == NULL) {
-        printf("Impossible d'ouvrir %s\n", filename);
-        return;
-    }
+void load_game(_jeu *jeu, const char *filename){
 
-    free_game(jeu);
-    *jeu = (_jeu){0};
 
-    int ok = 1;
+	
 
-    /* ---------------- GAME STATE ---------------- */
+    FILE *file = fopen(filename, "r");
+	exit_if_null_pointer(file);
+	printf("loading game\n");
+	
+	free_game(jeu);
+	
+	int savefile = 0;
+	fscanf(file,"savefile %d\n",&savefile);
+	if(!savefile){
+		printf("il n'y a pas de partie sauvegardé\n");
+	}
+	printf("il y a une partie sauvegardé\n");
+	
+	// les paramètres du jeu
+	fscanf(file,"happy_bar_len %d\n",&jeu->happy_bar_len);
+	fscanf(file,"patient_minimum_spawn_intervalle %d\n",&jeu->patient_minimum_spawn_intervalle);
+	fscanf(file,"patient_spawn_range %d\n",&jeu->patient_spawn_range);
+	fscanf(file,"patient_spawning_hapiness %d\n",&jeu->patient_spawning_hapiness);
+	fscanf(file,"patient_hapiness_range %d\n",&jeu->patient_hapiness_range);
+	fscanf(file,"next_patient_time %d\n",&jeu->next_patient_time);
+	fscanf(file,"hummeur_tab");
+	for(int i=0;i<NB_hummeur;i++){
+		fscanf(file," %d",&jeu->hummeur_tab[i]);
+	}
+	fscanf(file,"\n");
+	fscanf(file,"nb_step %d\n",&jeu->nb_step);
+	
+	// les informations du joueur
+	fscanf(file,"tool_type %d\n",&jeu->player.tool.type);
+	fscanf(file,"tool_clean %d\n",&jeu->player.tool.clean);
+	fscanf(file,"tool_used %d\n",&jeu->player.tool.used);
+	fscanf(file,"glove_type %d\n",&jeu->player.glove.type);
+	fscanf(file,"glove_used %d\n",&jeu->player.glove.used);
+	
+	// les informations de la grille de jeu
+	fscanf(file,"grid_size_x %d\n",&(jeu->grid_size_x));
+	fscanf(file,"grid_size_y %d\n",&(jeu->grid_size_y));
+	char map_string[MAX_map_string];
+	char c;
+	int i = 0;
+	do{
+		c = fgetc(file);
+		map_string[i] = c;
+		i++;
+	}while(c != EOF && c != '@');
+	map_string[i] = '\0';
+	fscanf(file,"\n");
+    jeu->grid = make_grid_from_string(map_string   ,jeu->grid_size_x    ,jeu->grid_size_y);
 
-    ok &= (fread(&jeu->nb_step, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->play, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->profit, sizeof(float), 1, f) == 1);
-
-    ok &= (fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->patient_spawn_range, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->patient_hapiness_range, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->next_patient_time, sizeof(int), 1, f) == 1);
-
-    ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
-    ok &= (fread(&jeu->happy_bar_len, sizeof(int), 1, f) == 1);
-
-    if (!ok || jeu->nb_plateau < 0 || jeu->nb_plateau > 100) {
-        printf("Erreur lecture (game state)\n");
-        fclose(f);
-        return;
-    }
-
-    /* ---------------- USERNAME ---------------- */
-	/*
-    if (fread(jeu->username, sizeof(char), username_SIZE, f) != username_SIZE) {
-        printf("Erreur lecture username\n");
-        fclose(f);
-        return;
-    }
-    jeu->username[username_SIZE - 1] = '\0';
-	*/
-    /* ---------------- GRID SIZE ---------------- */
-
-    if (fread(&jeu->grid_size_x, sizeof(int), 1, f) != 1 || fread(&jeu->grid_size_y, sizeof(int), 1, f) != 1)
-    {
-        printf("Erreur lecture grid size\n");
-        fclose(f);
-        return;
-    }
-
-    if (jeu->grid_size_x <= 0 || jeu->grid_size_x > 500 || jeu->grid_size_y <= 0 || jeu->grid_size_y > 500)
-    {
-        printf("Taille grille invalide\n");
-        fclose(f);
-        return;
-    }
-
-    /* ---------------- PLAYER ---------------- */
-
-    if (fread(&jeu->player, sizeof(_player), 1, f) != 1) {
-        printf("Erreur lecture player\n");
-        fclose(f);
-        return;
-    }
-
-    /* ---------------- HUMEUR ---------------- */
-
-    if (fread(jeu->hummeur_tab, sizeof(int), NB_hummeur, f) != NB_hummeur) {
-        printf("Erreur lecture humeur\n");
-        fclose(f);
-        return;
-    }
-
-    /* ---------------- GRID ---------------- */
-
-    jeu->grid = malloc(sizeof(_tile*) * jeu->grid_size_y);
-    exit_if_null_pointer(jeu->grid);
-
-    for (int y = 0; y < jeu->grid_size_y; y++) {
-
-        jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
-        exit_if_null_pointer(jeu->grid[y]);
-
-        if (fread(jeu->grid[y], sizeof(_tile),
-                  jeu->grid_size_x, f) != jeu->grid_size_x)
-        {
-            printf("Erreur lecture grid\n");
-            fclose(f);
-            free_game(jeu);
-            return;
-        }
-    }
-
-    /* ---------------- PLATEAUX ---------------- */
-
-    jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
-    exit_if_null_pointer(jeu->plateau_tab);
-
-    for (int i = 0; i < jeu->nb_plateau; i++) {
-
-        if (fread(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS)
-        {
-            printf("Erreur lecture tools\n");
-            fclose(f);
-            free_game(jeu);
-            return;
-        }
-
-        if (fread(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS)
-        {
-            printf("Erreur lecture used_tools\n");
-            fclose(f);
-            free_game(jeu);
-            return;
-        }
-
-        if (fread(&jeu->plateau_tab[i].id, sizeof(int), 1, f) != 1) {
-            printf("Erreur lecture id\n");
-            fclose(f);
-            free_game(jeu);
-            return;
-        }
-
-        int has_patient = 0;
-        if (fread(&has_patient, sizeof(int), 1, f) != 1) {
-            printf("Erreur lecture has_patient\n");
-            fclose(f);
-            free_game(jeu);
-            return;
-        }
-
-        if (has_patient) {
-            jeu->plateau_tab[i].patient = malloc(sizeof(_patient));
-            exit_if_null_pointer(jeu->plateau_tab[i].patient);
-
-            if (fread(jeu->plateau_tab[i].patient,
-                      sizeof(_patient), 1, f) != 1)
-            {
-                printf("Erreur lecture patient\n");
-                fclose(f);
-                free_game(jeu);
-                return;
-            }
-        } else {
-            jeu->plateau_tab[i].patient = NULL;
-        }
-
-    }
-
-    fclose(f);
-
-    jeu->player.pos = get_player_pos_from_grid(
-        jeu->grid,
-        jeu->grid_size_x,
-        jeu->grid_size_y
-    );
-
-    printf("Partie chargee avec succes !\n");
+	//initialisation des plateaux
+	fscanf(file,"nb_plateau %d\n",&jeu->nb_plateau);
+	jeu->plateau_tab = NULL;
+	jeu->plateau_tab = malloc((jeu->nb_plateau)*sizeof(_plateau));
+	exit_if_null_pointer(jeu->plateau_tab);
+	int has_patient = 0;
+	for(int plateau_ind=0;plateau_ind<jeu->nb_plateau;plateau_ind++){
+		fscanf(file,"plateau_id %d\n",&jeu->plateau_tab[plateau_ind].id);	
+		fscanf(file,"plateau_tool");
+		for(int i=0;i<NB_TOOLS;i++){
+			fscanf(file," %d",&jeu->plateau_tab[plateau_ind].tools[i]);
+		}
+		fscanf(file,"\n");
+		fscanf(file,"plateau_used_tool");
+		for(int i=0;i<NB_TOOLS;i++){
+			fscanf(file," %d",&jeu->plateau_tab[plateau_ind].used_tools[i]);
+		}
+		fscanf(file,"\n");
+		has_patient = 0;
+		fscanf(file,"has_patient %d\n",&has_patient);
+		if(has_patient){
+			jeu->plateau_tab[plateau_ind].patient = cree_patient();
+			fscanf(file,"|hummeur %d\n",&jeu->plateau_tab[plateau_ind].patient->hummeur);
+			fscanf(file,"|etat %d\n",&jeu->plateau_tab[plateau_ind].patient->etat);
+			fscanf(file,"|maladie_type %d\n",&jeu->plateau_tab[plateau_ind].patient->maladie.type);
+			fscanf(file,"|profit %f\n",&jeu->plateau_tab[plateau_ind].patient->maladie.profit);
+			
+			
+			fscanf(file,"|tool_needed ");
+			for(int i=0;i<NB_TOOLS;i++){
+				fscanf(file," %d",&jeu->plateau_tab[plateau_ind].patient->maladie.tool_needed[i]);
+			}
+			fscanf(file,"\n");
+			//fscanf(file,"tool_needed %d\n",&jeu->plateau_tab[plateau_ind].patient.maladie.tool_needed);
+		}
+		else{
+			jeu->plateau_tab[plateau_ind].patient = NULL;
+		}
+		
+	}
+	printf("loading game done\n");
+	fclose(file);
+	
 }
 //-----------------------------------------------------------          //savoir la position du joueur dans la grille de jeu
 _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {  //deplacer dans chaque case de la grille si la case player est 1 : retrourner la position -> utile pr en cas de reinitialisation. 
@@ -626,7 +490,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
     	                
     	            }
     	            else{
-    	                printf("🪑");//si il n'y a pas de patient    
+    	               printf("🪑");//si il n'y a pas de patient    
     	            }
     	            break;
 	            }
@@ -723,7 +587,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	}
 }
 //-----------------------------------------------------------
-void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille de gauche à doite ,de haut en bas
+void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille de gauche à doite ,de haut en bas;
 	exit_if_null_pointer(grid);
 	printf("\n\n");
 	for(int dy=0 ; dy<size_y ; dy++) {
@@ -817,7 +681,6 @@ int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab){//soig
 //-----------------------------------------------------------
 int try_cure_patient(_plateau* plateau ,float* profit ,int* hummeur_tab){    //(pour soigner) verifie si il y a un patient ,si oui on essaye de le soigner
     if(plateau->patient!=NULL){
-
         return cure_if_got_tools(plateau,profit,hummeur_tab);
     }
 }
@@ -906,7 +769,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
                     }
                     
                     
-                }    
+                }
                 else{
                     //prendre un outil sale du plateau si possible
                     //recherche d'un outil sale
@@ -1197,9 +1060,9 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){ //af
     if(plateau.patient!=NULL){//si il y a un patient à ce plateau ,affiche sa patience avec une jauge et en purcentage
         
         float percentage = 1.0*(plateau.patient->hummeur)/max_happiness;
-        printf("percentage = %f    ,plateau.patient->hummeur = %d       ,max_happiness = %d \n",percentage,plateau.patient->hummeur,max_happiness);                                                           
+        //printf("percentage = %f    ,plateau.patient->hummeur = %d       ,max_happiness = %d \n",percentage,plateau.patient->hummeur,max_happiness);                                                           
         int nb_box = percentage*happy_bar_len;
-        printf("nb_box = %d    ,percentage = %f       ,happy_bar_len = %d \n",nb_box,percentage,happy_bar_len);                                                         
+        //printf("nb_box = %d    ,percentage = %f       ,happy_bar_len = %d \n",nb_box,percentage,happy_bar_len);                                                         
         printf("|hummeur  ");
         for(int i=0;i<happy_bar_len;i++){
             if(nb_box<1){
@@ -1460,7 +1323,11 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
     new_jeu.play = 0;
      //initialisation du joueur
 	new_jeu.player.tool.type = 0;
+	new_jeu.player.tool.clean = 0;
+	new_jeu.player.tool.used = 0;
 	new_jeu.player.glove.type = 0;
+	new_jeu.player.glove.clean = 0;
+	new_jeu.player.glove.used = 0;
     new_jeu.profit = 0.00f;
     
     //initialisation de la grille de jeu
@@ -1660,7 +1527,14 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
 	
 }
 //-----------------------------------------------------------
-_menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
+_menu ask_menu(_jeu* current_game ,_menu current_menu ,const char* filename) {//selection de menu
+	FILE* file = NULL;
+	file = fopen(filename,"r");
+	exit_if_null_pointer(file);
+	int savefile = 0;
+	fscanf(file ,"savefile %d\n",&savefile);
+	fclose(file);
+	
 	char menu ;
 	int menu_choice_correct = 0;
 	int error = 0;
@@ -1669,7 +1543,12 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
     	if(current_game->play==1){
     	    printf("         |  save current game (press s)(not ready)  \n");
     	    printf("         |  continue  current game(press d)  \n");
+    	}   
+    	
+    	if(savefile){
+    		printf("         |  load a saved game(press j)  \n");
     	}
+    	 
     	printf("         |  play a new game  (press f)  \n");
         printf("         |  scoreboard   (press g)(not complete)  \n");
 	}
@@ -1681,7 +1560,7 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 	do {
 		error = scanf(" %c",&menu);
 		// savoir si le choix de menu est correct en fonction du menu actuelle
-		menu_choice_correct = ((current_menu == select_menu)&&((((menu=='s')||(menu=='d'))&&(current_game->play==1))||(menu=='f')||(menu=='g')||(menu=='h'))) || ((current_menu != select_menu)&&((menu=='h')||(menu=='q')));  //savoir si le menu choisi est correct en fonction du menu actuel
+		menu_choice_correct = ((current_menu == select_menu)&&((	(((menu=='s')||(menu=='d'))&&(current_game->play==1))||((menu=='j')&&(savefile))	)||(menu=='f')||(menu=='g')||(menu=='h'))) || ((current_menu != select_menu)&&((menu=='h')||(menu=='q')));  //savoir si le menu choisi est correct en fonction du menu actuel
 		if(!error){
 		    printf("input went wrong,flushing scanf()\n");
 		    do{
@@ -1705,6 +1584,8 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
     	    return new_jeu;
     	case 'g':
     		return scoreboard;
+    	case 'j':
+    		return load;
         case 'h':
     		return quit;
 	}
@@ -1717,7 +1598,7 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
     
     char* username = NULL;
     
-    const char* filename = "save_dat.bin";
+    const char* filename = "save_dat.txt";
     
     
     while(1){
@@ -1747,7 +1628,7 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
         //save_game(_jeu *jeu, const char *filename)
         //load_game(_jeu *jeu, const char *filename)
         else{
-		    current_menu = ask_menu(&current_game ,current_menu);
+		    current_menu = ask_menu(&current_game ,current_menu ,filename);
 		    switch(current_menu){
 		        default:
 		    		break;
@@ -1755,33 +1636,30 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
 		        	current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
 		        	free_game(&current_game);
 		            current_game = creer_jeu();
-		            
-		            
-		        case continu:
-		        
-		        	if(current_menu != new_jeu){
-		        		printf("LOADING!!\n");
-		        		current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
-		        		free_game(&current_game);
-		        		load_game(&current_game ,filename);
-		        	}
-		        	
+		       case continu:
 		            if(!play_a_game(&current_game ,username)){
 		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
 		            };
-		            
-		    	    break;
+		            break;
+		        case load:
+		        	current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
+		        	free_game(&current_game);
+		        	load_game(&current_game ,filename);
+		        	if(!play_a_game(&current_game ,username)){
+		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
+		            };
+		        	break;
 		        case scoreboard:
 		            print_scoreboard(); //(pas complet)
 		    	    break;
 		    	case save://sauvegarder une partie
 		    	    //  (rien pour le momment) 
-		    	    save_game(&current_game,filename) ;
+		    	    save_game(current_game ,filename) ;
 		    	    //free_game(&current_game) ;     
 		    	    break;
 		    	case quit://quitter le programme
 		    		free_game(&current_game);
-                              free(username);
+                    free(username);
 		    	    break;
 		    }
 		    if(current_menu == quit){
