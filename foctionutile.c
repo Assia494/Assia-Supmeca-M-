@@ -16,14 +16,18 @@ int randint(int a,int b) {                                                // nom
 int inter_check(int nb,int a,int b) {                                   // verifier si c dans une bon intervalle (si le deplacement est dans a taille de tableau
 	return (a<=nb)&&(nb<=b);
 }
-//-----------------------------------------------------------
+
+
+
 void exit_if_null_pointer(void* pointer) {                              // utile pour apres un malloc 
 	if(pointer == NULL) {
 		printf(">>Got a NULL pointer\n");
 		exit(1);
 	}
 }
-//-----------------------------------------------------------
+
+
+
 _tile cree_tile() {                                                       // creer une case de la grille avec des données par défaut                                    
 	_tile new_tile;  
 	new_tile.value = 0;
