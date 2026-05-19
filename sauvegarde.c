@@ -120,6 +120,13 @@ void save_game(_jeu *jeu, const char *filename){
 		return;
 	}
 
+   if (fwrite(&jeu->happy_bar_len, sizeof(int), 1, f) != 1) {
+		printf("Erreur sauvegarde nb_plateau\n");
+		fclose(f);
+		return;
+	}
+
+	
 	if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
 		printf("Erreur sauvegarde nb_plateau\n");
 		fclose(f);
@@ -127,14 +134,14 @@ void save_game(_jeu *jeu, const char *filename){
 	}
 
 	// --- USERNAME ---
-/*
 	if (fwrite(jeu->username, sizeof(char), username_SIZE,f) != username_SIZE) {
 		printf("Erreur sauvegarde username\n");
 		fclose(f);
 		return;
 	}
-*/
-	// --- GRID SIZE ---
+
+
+
 	if (fwrite(&jeu->grid_size_x, sizeof(int), 1, f) != 1) {
 		printf("Erreur sauvegarde grid_size_x\n");
 		fclose(f);
@@ -147,7 +154,9 @@ void save_game(_jeu *jeu, const char *filename){
 		return;
 	}
 
-	// --- PLAYER ---
+	
+
+
 	if (fwrite(&jeu->player, sizeof(_player), 1, f) != 1) {
 		printf("Erreur sauvegarde player\n");
 		fclose(f);
@@ -170,7 +179,8 @@ void save_game(_jeu *jeu, const char *filename){
 	}
 	}
 
-	// --- PLATEAUX ---
+	
+
 	for (int i = 0; i < jeu->nb_plateau; i++) {
 
 	if (fwrite(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS) {
@@ -225,8 +235,8 @@ void load_game(_jeu *jeu, const char *filename)
 
     int ok = 1;
 
-    /* ---------------- GAME STATE ---------------- */
 
+	
     ok &= (fread(&jeu->nb_step, sizeof(int), 1, f) == 1);
     ok &= (fread(&jeu->play, sizeof(int), 1, f) == 1);
     ok &= (fread(&jeu->profit, sizeof(float), 1, f) == 1);
@@ -237,7 +247,8 @@ void load_game(_jeu *jeu, const char *filename)
     ok &= (fread(&jeu->patient_hapiness_range, sizeof(int), 1, f) == 1);
     ok &= (fread(&jeu->next_patient_time, sizeof(int), 1, f) == 1);
 
-    ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->happy_bar_len, sizeof(int), 1, f) == 1);
+	ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
 
     if (!ok || jeu->nb_plateau < 0 || jeu->nb_plateau > 100) {
         printf("Erreur lecture (game state)\n");
@@ -245,7 +256,7 @@ void load_game(_jeu *jeu, const char *filename)
         return;
     }
 
-    /* ---------------- USERNAME ---------------- */
+   
 
     if (fread(jeu->username, sizeof(char), username_SIZE, f) != username_SIZE) {
         printf("Erreur lecture username\n");
@@ -270,7 +281,7 @@ void load_game(_jeu *jeu, const char *filename)
         return;
     }
 
-    /* ---------------- PLAYER ---------------- */
+    /
 
     if (fread(&jeu->player, sizeof(_player), 1, f) != 1) {
         printf("Erreur lecture player\n");
@@ -306,7 +317,7 @@ void load_game(_jeu *jeu, const char *filename)
         }
     }
 
-    /* ---------------- PLATEAUX ---------------- */
+	
 
     jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
     exit_if_null_pointer(jeu->plateau_tab);
@@ -370,4 +381,44 @@ void load_game(_jeu *jeu, const char *filename)
     );
 
     printf("Partie chargee avec succes !\n");
+}
+
+_jeu fonction_gestion_argent_cabinet(_jeu j){
+	float argent_ustensile=0;
+
+	FILE *fichier = NULL;
+	FILE *fichier2 = NULL;
+	fichier2 = fopen ("pathologie_client.txt", "w" );
+	fichier =fopen("ustensiles.txt","r");
+
+	if (fichier == NULL){
+		printf("Ouverture du fichier impossible\n");
+		printf("code d'erreur = %d \n", errno );
+		exit(1);
+	}
+	if (fichier2 == NULL){
+		printf("Ouverture du fichier impossible\n");
+		printf("code d'erreur = %d \n", errno );
+		fclose(fichier);
+		exit(1);
+	}
+
+	if (j.player.glove.type == 0){
+		printf("Il faut mettre ses gants!");
+	}
+	else{
+		int number = 0;
+		for(int i=0;i<NB_TOOLS;i++){
+			fscanf(fichier, "%f %d" , &argent_ustensile ,&number);
+			if(number == j.player.tool.type-'a'){
+				j.profit -= argent_ustensile;
+				fprintf(fichier2, "%f", j.profit);
+				break;
+			}
+		}
+	}
+
+	fclose(fichier);
+	fclose(fichier2);
+	return j;
 }
