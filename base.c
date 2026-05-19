@@ -151,3 +151,84 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 
 }
 
+void start(){ //affichage du menu principal et gere quelle est le menu active
+    _menu current_menu = select_menu;
+    _jeu current_game;
+    
+    char* username = NULL;
+    
+    const char* filename = "save_dat.bin";
+    
+    
+    while(1){
+        //Projet Cavity taskforce
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("         ####                                  #####                                                                                     \n");
+        printf("         #    ####  #   # ###  ### #   #         #   ####  #### # ## #### #### #### ### ####            made by:-Assia                   \n");
+        printf("         #    #  #  #   #  #    #   # #          #   #  #  ##   ##   #    #  # #  # #   ####                    -Catherine               \n");
+        printf("         #    ####   # #   #    #    #           #   ####    ## # #  ###  #  # ###  #   #                       -Théo R.                 \n");
+        printf("         #### #  #    #   ###   #    #           #   #  #  #### #  # #    #### #  # ### ####                                             \n");
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("__________________________________________________menu principal_________________________________________________________________________\n");
+        
+        if(username == NULL){
+        	username = malloc(username_SIZE*sizeof(char));
+        	exit_if_null_pointer(username);
+        	printf("Veuillez saisir le nom de votre joueur\n");
+        	scanf(" %49s",username);
+        	username[username_SIZE-1] = '\0'; 
+        	printf("%s\n",username);
+        
+        
+        }
+        
+        //free_game(_jeu *jeu)
+        //save_game(_jeu *jeu, const char *filename)
+        //load_game(_jeu *jeu, const char *filename)
+        else{
+		    current_menu = ask_menu(&current_game ,current_menu);
+		    switch(current_menu){
+		        default:
+		    		break;
+		        case new_jeu://jouer une parti
+		        	current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
+		        	free_game(&current_game);
+		            current_game = creer_jeu();
+		            
+		            
+		        case continu:
+		        
+		        	if(current_menu != new_jeu){
+		        		printf("LOADING!!\n");
+		        		current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
+		        		free_game(&current_game);
+		        		load_game(&current_game ,filename);
+		        	}
+		        	
+		            if(!play_a_game(&current_game ,username)){
+		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
+		            };
+		            
+		    	    break;
+		        case scoreboard:
+		            print_scoreboard(); //(pas complet)
+		    	    break;
+		    	case save://sauvegarder une partie
+		    	    //  (rien pour le momment) 
+		    	    save_game(&current_game,filename) ;
+		    	    //free_game(&current_game) ;     
+		    	    break;
+		    	case quit://quitter le programme
+		    		free_game(&current_game);
+                              free(username);
+		    	    break;
+		    }
+		    if(current_menu == quit){
+		        break;
+		    }
+		    current_menu = select_menu;
+		}
+    }
+    
+}
