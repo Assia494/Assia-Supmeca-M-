@@ -1600,7 +1600,7 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {
 }
 //-----------------------------------------------------------
 void start(){
-
+	
     _menu current_menu = select_menu;
     _jeu current_game;
     current_game.play = 0;
