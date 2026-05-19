@@ -42,9 +42,26 @@ void free_game(_jeu *jeu){
 	jeu->grid_size_x = 0;
 	jeu->grid_size_y = 0;
 } 
+//-----------------------------------------------------------
+_tile** cree_grid(int size_x,int size_y) {                       //crée un tableau case 2D   ,pour la grille de jeu
 
+	_tile** new_grid = NULL;
+	new_grid = malloc( size_y * sizeof(_tile*) );
+	exit_if_null_pointer(new_grid);
 
+	for(int dy=0 ; dy<size_y ; dy++) {
+		new_grid[dy] = malloc( size_x * sizeof(_tile) );
+		exit_if_null_pointer(new_grid[dy]);
 
+		for(int dx=0 ; dx<size_x ; dx++) {
+			new_grid[dy][dx] = cree_tile();
+			new_grid[dy][dx].value = 0;
+		}
+	}
+	return new_grid;
+
+}
+//-----------------------------------------------------------
 void save_game(_jeu *jeu, const char *filename){
 	printf("%d octet \n",sizeof(*jeu));
 	FILE *f = fopen(filename, "wb");
@@ -195,8 +212,6 @@ void save_game(_jeu *jeu, const char *filename){
 	printf("Partie sauvegardee avec succes !\n");
 }
 
-
-
 void load_game(_jeu *jeu, const char *filename)
 {
     FILE *f = fopen(filename, "rb");
@@ -281,7 +296,8 @@ void load_game(_jeu *jeu, const char *filename)
         jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
         exit_if_null_pointer(jeu->grid[y]);
 
-        if (fread(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f) != jeu->grid_size_x)
+        if (fread(jeu->grid[y], sizeof(_tile),
+                  jeu->grid_size_x, f) != jeu->grid_size_x)
         {
             printf("Erreur lecture grid\n");
             fclose(f);
@@ -355,4 +371,3 @@ void load_game(_jeu *jeu, const char *filename)
 
     printf("Partie chargee avec succes !\n");
 }
-	
