@@ -1,3 +1,6 @@
+#ifndef CREER_H
+	#define CREER_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <structprojet.h>
