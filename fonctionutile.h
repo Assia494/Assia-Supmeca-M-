@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <time.h>
 
-#include "strutprojet.h"
+#include "structprojet.h"
 
 int randint(int a, int b);
 int inter_check(int nb, int a, int b);
