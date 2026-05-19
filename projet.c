@@ -197,7 +197,12 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
         fclose(f);
         return;
     }
-
+     if (fwrite(&jeu->happy_bar_len, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde taile jauge\n");
+        fclose(f);
+        return;
+    }
+	
     if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
         printf("Erreur sauvegarde nb_plateau\n");
         fclose(f);
@@ -310,7 +315,8 @@ void load_game(_jeu *jeu, const char *filename)
     fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f);
     fread(&jeu->patient_hapiness_range, sizeof(int), 1, f);
     fread(&jeu->next_patient_time, sizeof(int), 1, f);
-
+      
+	fread(&jeu->happy_bar_len, sizeof(int), 1, f);
     fread(&jeu->nb_plateau, sizeof(int), 1, f);
 
     fread(jeu->username, sizeof(char), username_SIZE, f);
@@ -1541,6 +1547,7 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
 }
 //-----------------------------------------------------------
 void start(){ //affichage du menu principal et gere quelle est le menu active
+    _jeu current_game = {0};
     _menu current_menu = select_menu;
     _jeu current_game;
 	char* username = NULL;
