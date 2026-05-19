@@ -102,3 +102,37 @@ _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     
     return patient;
 }
+
+
+
+_jeu creer_jeu(){
+    _jeu new_game;
+    new_game.play = 0;
+    new_game.player.tool.type = 0;
+    new_game.player.glove.type = 0;
+    new_game.profit = 0.00f;
+
+    new_game.grid_size_x = 0;
+    new_game.grid_size_y = 0;
+    new_game.grid = NULL;
+    char* map_string = get_random_map_string();
+    get_grid_size_from_string(map_string ,&(new_game.grid_size_x) ,&(new_game.grid_size_y));
+    new_game.grid = make_grid_from_string(map_string ,new_game.grid_size_x ,new_game.grid_size_y);
+
+    new_game.happy_bar_len = 32;
+    new_game.nb_plateau = 0;
+    new_game.plateau_tab = NULL;
+    new_game.plateau_tab = get_plateau_tab(new_game.grid ,new_game.grid_size_x ,new_game.grid_size_y ,&(new_game.nb_plateau));
+
+    new_game.hummeur_tab[0] = 0;
+    new_game.hummeur_tab[1] = 0;
+    new_game.hummeur_tab[2] = 0;
+    new_game.patient_minimum_spawn_intervalle = 4*(new_game.nb_plateau);
+    new_game.patient_spawn_range = 10;
+    new_game.patient_spawning_hapiness = 37*(new_game.nb_plateau);
+    new_game.patient_hapiness_range = 7*(new_game.nb_plateau);
+    new_game.next_patient_time = 13 + 0*(new_game.patient_minimum_spawn_intervalle + randint(0 ,new_game.patient_spawn_range));
+    new_game.nb_step = -1;
+
+    return new_game;
+}
