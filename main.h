@@ -18,5 +18,6 @@
 #include <plateau.h>
 #include <creer.h>
 #include <scoreboard.h>
+#include <action_player.h>
 
 #endif
