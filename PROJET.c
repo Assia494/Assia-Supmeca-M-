@@ -260,6 +260,13 @@ void save_game(_jeu *jeu, const char *filename){
 		return;
 	}
 
+   if (fwrite(&jeu->happy_bar_len, sizeof(int), 1, f) != 1) {
+		printf("Erreur sauvegarde nb_plateau\n");
+		fclose(f);
+		return;
+	}
+
+	
 	if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
 		printf("Erreur sauvegarde nb_plateau\n");
 		fclose(f);
@@ -377,7 +384,8 @@ void load_game(_jeu *jeu, const char *filename)
     ok &= (fread(&jeu->patient_hapiness_range, sizeof(int), 1, f) == 1);
     ok &= (fread(&jeu->next_patient_time, sizeof(int), 1, f) == 1);
 
-    ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->happy_bar_len, sizeof(int), 1, f) == 1);
+	ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
 
     if (!ok || jeu->nb_plateau < 0 || jeu->nb_plateau > 100) {
         printf("Erreur lecture (game state)\n");
