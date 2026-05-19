@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sauvegarde.h>
 
 void save_game(_jeu *jeu, const char *filename){
 	printf("%d octet \n",sizeof(*jeu));
