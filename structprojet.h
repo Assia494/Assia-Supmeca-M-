@@ -1,3 +1,6 @@
+#ifndef STRUCTPROJET_H
+ #define STRUCTPROJET_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -24,3 +27,5 @@ typedef struct  _patient;
 typedef struct _plateau;
 typedef struct  _jeu;
 typedef struct  _score;
+
+#endif
