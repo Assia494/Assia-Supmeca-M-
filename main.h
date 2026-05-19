@@ -17,5 +17,6 @@
 #include <base.h>
 #include <plateau.h>
 #include <creer.h>
+#include <scoreboard.h>
 
 #endif
