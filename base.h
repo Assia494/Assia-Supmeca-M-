@@ -2,7 +2,7 @@
   #define BASE_H
 
 #include "strutprojet.h"
-#include "fonctionutile"
+#include "fonctionutile.h"
 
 _jeu creer_jeu();
 int play_a_game(_jeu* game ,char* username); 
