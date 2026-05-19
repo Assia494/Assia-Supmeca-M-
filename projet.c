@@ -138,6 +138,235 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
 	return new_grid;
 
 }
+
+
+ void save_game(_jeu *jeu, const char *filename)
+{
+    FILE *f = fopen(filename, "wb");
+
+    if (f == NULL) {
+        printf("Erreur ouverture %s\n", filename);
+        return;
+    }
+
+    // --- GAME STATE ---
+    if (fwrite(&jeu->nb_step, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde nb_step\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->play, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde play\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->profit, sizeof(float), 1, f) != 1) {
+        printf("Erreur sauvegarde profit\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->patient_minimum_spawn_intervalle, sizeof(int),1, f) != 1) {
+        printf("Erreur sauvegarde patient_minimum_spawn_intervalle\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->patient_spawn_range, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde patient_spawn_range\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->patient_spawning_hapiness, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde patient_spawning_hapiness\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->patient_hapiness_range, sizeof(int), 1,  f) != 1) {
+        printf("Erreur sauvegarde patient_hapiness_range\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->next_patient_time, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde next_patient_time\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->nb_plateau, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde nb_plateau\n");
+        fclose(f);
+        return;
+    }
+
+    // --- USERNAME ---
+    if (fwrite(score->username, sizeof(char), username_SIZE,f) != username_SIZE) {
+        printf("Erreur sauvegarde username\n");
+        fclose(f);
+        return;
+    }
+
+    // --- GRID SIZE ---
+    if (fwrite(&jeu->grid_size_x, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde grid_size_x\n");
+        fclose(f);
+        return;
+    }
+
+    if (fwrite(&jeu->grid_size_y, sizeof(int), 1, f) != 1) {
+        printf("Erreur sauvegarde grid_size_y\n");
+        fclose(f);
+        return;
+    }
+
+    // --- PLAYER ---
+    if (fwrite(&jeu->player, sizeof(_player), 1, f) != 1) {
+        printf("Erreur sauvegarde player\n");
+        fclose(f);
+        return;
+    }
+
+    // --- HUMEUR ---
+    if (fwrite(jeu->hummeur_tab, sizeof(int), NB_hummeur,f) != NB_hummeur) {
+        printf("Erreur sauvegarde hummeur_tab\n");
+        fclose(f);
+        return;
+    }
+
+    // --- GRID ---
+    for (int y = 0; y < jeu->grid_size_y; y++) {
+        if (fwrite(jeu->grid[y], sizeof(_tile), jeu->grid_size_x,f) != jeu->grid_size_x) {
+            printf("Erreur sauvegarde grid\n");
+            fclose(f);
+            return;
+        }
+    }
+
+    // --- PLATEAUX ---
+    for (int i = 0; i < jeu->nb_plateau; i++) {
+
+        if (fwrite(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS) {
+            printf("Erreur sauvegarde tools\n");
+            fclose(f);
+            return;
+        }
+
+        if (fwrite(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f) != NB_TOOLS) {
+            printf("Erreur sauvegarde used_tools\n");
+            fclose(f);
+            return;
+        }
+
+        if (fwrite(&jeu->plateau_tab[i].id, sizeof(int), 1, f) != 1) {
+            printf("Erreur sauvegarde id\n");
+            fclose(f);
+            return;
+        }
+     
+        int has_patient = (jeu->plateau_tab[i].patient != NULL);
+
+        if (fwrite(&has_patient,sizeof(int), 1, f) != 1) {
+            printf("Erreur sauvegarde has_patient\n");
+            fclose(f);
+            return;
+        }
+
+        if (has_patient) {
+            if (fwrite(jeu->plateau_tab[i].patient,sizeof(_patient), 1, f) != 1) {
+                printf("Erreur sauvegarde patient\n");
+                fclose(f);
+                return;
+            }
+        }
+    }
+
+    fclose(f);
+    printf("Partie sauvegardee avec succes !\n");
+}
+
+void load_game(_jeu *jeu, const char *filename)
+{
+    FILE *f = fopen(filename, "rb");
+    if (!f) {
+        printf("Impossible d'ouvrir save.dat\n");
+        return;
+    }
+
+    // IMPORTANT : reset propre
+    free_game(jeu);
+    
+    // --- GAME STATE ---
+    fread(&jeu->nb_step, sizeof(int), 1, f);
+    fread(&jeu->play, sizeof(int), 1, f);
+    fread(&jeu->profit, sizeof(float), 1, f);
+
+    fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f);
+    fread(&jeu->patient_spawn_range, sizeof(int), 1, f);
+    fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f);
+    fread(&jeu->patient_hapiness_range, sizeof(int), 1, f);
+    fread(&jeu->next_patient_time, sizeof(int), 1, f);
+
+    fread(&jeu->nb_plateau, sizeof(int), 1, f);
+
+    fread(jeu->username, sizeof(char), username_SIZE, f);
+    score->username[username_SIZE - 1] = '\0';
+
+    // --- GRID SIZE ---
+    fread(&jeu->grid_size_x, sizeof(int), 1, f);
+    fread(&jeu->grid_size_y, sizeof(int), 1, f);
+
+    // --- PLAYER ---
+    fread(&jeu->player, sizeof(_player), 1, f);
+
+    // --- HUMEUR ---
+    fread(jeu->hummeur_tab, sizeof(int), NB_hummeur, f);
+
+    // --- GRID ALLOCATION ---
+    jeu->grid = malloc(sizeof(_tile*) * jeu->grid_size_y);
+    exit_if_null_pointer(jeu->grid);
+    for (int y = 0; y < jeu->grid_size_y; y++) {
+        jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
+        exit_if_null_pointer(jeu->grid[y]);
+        fread(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f);
+    }
+
+    // --- PLATEAUX ---
+    jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
+    exit_if_null_pointer(jeu->plateau_tab);
+
+    for (int i = 0; i < jeu->nb_plateau; i++) {
+
+        fread(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f);
+        fread(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f);
+        fread(&jeu->plateau_tab[i].id, sizeof(int), 1, f);
+
+        int has_patient = 0;
+        fread(&has_patient, sizeof(int), 1, f);
+
+        if (has_patient) {
+            jeu->plateau_tab[i].patient = malloc(sizeof(_patient));
+            exit_if_null_pointer(jeu->plateau_tab[i].patient);
+            fread(jeu->plateau_tab[i].patient, sizeof(_patient), 1, f);
+        } else {
+            jeu->plateau_tab[i].patient = NULL;
+        }
+    }
+
+    fclose(f);
+
+    // IMPORTANT : recalcul position joueur aprÃ¨s load
+    jeu->player.pos = get_player_pos_from_grid(
+        jeu->grid,
+        jeu->grid_size_x,
+        jeu->grid_size_y
+    );
+}
+
 //-----------------------------------------------------------          //savoir la position du joueur dans la grille de jeu
 _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {  //deplacer dans chaque case de la grille si la case player est 1 : retrourner la position -> utile pr en cas de reinitialisation. 
 	_coord pos;
@@ -1347,10 +1576,11 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
             case scoreboard:
                 print_scoreboard(); //(pas complet)
         	    break;
-        	case save://sauvegarder une partie
-        	    //  (rien pour le momment)        
+        	case save:save_game(&current game, "save.dat");        
         	    break;
-        	case quit://quitter le programme
+        	case quit:
+				free_game(&current_game); 
+				free(username); 
         	    break;
         }
         if(current_menu == quit){
