@@ -4,9 +4,11 @@
 #include <game.h>
 #include <fonctionutile.h>
 
+make_tool_tab();
 _patient *create_patient(int id, int besoin);
+get_a_patient();
 void update_patients(_jeu *jeu);
 void update_patient_happiness(_patient *p);
-void update_patient_patience(_patient *p);
+void update_spawning_regulation(_patient *p);
 
 #endif
