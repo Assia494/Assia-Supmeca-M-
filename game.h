@@ -7,7 +7,9 @@
 #include <errno.h>
 #include <time.h>
 
-#include <strutprojet.h>
+#include "structprojet.h"
+#include "fonctionutile.h"
+
 void free_game(_jeu *jeu);
 void save_game(_jeu *jeu, const char *filename);
 void load_game(_jeu *jeu, const char *filename);
