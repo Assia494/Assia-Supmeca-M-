@@ -40,3 +40,48 @@ _plateau cree_plateau(int new_id){ //crée un variable plateau
 
 
 
+_patient* cree_patient(){ //cree un patient avec des paramètre par defaut
+    _patient* patient = NULL;
+    patient = malloc(sizeof(_patient));
+    exit_if_null_pointer(patient);
+    
+    patient->hummeur = 100;
+    patient->etat = satisfait;
+    
+    int desease_index = randint(1,NB_MALADIE);//choisir une maladie aleratoire
+    switch(desease_index){//avoir une maladie (les outils necessaire ,type de maladie ,le profit pour soigner ce maladie)
+        //parametre de chaque maladie
+        default:
+            patient->maladie.type = TEST_DESEASE;
+            make_tool_tab(patient->maladie.tool_needed,0,1,0,0,1,1,0);
+            patient->maladie.profit = 1.23f;
+            break;
+        case 1:
+            patient->maladie.type = DESEASE_A;
+            make_tool_tab(patient->maladie.tool_needed,0,1,0,0,1,0,1);
+            patient->maladie.profit = 3.20f;
+            break;
+        case 2:
+            patient->maladie.type = DESEASE_B;
+            make_tool_tab(patient->maladie.tool_needed,1,0,0,1,1,0,0);
+            patient->maladie.profit = 2.90f;
+            break;
+        case 3:
+            patient->maladie.type = DESEASE_C;
+            make_tool_tab(patient->maladie.tool_needed,1,0,0,1,0,1,0);
+            patient->maladie.profit = 4.14f;
+            break;
+        case 4:
+            patient->maladie.type = DESEASE_D;
+            make_tool_tab(patient->maladie.tool_needed,0,0,1,1,0,1,0);
+            patient->maladie.profit = 3.49f;
+            break;
+        case 5:
+            patient->maladie.type = DESEASE_E;
+            make_tool_tab(patient->maladie.tool_needed,0,1,1,0,0,0,1);
+            patient->maladie.profit = 5.65f;
+            break;
+    }
+    
+    return patient;
+}
