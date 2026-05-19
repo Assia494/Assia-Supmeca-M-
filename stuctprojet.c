@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
+#include "structprojet.h"
 
 #define NB_TOOLS 7
 #define NB_MALADIE 5
