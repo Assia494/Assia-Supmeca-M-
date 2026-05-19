@@ -136,3 +136,17 @@ _jeu creer_jeu(){
 
     return new_game;
 }
+
+
+
+int* cree_tab(int size){//cree un tableau 
+    //(temporaire)
+    int* tab =NULL;
+    tab = malloc(size*sizeof(int));
+    exit_if_null_pointer(tab);
+    for(int i=0;i<size;i++){
+        tab[i] = randint(100,10000);  //initialisation des valeurs du tableau cree 
+    }
+    
+    return tab;
+}
