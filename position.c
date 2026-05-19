@@ -5,6 +5,8 @@
 
 #include <string.h>
 #include <errno.h> 
+#include <creer.h>
+#include <fonctionutile.h>
 
 #define GRID_SIZE_X 20
 #define GRID_SIZE_Y 10
@@ -85,4 +87,32 @@ int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(
     	case 0: //si la case est du vide
     		return 1;
 	}
+}
+
+
+_plateau* get_plateau_tab(_tile** grid,int size_x,int size_y,int* taille){
+    //compter le nombre de plateau present dans la grille
+    _coord plateau_pos;
+    *taille = 0;
+    for(int id='t';id<='z';id++){
+        plateau_pos = get_element_pos_from_grid(grid ,size_x ,size_y ,id);
+        if(inter_check(plateau_pos.x,0,size_x)&&inter_check(plateau_pos.y,0,size_y)){
+            (*taille)++;    
+        }
+    }
+    //allocation de la liste des plateau
+    _plateau* plateau_tab = NULL;
+    plateau_tab = malloc((*taille)*sizeof(_plateau));
+    exit_if_null_pointer(plateau_tab);
+    //creation des plateaux du tableau de plateau
+    int index = 0;
+    for(int id='t';id<='z';id++){
+        plateau_pos = get_element_pos_from_grid(grid ,size_x ,size_y ,id);
+        if(inter_check(plateau_pos.x,0,size_x)&&inter_check(plateau_pos.y,0,size_y)){
+            plateau_tab[index] = cree_plateau(id);
+            index++;
+        }
+    }
+    return plateau_tab;
+    
 }
