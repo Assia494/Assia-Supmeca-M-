@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -1483,7 +1482,85 @@ void start(){
     char* username = NULL; 
     while(current_menu == select_menu){
         printf("_________________________________________________________________________________________________________________________________________\n");
-        printf("________________________________________________________... (3 Ko restants)
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("         ####                                  #####                                                                                     \n");
+        printf("         #    ####  #   # ###  ### #   #         #   ####  #### # ## #### #### #### ### ####            made by:-Assia                   \n");
+        printf("         #    #  #  #   #  #    #   # #          #   #  #  ##   ##   #    #  # #  # #   ####                    -Catherine               \n");
+        printf("         #    ####   # #   #    #    #           #   ####    ## # #  ###  #  # ###  #   #                       -ThÃ©o R.                 \n");
+        printf("         #### #  #    #   ###   #    #           #   #  #  #### #  # #    #### #  # ### ####                                             \n");
+        printf("_________________________________________________________________________________________________________________________________________\n");
+        printf("__________________________________________________menu principal_________________________________________________________________________\n");
 
-message avec des modfications.txt
-53 Ko
+    	if (username == NULL) {
+           username = malloc(username_SIZE*sizeof(char));
+           exit_if_null_pointer(username);
+
+           printf("Veuillez saisir le nom de votre joueur\n");
+           if(scanf("%49s", username) != 1){
+               printf("Erreur de lecture de username\n");
+	       free(username);
+               exit(1);
+           }
+           username[username_SIZE - 1] = '\0';
+     	}
+
+        current_menu = ask_menu(&current_game ,current_menu);
+        switch(current_menu){
+        default:
+            break;
+
+        case new_jeu:
+
+            free_game(&current_game);
+
+            current_game = creer_jeu();
+
+            if(!play_a_game(&current_game, username)){
+                free_game(&current_game);
+                current_game = creer_jeu();
+            }
+
+      	break;
+
+        case continu:
+
+            free_game(&current_game);
+
+            load_game(&current_game, "save.dat");
+
+             if(!play_a_game(&current_game, username))
+             {
+                   free_game(&current_game);
+                   current_game = creer_jeu();
+             }
+
+        break;
+
+        case scoreboard:
+            print_scoreboard();
+            break;
+
+        case save:
+            save_game(&current_game, "save.dat");
+            break;
+
+        case quit:
+            free_game(&current_game);
+            free(username);
+            break;
+        }
+	if(current_menu != quit){
+            current_menu = select_menu;
+	}
+    }
+}
+//-----------------------------------------------------------
+int main() {
+    srand(time(NULL));
+    printf("Running program\n\n\n\n");
+
+    start();
+
+    printf("program ended\n");
+    return 0;
+}
