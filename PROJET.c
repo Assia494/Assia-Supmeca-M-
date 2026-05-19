@@ -452,7 +452,7 @@ _jeu fonction_gestion_argent_cabinet(_jeu j){
 	}
 	else{
 		int number = 0;
-		for(int i=0;i<8;i++){
+		for(int i=0;i<NB_TOOLS;i++){
 			fscanf(fichier, "%f %d" , &argent_ustensile ,&number);
 			if(number == j.player.tool.type-'a'){
 				j.profit -= argent_ustensile;
