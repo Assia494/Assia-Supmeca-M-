@@ -33,7 +33,10 @@ _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y) {  //deplace
 	printf("Player not found\n");   
 	return pos;                            //retourner la position (-1,-1) si le joueur n'est pas trouvé
 }
-//-----------------------------------------------------------
+
+
+
+
 _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {      // a partir d une position on veut recup la case
 	exit_if_null_pointer(grid);
 
@@ -44,7 +47,10 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {      /
 	return grid[y][x];                                                                                    //retourn la case trouver
 
 }
-//-----------------------------------------------------------
+
+
+
+
 _coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element) { //avoir la position d'une case avec une valeur spécifique dans la grille de jeu(par exemple la position des cases d'actions)
 	_coord pos;
 	pos.x = -1;
@@ -61,19 +67,9 @@ _coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element)
 	}
 	return pos;
 }
-//-----------------------------------------------------------
-_plateau cree_plateau(int new_id){ //crée un variable plateau
-    _plateau new_plateau;
-    for(int i=0;i<NB_TOOLS;i++){
-        new_plateau.tools[i] = 0;       //pas d'outils propre
-        new_plateau.used_tools[i] = 0;  //pas d'outils usée
-    }
-    
-    new_plateau.patient = NULL;     //pas de patient <=> plateau.patient == NULL
-    new_plateau.id = new_id;        // le nom du plateau qui est dans l'intervalle [t,z]
-    return new_plateau;
-}
-//-----------------------------------------------------------
+
+
+
 int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(x,y) est la position d'arriver du déplacement
 	int tile_value = 0;
 	_tile tile;
