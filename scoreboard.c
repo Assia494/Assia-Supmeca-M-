@@ -1,4 +1,4 @@
-#include <scoreboard.h>
+#include "scoreboard.h"
 
 void score_swap(_score* a,_score* b){//echanger la valeur entre deux variable
     _score temp = *a;
