@@ -1,5 +1,8 @@
 #ifndef GRID_H
-#define GRID_H
+  #define GRID_H
+
+  #include <fonctionutile.h>
+  #include <.h>
 
 _tile** cree_grid(int size_x, int size_y);
 _tile cree_tile();
