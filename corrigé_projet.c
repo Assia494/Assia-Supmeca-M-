@@ -357,66 +357,149 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {
 void load_game(_jeu *jeu, const char *filename)
 {
     FILE *f = fopen(filename, "rb");
-    if (!f) {
-        printf("Impossible d'ouvrir save.dat\n");
+    if (f == NULL) {
+        printf("Impossible d'ouvrir %s\n", filename);
         return;
     }
 
-    // IMPORTANT : reset propre
     free_game(jeu);
+    *jeu = (_jeu){0};
 
-    // --- GAME STATE ---
-    fread(&jeu->nb_step, sizeof(int), 1, f);
-    fread(&jeu->play, sizeof(int), 1, f);
-    fread(&jeu->profit, sizeof(float), 1, f);
+    int ok = 1;
 
-    fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f);
-    fread(&jeu->patient_spawn_range, sizeof(int), 1, f);
-    fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f);
-    fread(&jeu->patient_hapiness_range, sizeof(int), 1, f);
-    fread(&jeu->next_patient_time, sizeof(int), 1, f);
+    /* ---------------- GAME STATE ---------------- */
 
-    fread(&jeu->nb_plateau, sizeof(int), 1, f);
+    ok &= (fread(&jeu->nb_step, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->play, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->profit, sizeof(float), 1, f) == 1);
 
-    fread(jeu->username, sizeof(char), username_SIZE, f);
-    jeu->username[username_SIZE - 1] = '\0';
+    ok &= (fread(&jeu->patient_minimum_spawn_intervalle, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->patient_spawn_range, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->patient_spawning_hapiness, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->patient_hapiness_range, sizeof(int), 1, f) == 1);
+    ok &= (fread(&jeu->next_patient_time, sizeof(int), 1, f) == 1);
 
-    // --- GRID SIZE ---
-    fread(&jeu->grid_size_x, sizeof(int), 1, f);
-    fread(&jeu->grid_size_y, sizeof(int), 1, f);
+    ok &= (fread(&jeu->nb_plateau, sizeof(int), 1, f) == 1);
 
-    // --- PLAYER ---
-    fread(&jeu->player, sizeof(_player), 1, f);
-
-    // --- HUMEUR ---
-    fread(jeu->hummeur_tab, sizeof(int), NB_hummeur, f);
-
-    // --- GRID ALLOCATION ---
-    jeu->grid = malloc(sizeof(_tile*) * jeu->grid_size_y);
-    exit_if_null_pointer(jeu->grid);
-    for (int y = 0; y < jeu->grid_size_y; y++) {
-        jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
-        exit_if_null_pointer(jeu->grid[y]);
-        fread(jeu->grid[y], sizeof(_tile), jeu->grid_size_x, f);
+    if (!ok || jeu->nb_plateau < 0 || jeu->nb_plateau > 100) {
+        printf("Erreur lecture (game state)\n");
+        fclose(f);
+        return;
     }
 
-    // --- PLATEAUX ---
+    /* ---------------- USERNAME ---------------- */
+
+    if (fread(jeu->username, sizeof(char), username_SIZE, f) != username_SIZE) {
+        printf("Erreur lecture username\n");
+        fclose(f);
+        return;
+    }
+    jeu->username[username_SIZE - 1] = '\0';
+
+    /* ---------------- GRID SIZE ---------------- */
+
+    if (fread(&jeu->grid_size_x, sizeof(int), 1, f) != 1 || fread(&jeu->grid_size_y, sizeof(int), 1, f) != 1)
+    {
+        printf("Erreur lecture grid size\n");
+        fclose(f);
+        return;
+    }
+
+    if (jeu->grid_size_x <= 0 || jeu->grid_size_x > 500 || jeu->grid_size_y <= 0 || jeu->grid_size_y > 500)
+    {
+        printf("Taille grille invalide\n");
+        fclose(f);
+        return;
+    }
+
+    /* ---------------- PLAYER ---------------- */
+
+    if (fread(&jeu->player, sizeof(_player), 1, f) != 1) {
+        printf("Erreur lecture player\n");
+        fclose(f);
+        return;
+    }
+
+    /* ---------------- HUMEUR ---------------- */
+
+    if (fread(jeu->hummeur_tab, sizeof(int), NB_hummeur, f) != NB_hummeur) {
+        printf("Erreur lecture humeur\n");
+        fclose(f);
+        return;
+    }
+
+    /* ---------------- GRID ---------------- */
+
+    jeu->grid = malloc(sizeof(_tile*) * jeu->grid_size_y);
+    exit_if_null_pointer(jeu->grid);
+
+    for (int y = 0; y < jeu->grid_size_y; y++) {
+
+        jeu->grid[y] = malloc(sizeof(_tile) * jeu->grid_size_x);
+        exit_if_null_pointer(jeu->grid[y]);
+
+        if (fread(jeu->grid[y], sizeof(_tile),
+                  jeu->grid_size_x, f) != jeu->grid_size_x)
+        {
+            printf("Erreur lecture grid\n");
+            fclose(f);
+            free_game(jeu);
+            return;
+        }
+    }
+
+    /* ---------------- PLATEAUX ---------------- */
+
     jeu->plateau_tab = malloc(sizeof(_plateau) * jeu->nb_plateau);
     exit_if_null_pointer(jeu->plateau_tab);
 
     for (int i = 0; i < jeu->nb_plateau; i++) {
 
-        fread(jeu->plateau_tab[i].tools, sizeof(int), NB_TOOLS, f);
-        fread(jeu->plateau_tab[i].used_tools, sizeof(int), NB_TOOLS, f);
-        fread(&jeu->plateau_tab[i].id, sizeof(int), 1, f);
+        if (fread(jeu->plateau_tab[i].tools, sizeof(int),
+                  NB_TOOLS, f) != NB_TOOLS)
+        {
+            printf("Erreur lecture tools\n");
+            fclose(f);
+            free_game(jeu);
+            return;
+        }
+
+        if (fread(jeu->plateau_tab[i].used_tools, sizeof(int),
+                  NB_TOOLS, f) != NB_TOOLS)
+        {
+            printf("Erreur lecture used_tools\n");
+            fclose(f);
+            free_game(jeu);
+            return;
+        }
+
+        if (fread(&jeu->plateau_tab[i].id, sizeof(int), 1, f) != 1) {
+            printf("Erreur lecture id\n");
+            fclose(f);
+            free_game(jeu);
+            return;
+        }
 
         int has_patient = 0;
-        fread(&has_patient, sizeof(int), 1, f);
+        if (fread(&has_patient, sizeof(int), 1, f) != 1) {
+            printf("Erreur lecture has_patient\n");
+            fclose(f);
+            free_game(jeu);
+            return;
+        }
 
         if (has_patient) {
             jeu->plateau_tab[i].patient = malloc(sizeof(_patient));
             exit_if_null_pointer(jeu->plateau_tab[i].patient);
-            fread(jeu->plateau_tab[i].patient, sizeof(_patient), 1, f);
+
+            if (fread(jeu->plateau_tab[i].patient,
+                      sizeof(_patient), 1, f) != 1)
+            {
+                printf("Erreur lecture patient\n");
+                fclose(f);
+                free_game(jeu);
+                return;
+            }
         } else {
             jeu->plateau_tab[i].patient = NULL;
         }
@@ -424,15 +507,14 @@ void load_game(_jeu *jeu, const char *filename)
 
     fclose(f);
 
-    // IMPORTANT : recalcul position joueur aprÃ¨s load
     jeu->player.pos = get_player_pos_from_grid(
         jeu->grid,
         jeu->grid_size_x,
         jeu->grid_size_y
     );
+
+    printf("Partie chargee avec succes !\n");
 }
-
-
 _jeu fonction_gestion_argent_cabinet(_jeu j)
 {
     float argent_ustensile=0;
