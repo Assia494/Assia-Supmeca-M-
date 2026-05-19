@@ -1,4 +1,4 @@
-#include <patient.h>
+#include "patient.h"
 
 _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     _patient* patient = NULL;
