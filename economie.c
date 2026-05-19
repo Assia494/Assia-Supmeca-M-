@@ -1,6 +1,4 @@
 #include "economy.h"
-#include "game.h"
-
 
 
 _jeu fonction_gestion_argent_cabinet(_jeu j){
