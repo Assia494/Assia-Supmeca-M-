@@ -1,5 +1,5 @@
-#ifndef  BASE.H
-  #define BASE.H
+#ifndef  DISLAY_H
+  #define DISLAY_H
 
 #include <stdio.h>
 #include <stdlib.h>
