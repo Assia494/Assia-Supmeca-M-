@@ -523,101 +523,129 @@ int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {
 }
 //-----------------------------------------------------------
 void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
-    if(tile.player == 1) {
-        if((player.glove.type =='h')){
-            printf("ðŸ˜·");
-        }
-        else{
-            printf("ðŸ˜");
-        }
-    }
-    else {
-        if( inter_check(tile.value,'T','Z') ){
-            char c;
-            c = tile.value -'T' +'t';
-            for(int i=0;i<taille;i++){
-                if(plateau_tab[i].id==c){
-                    if(plateau_tab[i].patient != NULL){
-                        if(plateau_tab[i].patient->etat==satisfait){
-                            printf("ðŸ¤’");
-                        }
-                        else{
-                            printf("ðŸ˜¥");
-                        }
-                    }
-                    else{
-                        printf("ðŸª‘");
-                    }
-                    break;
-                }
-            }
-        }
-        else{
-            switch(tile.value) {
-            default:
-                if( inter_check(tile.value,'t','z') ){
-                    printf(" %c",tile.value);
-                }
-                else if( inter_check(tile.value,'a','h')||inter_check(tile.value,'i','j') ){
-                    printf(" .");
-                }
-                else{
-                    printf("  ");
-                }
-                break;
-            case 0:
-                printf("  ");
-                break;
-            case 1:
-                printf("â¬›" );
-                break;
-            case 2:
-                printf("ðŸ§Š");
-                break;
-            case 3:
-                printf("ðŸšªï¸");
-                break;
-            case 4:
-                printf("ðŸ”²ï¸");
-                break;
+	if(tile.player == 1) { // si le joueur est présent
+	    
+		if((player.glove.type =='h')){
+		    printf("😷");   // si le joueur porte des gants
+		}
+		else{
+		    printf("😐");   // si le joueur ne porte pas des gants
+		}
+	}
+	else {
+	    if( inter_check(tile.value,'T','Z') ){ // si la case représente "la case d'affichage d'un plateau"(la case où on voit si il y a un patient ou pas à ce plateau)
+	        
+	        char c;                                               
+	        c = tile.value -'T' +'t';                               //    converti les valeurs de 'T' à 'Z' en minuscule ('t' à 'z') stocker dans la variable c pour 
+	        for(int i=0;i<taille;i++){                              //    chercher le plateau correspondant dans le tableau plateau, plateau_tab ,(en fonction de son id qui est dans l'intervalle [t,z])
+	            if(plateau_tab[i].id==c){
+    	            if(plateau_tab[i].patient != NULL){//si il y a un patient present à ce plateau
+    	                if(plateau_tab[i].patient->etat==satisfait){
+    	                    printf("🤒");//si le patient est satisfait
+    	                }
+    	                else{
+    	                    printf("😥");//si le patient est mécontant    
+    	                }
+    	                
+    	                
+    	            }
+    	            else{
+    	                printf("🪑");//si il n'y a pas de patient    
+    	            }
+    	            break;
+	            }
+	        }
+	        
+	    }        
+	    else{
+    		switch(tile.value) {
+    		default:
+    		    if( inter_check(tile.value,'t','z') ){//si la case est la case d'action des plateaux
+    		        printf(" %c",tile.value);
+    		    }
+    		    else if( inter_check(tile.value,'a','h')||inter_check(tile.value,'i','j') ){//si c'est des cases d'actions autre que celles des plateux
+    		        printf(" .",tile.value);
+    		    }
+    		    else{
+    		        printf("  ");
+    		    }
+    			break;
+    		case 0:
+    			printf("  ");
+    			break;
+    		case 1:
+    			printf("⬛" );
+    			break;
+    		case 2:
+    			printf("🧊");
+    			break;
+    		case 3:
+    			printf("🚪️");
+    			break;
+    		case 4:
+    			printf("🔲️");
+    			break;
+    			
+    		case 'A':
+    			printf("🪛");
+    			break;
+    		case 'B':
+    			printf("⚙️ ");
+    			break;
+    		case 'C':
+    			printf("🔩");
+    			break;
+    		case 'D':
+    			printf("🔬");
+    			break;
+    		case 'E':
+    			printf("💉");
+    			break;
+    			
+    		case 'F':
+    			printf("🩹");
+    			break;
+    		case 'G':
+    			printf("💭");
+    			break;
+    		case 'H':
+    			printf("🧤");
+    			break;
+    			
+    		case 'I':
+    			printf("♻️ ");
+    			break;
+    		case 'J':
+    			printf("☣️ ");
+    			break;
 
-            case 'A':
-                printf("ðŸª›");
-                break;
-            case 'B':
-                printf("âš™ï¸ ");
-                break;
-            case 'C':
-                printf("ðŸ”©");
-                break;
-            case 'D':
-                printf("ðŸ”¬");
-                break;
-            case 'E':
-                printf("ðŸ’‰");
-                break;
-
-            case 'F':
-                printf("ðŸ©¹");
-                break;
-            case 'G':
-                printf("ðŸ’­");
-                break;
-            case 'H':
-                printf("ðŸ§¤");
-                break;
-
-            case 'I':
-                printf("â™»ï¸ ");
-                break;
-            case 'J':
-                printf("â˜£ï¸ ");
-                break;
-            }
-        }
-    }
+    		}
+	    }
+    /*
+    -----------
+    .player = 1 :😷
+    -------
+    0 :
+    1 :⬛
+    2 :🧊️
+    3 :️🚪
+    -------
+    A :🪛  
+    B :⚙️
+    C :🔩
+    D :🔬
+    E :💉
+    
+    
+    F :🩹
+    G :💭
+    H :🧤
+    ️
+    I :♻️
+    J :☣️
+	*/
+	}
 }
-//-----------------------------------------------------------
 void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {
     exit_if_null_pointer(grid);
     printf("\n\n");
@@ -834,73 +862,79 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
     }
 }
 //-----------------------------------------------------------
-void print_red_green(int a){
+void print_red_green(int a){//affiche vert pour 1 ou rouge pour 0 (affiche vrai ou faux avec couleur)
     if(a){
-        printf(" ðŸŸ© ");
+        printf(" 🟩 ");    
     }
     else{
-        printf(" ðŸŸ¥ ");
+        printf(" 🟥 ");    
     }
 }
 //-----------------------------------------------------------
-void print_player_status(_player player ,float profit){
+void print_player_status(_player player ,float profit){//affiche les informations sur le joueur
     color(190,175,30);
     printf("\n----------------Le joueur-------------------\n");
-    printf("    |ðŸ’µ %.2f$",profit);
-    if(player.glove.type=='h'){
-        printf("    |ðŸ§¤ ");
+    printf("    |💵 %.2f$",profit); //affichage de l'argent
+    //si le joueur a des gants
+    if(player.glove.type=='h'){ //affichage des gants si le joueur a des gant
+        printf("    |🧤 ");
         if(player.glove.used==0){
-            printf("ðŸŸ©");
+            printf("🟩");//porpre
         }
         else{
-            printf("ðŸŸ«");
+            printf("🟫");//sale
         }
     }
-    if(player.tool.type!=0){
+     //si le joueur a un outil
+    if(player.tool.type!=0){ //affichage des outils si le joueur a des outils
         printf("    |");
         switch(player.tool.type){
             default:
                 printf("...");
                 break;
             case 'a':
-                printf("ðŸª›");
+                printf("🪛");
                 break;
             case 'b':
-                printf("âš™ï¸ ");
+                printf("⚙️ ");
                 break;
             case 'c':
-                printf("ðŸ”©");
-                break;
+                printf("🔩");
+                break;            
             case 'd':
-                printf("ðŸ”¬");
+                printf("🔬");
                 break;
             case 'e':
-                printf("ðŸ’‰");
+                printf("💉");
                 break;
             case 'f':
-                printf("ðŸ©¹");
+                printf("🩹");
                 break;
             case 'g':
-                printf("ðŸ’­");
+                printf("💭");
                 break;
         }
         if(player.tool.used==0){
-            printf(" ðŸŸ©");
+            printf(" 🟩");//porpre
         }
         else{
-            printf(" ðŸŸ«");
+            printf(" 🟫");//sale
         }
     }
+    
+    
+    
     printf("\n");
     reset_color();
 }
 //-----------------------------------------------------------
-void print_total_patient(int* hummeur_tab){
+void print_total_patient(int* hummeur_tab){//affiche la quantité de patient selon leur etat qui sont partis
     color(190,175,30);
-    printf("    |patient score:  |%d ðŸŸ©    |%d ðŸŸ¨    |%d ðŸŸ¥  \n\n",hummeur_tab[0],hummeur_tab[1],hummeur_tab[2]);
+    printf("    |patient score:  |%d 🟩    |%d 🟨    |%d 🟥  \n\n",hummeur_tab[0],hummeur_tab[1],hummeur_tab[2]);
     reset_color();
 }
-//-----------------------------------------------------------
+
+
 _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){
     _tile** new_grid = NULL;
     new_grid = cree_grid(max_size_x ,max_size_y);
@@ -960,103 +994,114 @@ _plateau* get_plateau_tab(_tile** grid,int size_x,int size_y,int* taille){
     return plateau_tab;
 }
 //-----------------------------------------------------------
-void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){
+void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){ //affiche les information d'un plateau
     color(190,175,30);
+    //printf("-------------------------------------plateau %c -------------------------------------------\n",plateau.id);
     printf("  <plateau %c > ",plateau.id);
+    //affichage des outils present sur le plateau 
+    //printf("    |tools :    ");
     for(int i=0;i<NB_TOOLS;i++){
         switch(i){
             default:
                 printf("...");
                 break;
             case 0:
-                printf("ðŸª›");
+                printf("🪛");
                 break;
             case 1:
-                printf("âš™ï¸ ");
+                printf("⚙️ ");
                 break;
             case 2:
-                printf("ðŸ”©");
-                break;
+                printf("🔩");
+                break;            
             case 3:
-                printf("ðŸ”¬");
+                printf("🔬");
                 break;
             case 4:
-                printf("ðŸ’‰");
+                printf("💉");
                 break;
             case 5:
-                printf("ðŸ©¹");
+                printf("🩹");
                 break;
             case 6:
-                printf("ðŸ’­");
+                printf("💭");
                 break;
         }
-        if(plateau.tools[i]){
+        if(plateau.tools[i]){ //si outils present est propre
             if(plateau.patient != NULL){
                 if (plateau.patient->maladie.tool_needed[i]){
-                    printf(" âœ…");
+                    printf(" ✅"); //si l'outils present est nécessaires 
                 }
                 else{
-                    printf(" ðŸŸ©");
+                    printf(" 🟩");
                 }
             }
             else{
-                printf(" ðŸŸ©");
+                printf(" 🟩"); 
             }
         }
-        else if(plateau.used_tools[i]){
+        else if(plateau.used_tools[i]){ //si outils present est utilisée(sale) 
             if(plateau.patient != NULL){
                 if (plateau.patient->maladie.tool_needed[i]){
-                    printf(" ðŸš«");
+                    printf(" 🚫"); //si l'outils present est nécessaires mais il est sale
                 }
                 else{
-                    printf(" ðŸŸ«");
+                    printf(" 🟫"); 
                 }
             }
             else{
-                printf(" ðŸŸ«");
+                printf(" 🟫"); 
             }
         }
         else if(plateau.patient != NULL){
             if (plateau.patient->maladie.tool_needed[i]){
-                printf(" â¬œ");
+                printf(" ⬜");  //si l'outils present est nécessaires et doit être ramené au plateau
             }
             else{
-                printf(" ðŸŸ¥");
+                printf(" 🟥");
             }
         }
         else{
-            printf(" ðŸŸ¥");
+            printf(" 🟥"); //l'outils n'est pas present sur le plateau  
         }
         printf("    ");
-    }
+    }    
 
-    if(plateau.patient!=NULL){
+    
+    if(plateau.patient!=NULL){//si il y a un patient à ce plateau ,affiche sa patience avec une jauge et en purcentage
         float percentage = 1.0*(plateau.patient->hummeur)/max_happiness;
-        int nb_box = (int)(percentage*happy_bar_len);
+        int nb_box = percentage*happy_bar_len;
         printf("|hummeur  ");
         for(int i=0;i<happy_bar_len;i++){
             if(nb_box<1){
-                printf("â¬›");
+                printf("⬛");
             }
             else if(i<=happy_bar_len*0.075){
-                printf("ðŸŸ¥");
+                printf("🟥");
+                //color(220,50,30);
             }
             else if(i<=happy_bar_len*0.22){
-                printf("ðŸŸ§");
+                printf("🟧");
+                //color(190,90,30);
             }
             else if(i<=happy_bar_len*0.45){
-                printf("ðŸŸ¨");
+                printf("🟨");
+                //color(145,120,30);
             }
             else{
-                printf("ðŸŸ©");
+                printf("🟩");
+                //color(50,150,30);
             }
+            //printf(" ");
             nb_box--;
         }
-        color((unsigned char)(255*(1-percentage)),(unsigned char)(255*percentage),(unsigned char)(90*(1-percentage)));
-        printf("    %.2f%%",percentage*100);
+        color(255*(1-percentage),255*percentage,90*(1-percentage));
+        printf("    %.2f%",percentage*100);
+        ///🟥🟧🟧🟨🟨🟨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬛⬛
     }
     printf("\n");
     reset_color();
+    
 }
 //-----------------------------------------------------------
 void print_plateau_tab(_plateau* plateau_tab ,int taille ,int max_happiness ,int happy_bar_len){
