@@ -11,7 +11,8 @@ _coord get_element_pos_from_grid(_tile** grid, int size_x, int size_y, int eleme
 
 _tile get_tile_from_pos(_tile** grid, int size_x, int size_y, int x, int y);
 int can_move_at_pos(_tile** grid, int size_x, int size_y, int x, int y);
-void move_player(_tile** grid,int size_x,int size_y,_movement movement)
-_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y)
+void move_player(_tile** grid,int size_x,int size_y,_movement movement);
+_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y);
+void get_grid_size_from_string(char map_string[] ,int* size_x ,int* size_y);
 
 #endif
