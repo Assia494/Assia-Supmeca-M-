@@ -1,5 +1,5 @@
-#ifndef  BASE.H
-  #define BASE.H
+#ifndef  GAME_H
+  #define GAME_H
 
 #include <stdio.h>
 #include <stdlib.h>
