@@ -1,5 +1,6 @@
-#include "fonctionutile.h"
-#include "grid.h"
-#include "game.h"
-#include "display.h"
-#include "economi.h"
+#include <fonctionutile.h>
+#include <grid.h>
+#include <game.h>
+#include <display.h>
+#include <economi.h>
+#include <patient.h>
