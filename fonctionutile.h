@@ -7,5 +7,7 @@ void exit_if_null_pointer(void* pointer);
 
 void color(unsigned char r, unsigned char g, unsigned char b);
 void reset_color(void);
+void decrease_if_to_much(int* var ,int min);
+int* cree_tab(int size);
 
 #endif
