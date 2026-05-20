@@ -4,6 +4,6 @@
 #include "structprojet.h"
 #include "game.h"
 
-_jeu fonction_gestion_argent_cabinet(_jeu j); 
+void fonction_gestion_argent_cabinet(_jeu* j ,int outils_id); 
 
 #endif
