@@ -109,7 +109,7 @@ typedef struct {
 _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
 _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y);
 _patient* cree_patient();
-
+_coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
 
 //-----------------------------------------------------------
 void color(unsigned char r, unsigned char g, unsigned char b){    //couleur affichage           r ,g ,b apartient à l'intervalle [0,255]
@@ -207,7 +207,7 @@ void save_game(_jeu jeu, const char* filename){
 	FILE *file = fopen(filename, "w+");
 	exit_if_null_pointer(file);
 	printf("saving game\n");
-	//fprintf(file ,"savefile 1\n");
+	fprintf(file ,"savefile 1\n");
 
 	
 	// les paramètres du jeu
@@ -219,6 +219,7 @@ void save_game(_jeu jeu, const char* filename){
 	fprintf(file ,"next_patient_time %d\n",jeu.next_patient_time);
 	fprintf(file ,"hummeur_tab %d %d %d\n",jeu.hummeur_tab[0],jeu.hummeur_tab[1],jeu.hummeur_tab[2]);
 	fprintf(file ,"nb_step %d\n",jeu.nb_step);
+	fprintf(file ,"profit %.2f\n",jeu.profit);
 	
 	//fprintf(file ,"\n\n");
 	// les informations du joueur
@@ -227,6 +228,9 @@ void save_game(_jeu jeu, const char* filename){
 	fprintf(file ,"tool_used %d\n",jeu.player.tool.used);
 	fprintf(file ,"glove_type %d\n",jeu.player.glove.type);
 	fprintf(file ,"glove_used %d\n",jeu.player.glove.used);
+	jeu.player.pos = get_player_pos_from_grid(jeu.grid,jeu.grid_size_x,jeu.grid_size_y);
+	fprintf(file ,"player_pos_x %d\n",jeu.player.pos.x);
+	fprintf(file ,"player_pos_y %d\n",jeu.player.pos.y);
 	
 	//fprintf(file ,"\n\n");
 	// les informations de la grille de jeu
@@ -236,11 +240,7 @@ void save_game(_jeu jeu, const char* filename){
 	for(int dy=0;dy<jeu.grid_size_y;dy++){
 		for(int dx=0;dx<jeu.grid_size_x;dx++){
 			tile = jeu.grid[dy][dx];
-			//printf("grid(%d,%d)   max(%d,%d)\n",dy,dx,jeu.grid_size_y,jeu.grid_size_x);
-			if(tile.player == 1){
-				fputc('P',file);
-			}
-			else if(inter_check(tile.value,'a','z')||inter_check(tile.value,'A','Z')){
+			if(inter_check(tile.value,'a','z')||inter_check(tile.value,'A','Z')){
 				fputc(tile.value ,file);
 			}
 			else if(inter_check(tile.value,0,9)){
@@ -256,7 +256,6 @@ void save_game(_jeu jeu, const char* filename){
 	
 	//fprintf(file ,"\n\n");
 	// les informations sur les plateaux
-	printf("1\n");
 	fprintf(file ,"nb_plateau %d\n",jeu.nb_plateau);
 	
 	for(int plateau_ind=0;plateau_ind<jeu.nb_plateau;plateau_ind++){
@@ -304,8 +303,8 @@ void load_game(_jeu *jeu, const char *filename){
 	if(!savefile){
 		printf("il n'y a pas de partie sauvegardé\n");
 	}
-	printf("il y a une partie sauvegardé\n");
-	
+	//printf("il y a une partie sauvegardé\n");
+	jeu->play = 1;
 	// les paramètres du jeu
 	fscanf(file,"happy_bar_len %d\n",&jeu->happy_bar_len);
 	fscanf(file,"patient_minimum_spawn_intervalle %d\n",&jeu->patient_minimum_spawn_intervalle);
@@ -319,6 +318,7 @@ void load_game(_jeu *jeu, const char *filename){
 	}
 	fscanf(file,"\n");
 	fscanf(file,"nb_step %d\n",&jeu->nb_step);
+	fscanf(file,"profit %f\n",&jeu->profit);
 	
 	// les informations du joueur
 	fscanf(file,"tool_type %d\n",&jeu->player.tool.type);
@@ -326,6 +326,9 @@ void load_game(_jeu *jeu, const char *filename){
 	fscanf(file,"tool_used %d\n",&jeu->player.tool.used);
 	fscanf(file,"glove_type %d\n",&jeu->player.glove.type);
 	fscanf(file,"glove_used %d\n",&jeu->player.glove.used);
+	fscanf(file,"player_pos_x %d\n",&jeu->player.pos.x);
+	fscanf(file,"player_pos_y %d\n",&jeu->player.pos.y);
+	
 	
 	// les informations de la grille de jeu
 	fscanf(file,"grid_size_x %d\n",&(jeu->grid_size_x));
@@ -341,6 +344,8 @@ void load_game(_jeu *jeu, const char *filename){
 	map_string[i] = '\0';
 	fscanf(file,"\n");
     jeu->grid = make_grid_from_string(map_string   ,jeu->grid_size_x    ,jeu->grid_size_y);
+	jeu->grid[jeu->player.pos.y][jeu->player.pos.x].player = 1;
+
 
 	//initialisation des plateaux
 	fscanf(file,"nb_plateau %d\n",&jeu->nb_plateau);
@@ -685,9 +690,42 @@ int try_cure_patient(_plateau* plateau ,float* profit ,int* hummeur_tab){    //(
     }
 }
 //-----------------------------------------------------------
-char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab){ //pour les actions autre que les déplacements
+void fonction_gestion_argent_cabinet(float* profit ,int outils_id){
+	FILE* file = NULL;
+	file = fopen("ustensiles.txt","r");
+	exit_if_null_pointer(file);
+	int error = 0;
+	int number = 0;
+	float cost = 0;
+	char temp[100];
+	for(int i=0;i<NB_TOOLS+1;i++){
+		fscanf(file ,"%d %f %s\n",&number ,&cost ,temp);
+		if(error){
+			*profit -= 1.2;
+			printf("il y a au un erreur donc 1.2$ du profit est dépensé pour avoir un outil\n");
+			break;
+		}
+		
+		if(outils_id == number){ //convertir ['1','8'] en [1,8]
+			*profit -= cost;
+			printf("%.2f$ du profit est dépensé pour avoir un outil\n",cost);
+			break;
+		}
+	}
+	
+	
+	
+	
+}
+
+//-----------------------------------------------------------
+char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab ,int* game_over){ //pour les actions autre que les déplacements
     _tile current_tile;
     int tile_value;
+    
+    int full = 1;
+    int angry_patient = 0;
+    *game_over = 0;
     
     player->pos = get_player_pos_from_grid(grid ,size_x ,size_y);
     if((player->pos.x<0)||(player->pos.y<0)){   //si le joueur se situe à (-1,-1) ,qui n'est pas possible => exit()
@@ -702,17 +740,14 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         player->glove.type = 'h';
         player->glove.clean = 0 ;
         player->glove.used = 0 ; 
-        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
-        printf("1.2$ du profit est dépensé pour avoir des gants\n");
+        fonction_gestion_argent_cabinet(profit ,'h'-'a'+1);
     }
     if(inter_check(tile_value,'a','g')&&(player->tool.type==0)){  //si la case d'action est la case d'action pour prendre des outils ,de plus si le joueur n'a pas d'outil en main
         //prendre un objet si le joueur n'a pas d'outil
         player->tool.type = tile_value;
         player->tool.clean = (player->glove.type=='h')&&(player->glove.used==0) ;
         player->tool.used = 0 ;
-        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
-        printf("1.2$ du profit est dépensé pour avoir un outil\n");
-        
+        fonction_gestion_argent_cabinet(profit ,tile_value-'a'+1);
     }
     else if(tile_value=='i'){  //si la case d'action est la case d'action de la poubelle pour les outils sales non usées
         //mettre les outils dans la poubelle de recyclage
@@ -738,7 +773,12 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         //pour les plateaux
         //on cherche le plateau
         for(int i=0;i<taille;i++){
+            if(plateau_tab[i].patient==NULL){
+            	full = 0;
+            }
             if(plateau_tab[i].id==tile_value){
+            	
+            
                 //mettre l'outil non sale au plateau si possible
                 if(     (player->tool.type!=0)&&(player->tool.clean==1)&&(  (plateau_tab[i].tools[(player->tool.type)-'a'] + plateau_tab[i].used_tools[(player->tool.type)-'a']) == 0)    ){
                     plateau_tab[i].tools[(player->tool.type)-'a'] = 1;
@@ -754,12 +794,13 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
                     break;
                 }
                 //si on tente de soigner un patient mais on n'a pas de gant ou des gants sales
-                else if(    ((player->glove.used==1)||(player->glove.type!='h'))&&(plateau_tab[i].patient!=NULL)&&(player->tool.type==0) ){
+                else if(    ((player->glove.type=='h')&&(player->glove.used==1))||((player->glove.type!='h')&&(plateau_tab[i].patient!=NULL)&&(player->tool.type==0)) ){
                     //le patient part
                     free(plateau_tab[i].patient);
                     plateau_tab[i].patient = NULL;
                     printf("Un patient est parti furieux par peur de contamination,\nil a contaminé les outils présents sur son plateau, il n'a rien donné\n");
                     hummeur_tab[2] ++;
+                    angry_patient = 1;
                     //les outils deviennent sales ,par la panique du patient ,par peur de contamination
                     for(int ind=0;ind<NB_TOOLS;ind++){
                         if(plateau_tab[i].tools[ind]==1){
@@ -786,9 +827,13 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
             }
         }
     }
+    //verification si la partie est terminé
+    if(angry_patient && full){
+    	*game_over = 1;
+    }
 } 
 //-----------------------------------------------------------
-void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ,int* playing) {//demande d'action de la part du joueur (déplacament ,action ,retourner vers le menu pricipal)
+void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ,int* playing ,int* game_over) {//demande d'action de la part du joueur (déplacament ,action ,retourner vers le menu pricipal)
 	char move ;
 	int error = 0;
 	printf("Veuillez saisir votre action-----\n\n");
@@ -834,7 +879,7 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 		break;
 	
 	case 'g': //faire un action
-		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab);
+		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab ,game_over);
 		break;
 	case 'h': //retourner au menu principal
 		*playing = 0;
@@ -859,10 +904,10 @@ void print_player_status(_player player ,float profit){//affiche les information
     if(player.glove.type=='h'){ //affichage des gants si le joueur a des gant
         printf("    |🧤 ");
         if(player.glove.used==0){
-            printf("🟩");//porpre
+            printf("🟩");//propre
         }
         else{
-            printf("🟫");//sale
+            printf("🟫");//usée
         }
     }
      //si le joueur a un outil
@@ -894,11 +939,14 @@ void print_player_status(_player player ,float profit){//affiche les information
                 printf("💭");
                 break;
         }
-        if(player.tool.used==0){
-            printf(" 🟩");//porpre
+        if(player.tool.used==0 && player.tool.clean==1){
+            printf(" 🟩");//propre
+        }
+        else if(player.tool.used==0 && player.tool.clean==0){
+            printf(" 🟥");//sale
         }
         else{
-            printf(" 🟫");//sale
+            printf(" 🟫");//usée
         }
     }
     printf("\n");
@@ -1088,7 +1136,7 @@ void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){ //af
             nb_box--;
         }
         color(255*(1-percentage),255*percentage,90*(1-percentage));
-        printf("    %.2f % ",percentage*100);
+        printf("    %.2f %% ",percentage*100);
         ///🟥🟧🟧🟨🟨🟨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬛⬛
     }
     printf("\n");
@@ -1369,11 +1417,12 @@ int play_a_game(_jeu* game ,char* username){
     	game->play = 1;
     }
     
-    int playing = 1;//est cec que le joueur veut continuer la partie 
+    int playing = 1;//est ce que le joueur veut continuer la partie 
+    int game_over = 0;
     while(playing){
         game->nb_step++;
         //fin de jeu? + mettre à jour les patients
-        if(!update_patients(game->plateau_tab ,game->nb_plateau ,game->patient_minimum_spawn_intervalle ,game->patient_spawn_range ,&(game->next_patient_time) ,game->patient_spawning_hapiness+randint(0,game->patient_hapiness_range) ,&(game->profit) ,game->hummeur_tab)){
+        if(game_over || !update_patients(game->plateau_tab ,game->nb_plateau ,game->patient_minimum_spawn_intervalle ,game->patient_spawn_range ,&(game->next_patient_time) ,game->patient_spawning_hapiness+randint(0,game->patient_hapiness_range) ,&(game->profit) ,game->hummeur_tab)){
             color(250,30,30);//game over
             printf("\n\n");
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1409,7 +1458,7 @@ int play_a_game(_jeu* game ,char* username){
     	print_player_status(game->player ,game->profit);
     	print_total_patient(game->hummeur_tab);
     	//demande d'action
-    	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing);
+    	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing ,&game_over);
     }
     return 1;//la partie n'est pas terminer et peut etre continuer
 } //return 0 <=> partie terminer    , return 1 <=> partie non terminer mais il est mis en pause 
@@ -1503,11 +1552,11 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
         color(50,145,180);
         printf("profit:%.2f ",score_tab[i].profit);
         color(100,200,100);
-        printf("profit:%d ",score_tab[i].hummeur_tab[0]);
+        printf("satisfait:%d ",score_tab[i].hummeur_tab[0]);
         color(150,150,75);
-        printf("profit:%d ",score_tab[i].hummeur_tab[1]);
+        printf("mécontent:%d ",score_tab[i].hummeur_tab[1]);
         color(200,75,75);
-        printf("profit:%d ",score_tab[i].hummeur_tab[2]);
+        printf("furieux:%d ",score_tab[i].hummeur_tab[2]);
         printf("\n");
         reset_color();
         
@@ -1541,21 +1590,21 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu ,const char* filename) {//
 	printf("    Veuillez choisir l'une des options suivantes\n\n");
 	if(current_menu == select_menu){
     	if(current_game->play==1){
-    	    printf("         |  save current game (press s)(not ready)  \n");
-    	    printf("         |  continue  current game(press d)  \n");
+    	    printf("         |  save current game (press s)\n");
+    	    printf("         |  continue  current game(press d)\n");
     	}   
     	
     	if(savefile){
-    		printf("         |  load a saved game(press j)  \n");
+    		printf("         |  load a saved game(press j)\n");
     	}
     	 
-    	printf("         |  play a new game  (press f)  \n");
-        printf("         |  scoreboard   (press g)(not complete)  \n");
+    	printf("         |  play a new game  (press f)\n");
+        printf("         |  scoreboard   (press g)\n");
 	}
 	else{
-	    printf("         |  go to menu   (press q)  \n");
+	    printf("         |  go to menu   (press q)\n");
 	}
-    printf("         |  quit program (press h)  \n");
+    printf("         |  quit program (press h)\n");
     printf("\n\n\n\n");
 	do {
 		error = scanf(" %c",&menu);
