@@ -1,8 +1,4 @@
-#include "structprojet.h"
-#include "fonctionutile.h"
-#include "map.h"
-#include "grid.h"
-#include "plateau.h"
+#include "creer.h"
 
 _tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
 	_tile new_tile;  
