@@ -3,6 +3,8 @@
 
 #include "structprojet.h"
 #include "game.h"
+#include "fonctionutile.h"
+
 
 void fonction_gestion_argent_cabinet(float* profit ,int outils_id); 
 
