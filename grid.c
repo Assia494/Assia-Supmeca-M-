@@ -1,6 +1,12 @@
 #include "grid.h"
 
 
+_tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
+	_tile new_tile;  
+	new_tile.value = 0;
+	new_tile.player = 0;
+	return new_tile;
+}
 
 _tile** cree_grid(int size_x,int size_y) {                       //crée un tableau case 2D   ,pour la grille de jeu
 
@@ -19,14 +25,6 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
 	}
 	return new_grid;
 
-}
-
-
-_tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
-	_tile new_tile;  
-	new_tile.value = 0;
-	new_tile.player = 0;
-	return new_tile;
 }
 
 
@@ -62,6 +60,25 @@ _tile get_tile_from_pos(_tile** grid,int size_x,int size_y,int x,int y) {      /
 	}
 	return grid[y][x];                                                                                    //retourn la case trouver
 
+}
+
+
+
+int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(x,y) est la position d'arriver du déplacement
+	int tile_value = 0;
+	_tile tile;
+
+	tile = get_tile_from_pos(grid,size_x,size_y,x,y) ;                          // a partir du type de case est ce que  le joueur peut sy rendre
+	tile_value = tile.value;
+	if(inter_check(tile_value,'a','z')){                                        // les cases de valeurs 'a' à 'z' sont des cases d'actions  ,de plus ces case le joueur peut se déplacer sur cette case donc return 1
+	    return 1;
+	}
+	switch(tile_value) {                                                   
+    	default: //si la case n'est pas du vide
+    		return 0; 
+    	case 0: //si la case est du vide
+    		return 1;
+	}
 }
 
 
@@ -119,24 +136,6 @@ void move_player(_tile** grid,int size_x,int size_y,_movement movement) {       
 
 }
 
-
-
-int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(x,y) est la position d'arriver du déplacement
-	int tile_value = 0;
-	_tile tile;
-
-	tile = get_tile_from_pos(grid,size_x,size_y,x,y) ;                          // a partir du type de case est ce que  le joueur peut sy rendre
-	tile_value = tile.value;
-	if(inter_check(tile_value,'a','z')){                                        // les cases de valeurs 'a' à 'z' sont des cases d'actions  ,de plus ces case le joueur peut se déplacer sur cette case donc return 1
-	    return 1;
-	}
-	switch(tile_value) {                                                   
-    	default: //si la case n'est pas du vide
-    		return 0; 
-    	case 0: //si la case est du vide
-    		return 1;
-	}
-}
 
 
 
