@@ -60,10 +60,8 @@ int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab){//soig
 
 
 
-
 int try_cure_patient(_plateau* plateau ,float* profit ,int* hummeur_tab){    //(pour soigner) verifie si il y a un patient ,si oui on essaye de le soigner
     if(plateau->patient!=NULL){
-
         return cure_if_got_tools(plateau,profit,hummeur_tab);
     }
 }
