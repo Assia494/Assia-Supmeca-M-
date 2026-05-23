@@ -1,12 +1,6 @@
 #ifndef  FONCTIONUTILE_H
   #define FONCTIONUTILE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <time.h>
-
 #include "structprojet.h"
 
 int randint(int a, int b);
