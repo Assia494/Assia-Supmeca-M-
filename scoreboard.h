@@ -4,6 +4,8 @@
 
 #include "structprojet.h"
 #include "fonctionutile.h"
+#include "sauvegarde.h"
+#include "display.h"
 
 void score_swap(_score* a,_score* b);
 void print_scoreboard();
