@@ -65,6 +65,13 @@ typedef struct {
     int id;   //noms possible des plateaux (t u v w x y z)
 } _plateau;
 
+typedef struct {
+	int nb_step;
+    int hummeur_tab[NB_hummeur];
+    float profit;
+    char username[username_SIZE];
+} _score;
+
 typedef struct { //structure qui stock les informations d'un partie de jeu
     
     int nb_step ;   //le temps écoulé depuis le début de la partie
@@ -94,12 +101,5 @@ typedef struct { //structure qui stock les informations d'un partie de jeu
     int patient_hapiness_range;            
     int next_patient_time ;                
 }_jeu;
-
-typedef struct {
-	int nb_step;
-    int hummeur_tab[NB_hummeur];
-    float profit;
-    char username[username_SIZE];
-} _score;
 
 #endif
