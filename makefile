@@ -26,7 +26,7 @@ main.o : main.c main.h fonctionutile.h economy.h structprojet.h  grid.h map.h pa
 map.o : map.c map.h structprojet.h fonctionutile.h
 	gcc -c map.c
 
-patient.o : patient.c patient.h  structprojet.h game.h fonctionutile.h grid.h sauvegarde.h 
+patient.o : patient.c patient.h  structprojet.h game.h fonctionutile.h grid.h plateau.h sauvegarde.h 
 	gcc -c patient.c
 
 plateau.o : plateau.c plateau.h structprojet.h  grid.h
