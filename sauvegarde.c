@@ -58,7 +58,7 @@ _tile** cree_grid(int size_x,int size_y) {                       //crée un tabl
 
 }
 //-----------------------------------------------------------
-void save_game(_jeu jeu, const char* filename){
+void save_game(const _jeu *jeu, const char* filename){
 	//printf("%d octet \n",sizeof(jeu));
 	
 	FILE *file = fopen(filename, "w+");
