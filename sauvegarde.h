@@ -10,7 +10,7 @@
 
 
 
-void save_game(const _jeu *jeu, const char *filename);
+void save_game(_jeu *jeu, const char *filename);
 void load_game(_jeu *jeu, const char *filename);
 void free_game(_jeu *jeu);
 
