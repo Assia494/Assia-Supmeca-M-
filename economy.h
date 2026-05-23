@@ -2,7 +2,7 @@
 	#define ECONOMY_H
 
 #include "structprojet.h"
-#include "game.h"
+#include "sauvegarde.h"
 #include "fonctionutile.h"
 
 
