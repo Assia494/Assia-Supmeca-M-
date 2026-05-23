@@ -10,7 +10,7 @@ base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h pat
 creer.o : creer.h creer.c structprojet.h
 	gcc -c creer.c
 	
-display.o : display.c display.h structprojet.h fonctionutile.h
+display.o : display.c display.h structprojet.h fonctionutile.h sauvegarde.h display.h 
 	gcc -c display.c
 	
 
