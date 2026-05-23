@@ -22,6 +22,23 @@ void _score_bubble_sort(_score* tab ,int taille){//ranger un tableau en ordre d√
     
 }
 
+//-----------------------------------------------------------
+void _score_bubble_sort(_score* tab ,int taille){//ranger un tableau en ordre d√©croissant
+    for(int i=0;i<taille-1;i++){
+        for(int j=0;j<taille-1-i;j++){
+            if(tab[j].nb_step < tab[j+1].nb_step){
+                score_swap(tab+j,tab+j+1);  
+            }
+            else if(tab[j].nb_step == tab[j+1].nb_step){
+            	if(tab[j].profit < tab[j+1].profit){
+                	score_swap(tab+j,tab+j+1);  
+            	}
+            }
+        }
+    }
+    
+}
+
 
 
 void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les 1er case du tableau (ordre decroissant)
