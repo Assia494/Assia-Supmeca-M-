@@ -1,6 +1,6 @@
 #ifndef PATIENT_H
   #define PATIENT_H
-
+#include "game.h"
 #include "fonctionutile.h"
 #include "plateau.h"
 #include "grid.h"
