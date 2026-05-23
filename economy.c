@@ -1,42 +1,28 @@
 #include "economy.h"
-
-
-_jeu fonction_gestion_argent_cabinet(_jeu j){
-	float argent_ustensile=0;
-
-	FILE *fichier = NULL;
-	FILE *fichier2 = NULL;
-	fichier2 = fopen ("pathologie_client.txt", "w" );
-	fichier =fopen("ustensiles.txt","r");
-
-	if (fichier == NULL){
-		printf("Ouverture du fichier impossible\n");
-		printf("code d'erreur = %d \n", errno );
-		exit(1);
-	}
-	if (fichier2 == NULL){
-		printf("Ouverture du fichier impossible\n");
-		printf("code d'erreur = %d \n", errno );
-		fclose(fichier);
-		exit(1);
-	}
-
-	if (j.player.glove.type == 0){
-		printf("Il faut mettre ses gants!");
-	}
-	else{
-		int number = 0;
-		for(int i=0;i<NB_TOOLS;i++){
-			fscanf(fichier, "%f %d" , &argent_ustensile ,&number);
-			if(number == j.player.tool.type-'a'){
-				j.profit -= argent_ustensile;
-				fprintf(fichier2, "%f", j.profit);
-				break;
-			}
+void fonction_gestion_argent_cabinet(float* profit ,int outils_id){
+	FILE* file = NULL;
+	file = fopen("ustensiles.txt","r");
+	exit_if_null_pointer(file);
+	int error = 0;
+	int number = 0;
+	float cost = 0;
+	char temp[100];
+	for(int i=0;i<NB_TOOLS+1;i++){
+		fscanf(file ,"%d %f %s\n",&number ,&cost ,temp);
+		if(error){
+			*profit -= 1.2;
+			printf("il y a au un erreur donc 1.2$ du profit est dépensé pour avoir un outil\n");
+			break;
+		}
+		
+		if(outils_id == number){ //convertir ['1','8'] en [1,8]
+			*profit -= cost;
+			printf("%.2f$ du profit est dépensé pour avoir un outil\n",cost);
+			break;
 		}
 	}
-
-	fclose(fichier);
-	fclose(fichier2);
-	return j;
+	
+	
+	
+	
 }
