@@ -7,9 +7,9 @@ economy.o : economy.c economy.h structprojet.h sauvegarde.h fonctionutile.h
 base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h patient.h sauvegarde.h scoreboard.h 
 	gcc -c base.c
 	
-creer.o : creer.h creer.c structprojet.h
+creer.o : creer.h creer.c structprojet.h fonctionutile.h map.h grid.h plateau.h
 	gcc -c creer.c
-	
+
 display.o : display.c display.h structprojet.h fonctionutile.h  
 	gcc -c display.c
 	
