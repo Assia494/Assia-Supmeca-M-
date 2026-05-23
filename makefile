@@ -1,8 +1,8 @@
-exec : base.o creer.o display.o fonctionutile.o game.o grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o
-	gcc base.o creer.o display.o fonctionutile.o game.o grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o -o exec
+exec : base.o creer.o display.o fonctionutile.o  grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o
+	gcc base.o creer.o display.o fonctionutile.o grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o -o exec
 	
 	
-base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h patient.h 
+base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h patient.h sauvegarde.h scoreboard.h 
 	gcc -c base.c
 	
 creer.o : creer.h creer.c structprojet.h
@@ -14,9 +14,6 @@ display.o : display.c display.h structprojet.h fonctionutile.h
 
 fonctionutile.o : fonctionutile.c fonctionutile.h structprojet.h 
 	gcc -c fonctionutile.c 
-
-game.o : game.c game.h fonctionutile.h structprojet.h grid.h
-	gcc -c game.c
 	
 grid.o :grid.c grid.h fonctionutile.h structprojet.h 
 	gcc -c creer.c
@@ -39,5 +36,5 @@ sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h
 scoreboard.o : sauvegarde.h sauvegarde.c scoreboard.h
 	gcc -c scoreboard.c
 
-action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h game.h 
+action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h sauvegarde.h fonctionutile.h economy.h patient.h base.h creer.h display.h
 	gcc -c action_player.c
