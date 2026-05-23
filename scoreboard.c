@@ -22,6 +22,8 @@ void _score_bubble_sort(_score* tab ,int taille){//ranger un tableau en ordre d√
     
 }
 
+
+
 void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les 1er case du tableau (ordre decroissant)
 
 	//avoir le ficher score
@@ -77,11 +79,11 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
         color(50,145,180);
         printf("profit:%.2f ",score_tab[i].profit);
         color(100,200,100);
-        printf("profit:%d ",score_tab[i].hummeur_tab[0]);
+        printf("satisfait:%d ",score_tab[i].hummeur_tab[0]);
         color(150,150,75);
-        printf("profit:%d ",score_tab[i].hummeur_tab[1]);
+        printf("m√©content:%d ",score_tab[i].hummeur_tab[1]);
         color(200,75,75);
-        printf("profit:%d ",score_tab[i].hummeur_tab[2]);
+        printf("furieux:%d ",score_tab[i].hummeur_tab[2]);
         printf("\n");
         reset_color();
         
