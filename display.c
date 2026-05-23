@@ -216,3 +216,128 @@ void print_total_patient(int* hummeur_tab){//affiche la quantité de patient sel
     printf("    |patient score:  |%d 🟩    |%d 🟨    |%d 🟥  \n\n",hummeur_tab[0],hummeur_tab[1],hummeur_tab[2]);
     reset_color();
 }
+
+
+
+void print_plateau(_plateau plateau ,int max_happiness ,int happy_bar_len){ //affiche les information d'un plateau
+    color(190,175,30);
+    //printf("-------------------------------------plateau %c -------------------------------------------\n",plateau.id);
+    printf("  <plateau %c > ",plateau.id);
+    //affichage des outils present sur le plateau 
+    //printf("    |tools :    ");
+    for(int i=0;i<NB_TOOLS;i++){
+        switch(i){
+            default:
+                printf("...");
+                break;
+            case 0:
+                printf("🪛");
+                break;
+            case 1:
+                printf("⚙️ ");
+                break;
+            case 2:
+                printf("🔩");
+                break;            
+            case 3:
+                printf("🔬");
+                break;
+            case 4:
+                printf("💉");
+                break;
+            case 5:
+                printf("🩹");
+                break;
+            case 6:
+                printf("💭");
+                break;
+        }
+        if(plateau.tools[i]){ //si outils present est propre
+            if(plateau.patient != NULL){
+                if (plateau.patient->maladie.tool_needed[i]){
+                    printf(" ✅"); //si l'outils present est nécessaires 
+                }
+                else{
+                    printf(" 🟩");
+                }
+            }
+            else{
+                printf(" 🟩"); 
+            }
+        }
+        else if(plateau.used_tools[i]){ //si outils present est utilisée(sale) 
+            if(plateau.patient != NULL){
+                if (plateau.patient->maladie.tool_needed[i]){
+                    printf(" 🚫"); //si l'outils present est nécessaires mais il est sale
+                }
+                else{
+                    printf(" 🟫"); 
+                }
+            }
+            else{
+                printf(" 🟫"); 
+            }
+        }
+        else if(plateau.patient != NULL){
+            if (plateau.patient->maladie.tool_needed[i]){
+                printf(" ⬜");  //si l'outils present est nécessaires et doit être ramené au plateau
+            }
+            else{
+                printf(" 🟥");
+            }
+        }
+        else{
+            printf(" 🟥"); //l'outils n'est pas present sur le plateau  
+        }
+        printf("    ");
+    }    
+
+    
+    if(plateau.patient!=NULL){//si il y a un patient à ce plateau ,affiche sa patience avec une jauge et en purcentage
+        
+        float percentage = 1.0*(plateau.patient->hummeur)/max_happiness;
+        //printf("percentage = %f    ,plateau.patient->hummeur = %d       ,max_happiness = %d \n",percentage,plateau.patient->hummeur,max_happiness);                                                           
+        int nb_box = percentage*happy_bar_len;
+        //printf("nb_box = %d    ,percentage = %f       ,happy_bar_len = %d \n",nb_box,percentage,happy_bar_len);                                                         
+        printf("|hummeur  ");
+        for(int i=0;i<happy_bar_len;i++){
+            if(nb_box<1){
+                printf("⬛");
+            }
+            else if(i<=happy_bar_len*0.075){
+                printf("🟥");
+                //color(220,50,30);
+            }
+            else if(i<=happy_bar_len*0.22){
+                printf("🟧");
+                //color(190,90,30);
+            }
+            else if(i<=happy_bar_len*0.45){
+                printf("🟨");
+                //color(145,120,30);
+            }
+            else{
+                printf("🟩");
+                //color(50,150,30);
+            }
+            //printf(" ");
+            nb_box--;
+        }
+        color(255*(1-percentage),255*percentage,90*(1-percentage));
+        printf("    %.2f %% ",percentage*100);
+        ///🟥🟧🟧🟨🟨🟨🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬛⬛
+    }
+    printf("\n");
+    reset_color();
+    
+}    
+//-----------------------------------------------------------
+void print_plateau_tab(_plateau* plateau_tab ,int taille ,int max_happiness ,int happy_bar_len){//affiche l'information de tous les plateaux 
+    color(190,175,30);
+    printf("------------------------------------- informations des plateaux --------------------------------------------------------------------------------\n");
+    reset_color();
+    for(int i=0;i<taille;i++){
+        print_plateau(plateau_tab[i] ,max_happiness ,happy_bar_len);    
+    }    
+    printf("\n");
+}
