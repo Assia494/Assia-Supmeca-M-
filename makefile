@@ -20,7 +20,7 @@ fonctionutile.o : fonctionutile.c fonctionutile.h structprojet.h
 grid.o :grid.c grid.h fonctionutile.h structprojet.h 
 	gcc -c creer.c
 
-main.o : main.c main.h fonctionutile.h structprojet.h  grid.h map.h patient.h plateau.h sauvegarde.h scoreboard.h structprojet.h action_player.h
+main.o : main.c main.h fonctionutile.h economy.h structprojet.h  grid.h map.h patient.h plateau.h sauvegarde.h scoreboard.h structprojet.h action_player.h
 	gcc -c main.c
 
 map.o : map.c map.h structprojet.h fonctionutile.h
