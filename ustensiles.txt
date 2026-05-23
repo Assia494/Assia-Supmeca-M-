@@ -1,8 +1,8 @@
-7 8.3 detartreur
-5 2.5 roulette
-4 2.0 maintien
-8 5.2 microscope
-2 1.95 seringue
+1 8.3 detartreur
+2 2.5 roulette
+3 2.0 maintien
+4 5.2 microscope
+5 1.95 seringue
 6 3.95 pensement
-3 1.0 compresse
-1 0.95 gants
+7 1.0 compresse
+8 0.95 gants
