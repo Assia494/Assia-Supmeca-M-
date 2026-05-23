@@ -28,7 +28,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
     	                
     	            }
     	            else{
-    	                printf("🪑");//si il n'y a pas de patient    
+    	               printf("🪑");//si il n'y a pas de patient    
     	            }
     	            break;
 	            }
@@ -124,8 +124,11 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	*/
 	}
 }
-//-----------------------------------------------------------
-void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille de gauche à doite ,de haut en bas
+
+
+
+
+void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille de gauche à doite ,de haut en bas;
 	exit_if_null_pointer(grid);
 	printf("\n\n");
 	for(int dy=0 ; dy<size_y ; dy++) {
