@@ -227,8 +227,8 @@ void load_game(_jeu *jeu, const char *filename){
 		if(has_patient){
 			jeu->plateau_tab[plateau_ind].patient = cree_patient();
 			fscanf(file,"|hummeur %d\n",&jeu->plateau_tab[plateau_ind].patient->hummeur);
-			fscanf(file,"|etat %d\n",&jeu->plateau_tab[plateau_ind].patient->etat);
-			fscanf(file,"|maladie_type %d\n",&jeu->plateau_tab[plateau_ind].patient->maladie.type);
+			fscanf(file, "|etat %d\n", (int *)&(jeu->plateau_tab[plateau_ind].patient->etat));
+            fscanf(file, "|maladie_type %d\n", (int *)&(jeu->plateau_tab[plateau_ind].patient->maladie.type));
 			fscanf(file,"|profit %f\n",&jeu->plateau_tab[plateau_ind].patient->maladie.profit);
 			
 			
