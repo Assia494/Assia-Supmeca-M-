@@ -19,57 +19,52 @@
 #define username_SIZE 50
 
 
-
-//-----------------------------------------------------------
 typedef enum {UP=0,RIGHT=1,DOWN=2,LEFT=3} _movement;
-//-----------------
 typedef enum {TEST_DESEASE=0,DESEASE_A=1,DESEASE_B=2,DESEASE_C=3,DESEASE_D=4,DESEASE_E=5} _maladie_type;
-//-----------------
 typedef enum {satisfait=0,mecontant=1,furieux=2} _etat;
-//-----------------
 typedef enum {new_jeu=0,select_menu=1,scoreboard=2,save=3,continu=4,quit=5,load=6} _menu;
-//-----------------
+
 typedef struct {
-	int value;  //type de case  
-	int player; //presence de joueur
-} _tile;     //case 
-//-----------------
+	int value;  
+	int player; 
+} _tile;   
+
 typedef struct {
 	int x;
 	int y;
 } _coord;
-//-----------------
+
 typedef struct {
-    int clean;  //sale (quand l'outil est pris et le joueur n'a pas de gant)
-    int used;   //sale (quand l'outil est utilisé)
-    int type;   //type d'outil  a: b: c: d: e: f: g: h:
+    int clean;  
+    int used;   
+    int type;   
 } _tool;
-//-----------------
+
 typedef struct {
 	_coord pos;
 	_tool tool;   //si outil alors player.glove.type = (int)    sinon player.tool.type = 0
 	_tool glove;  //si gant alors player.glove.type = 'h'       sinon player.glove.type = 0
 } _player;
-//-----------------
+
 typedef struct {
     _maladie_type type;
     int tool_needed[NB_TOOLS] ;
     float profit;
 } _maladie;
-//-----------------
+
 typedef struct {
     int hummeur;
     _maladie maladie;
     _etat etat;
 } _patient;
-//-----------------
+
 typedef struct {
     int tools[NB_TOOLS] ;     //{a,b,c,d,e,f,g}
     int used_tools[NB_TOOLS] ;
     _patient* patient;
     int id;   //noms possible des plateaux (t u v w x y z)
 } _plateau;
-//-----------------
+
 typedef struct { //structure qui stock les informations d'un partie de jeu
     
     int nb_step ;   //le temps écoulé depuis le début de la partie
@@ -93,20 +88,17 @@ typedef struct { //structure qui stock les informations d'un partie de jeu
     _plateau* plateau_tab ;
 
     //initialisation des paramètre des patients
-    int patient_minimum_spawn_intervalle ; //le temps minimum à attendre avant un patient apparait  
-    int patient_spawn_range ;              //le temps additionelle maximum à attendre pour l'apparition d'un patient
-    int patient_spawning_hapiness ;        //la patience minimum d'un patient qui vient d'apparaitre
-    int patient_hapiness_range;            //la patience additionelle maximum pour un patient qui vient d'apparaitre
-    int next_patient_time ;                //le temps restant avant le prochain patient aparait (si il n'y a plus de place pour un nouveau patient le temps restera à 0)
-} _jeu ;
-//-----------------
+    int patient_minimum_spawn_intervalle ; 
+    int patient_spawn_range ;             
+    int patient_spawning_hapiness ;        
+    int patient_hapiness_range;            
+    int next_patient_time ;                
+
 typedef struct {
 	int nb_step;
     int hummeur_tab[NB_hummeur];
     float profit;
     char username[username_SIZE];
 } _score;
-
-
 
 #endif
