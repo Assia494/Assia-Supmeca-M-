@@ -4,7 +4,7 @@
 #include "structprojet.h"
 #include "fonctionutile.h"
 #include "grid.h"
-#include "game.h"
+#include "sauvegarde.h"
 #include "display.h"
 #include "economy.h"
 #include "patient.h"
