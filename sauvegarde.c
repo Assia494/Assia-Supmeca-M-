@@ -68,9 +68,9 @@ void save_game(const _jeu *jeu, const char* filename){
 
 	
 	// les paramètres du jeu
-	fprintf(file ,"happy_bar_len %d\n",jeu.happy_bar_len);
-	fprintf(file ,"patient_minimum_spawn_intervalle %d\n",jeu.patient_minimum_spawn_intervalle);
-	fprintf(file ,"patient_spawn_range %d\n",jeu.patient_spawn_range);
+	fprintf(file, "happy_bar_len %d\n", jeu->happy_bar_len);
+	fprintf(file, "patient_minimum_spawn_intervalle %d\n", jeu->patient_minimum_spawn_intervalle);
+	fprintf(file, "patient_spawn_range %d\n", jeu->patient_spawn_range);
 	fprintf(file ,"patient_spawning_hapiness %d\n",jeu.patient_spawning_hapiness);
 	fprintf(file ,"patient_hapiness_range %d\n",jeu.patient_hapiness_range);
 	fprintf(file ,"next_patient_time %d\n",jeu.next_patient_time);
