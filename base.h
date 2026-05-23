@@ -7,7 +7,6 @@
 #include "grid.h"
 #include "plateau.h"
 #include "patient.h"
-#include "game.h"
 #include "sauvegarde.h"
 #include "scoreboard.h"
 
