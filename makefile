@@ -32,7 +32,7 @@ patient.o : patient.c patient.h  structprojet.h game.h fonctionutile.h
 plateau.o : plateau.c plateau.h structprojet.h  grid.h
 	gcc -c plateau.c
 
-sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h
+sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h plateau.h patient.h economy.h 
 	gcc -c sauvegarde.c
 
 scoreboard.o : sauvegarde.h sauvegarde.c scoreboard.h
