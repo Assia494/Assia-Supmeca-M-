@@ -35,7 +35,7 @@ plateau.o : plateau.c plateau.h structprojet.h  grid.h
 sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h plateau.h patient.h economy.h 
 	gcc -c sauvegarde.c
 
-scoreboard.o : sauvegarde.h sauvegarde.c scoreboard.h 
+scoreboard.o : scoreboard.c scoreboard.h sauvegarde.h fonctionutile.h display.h 
 	gcc -c scoreboard.c
 
 action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h sauvegarde.h fonctionutile.h economy.h patient.h base.h creer.h display.h
