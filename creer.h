@@ -2,7 +2,10 @@
   #define CREER_H
 
 #include "structprojet.h"
+#include "fonctionutile.h"
+#include "map.h"
 #include "grid.h"
+#include "plateau.h"
 
 _tile** cree_grid(int size_x, int size_y);
 _tile cree_tile();
