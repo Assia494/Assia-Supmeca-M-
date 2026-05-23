@@ -125,9 +125,6 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
 	}
 }
 
-
-
-
 void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int taille,_player player) {         //afficher la grille de gauche à doite ,de haut en bas;
 	exit_if_null_pointer(grid);
 	printf("\n\n");
@@ -139,4 +136,83 @@ void print_grid(_tile** grid,int size_x,int size_y,_plateau* plateau_tab,int tai
 		printf("\n");
 	}
 	printf("\n");
+}
+
+
+
+void print_red_green(int a){//affiche vert pour 1 ou rouge pour 0 (affiche vrai ou faux avec couleur)
+    if(a){
+        printf(" 🟩 ");    
+    }
+    else{
+        printf(" 🟥 ");    
+    }
+}
+
+
+
+void print_player_status(_player player ,float profit){//affiche les informations sur le joueur
+    color(190,175,30);
+    printf("\n----------------Le joueur-------------------\n");
+    printf("    |💵 %.2f$",profit); //affichage de l'argent
+    //si le joueur a des gants
+    if(player.glove.type=='h'){ //affichage des gants si le joueur a des gant
+        printf("    |🧤 ");
+        if(player.glove.used==0){
+            printf("🟩");//propre
+        }
+        else{
+            printf("🟫");//usée
+        }
+    }
+     //si le joueur a un outil
+    if(player.tool.type!=0){ //affichage des outils si le joueur a des outils
+        printf("    |");
+        switch(player.tool.type){
+            default:
+                printf("...");
+                break;
+            case 'a':
+                printf("🪛");
+                break;
+            case 'b':
+                printf("⚙️ ");
+                break;
+            case 'c':
+                printf("🔩");
+                break;            
+            case 'd':
+                printf("🔬");
+                break;
+            case 'e':
+                printf("💉");
+                break;
+            case 'f':
+                printf("🩹");
+                break;
+            case 'g':
+                printf("💭");
+                break;
+        }
+        if(player.tool.used==0 && player.tool.clean==1){
+            printf(" 🟩");//propre
+        }
+        else if(player.tool.used==0 && player.tool.clean==0){
+            printf(" 🟥");//sale
+        }
+        else{
+            printf(" 🟫");//usée
+        }
+    }
+    printf("\n");
+    reset_color();
+}
+
+
+
+
+void print_total_patient(int* hummeur_tab){//affiche la quantité de patient selon leur etat qui sont partis
+    color(190,175,30);
+    printf("    |patient score:  |%d 🟩    |%d 🟨    |%d 🟥  \n\n",hummeur_tab[0],hummeur_tab[1],hummeur_tab[2]);
+    reset_color();
 }
