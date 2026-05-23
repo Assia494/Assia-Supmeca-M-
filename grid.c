@@ -84,9 +84,6 @@ _coord get_element_pos_from_grid(_tile** grid,int size_x,int size_y,int element)
 }
 
 
-_coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
-
-
 
 
 void move_player(_tile** grid,int size_x,int size_y,_movement movement) {               //déplace le joueur dans la grille de jeu en fonction du mouvement demandé(stocké dans movement) 
