@@ -231,7 +231,7 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
 		    	    break;
 		    	case save://sauvegarder une partie
 		    	    //  (rien pour le momment) 
-		    	    save_game(current_game ,filename) ;
+		    	    save_game(&current_game, filename);
 		    	    //free_game(&current_game) ;     
 		    	    break;
 		    	case quit://quitter le programme
