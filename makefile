@@ -10,7 +10,7 @@ base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h pat
 creer.o : creer.h creer.c structprojet.h
 	gcc -c creer.c
 	
-display.o : display.c display.h structprojet.h fonctionutile.h sauvegarde.h display.h 
+display.o : display.c display.h structprojet.h fonctionutile.h  
 	gcc -c display.c
 	
 
@@ -35,7 +35,7 @@ plateau.o : plateau.c plateau.h structprojet.h  grid.h
 sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h plateau.h patient.h economy.h 
 	gcc -c sauvegarde.c
 
-scoreboard.o : sauvegarde.h sauvegarde.c scoreboard.h
+scoreboard.o : sauvegarde.h sauvegarde.c scoreboard.h 
 	gcc -c scoreboard.c
 
 action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h sauvegarde.h fonctionutile.h economy.h patient.h base.h creer.h display.h
