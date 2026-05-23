@@ -1,32 +1,29 @@
 #include "creer.h"
 
-_tile cree_tile() {                                              //creer une case de la grille avec des données par défaut                                    
-	_tile new_tile;  
-	new_tile.value = 0;
-	new_tile.player = 0;
-	return new_tile;
+static _tile cree_tile() {                                             //creer une case de la grille avec des données par défaut                                    
+    _tile new_tile;  
+    new_tile.value = 0;
+    new_tile.player = 0;
+    return new_tile;
 }
 
+static _tile** cree_grid(int size_x,int size_y) {                       //crée un tableau case 2D   ,pour la grille de jeu
 
+    _tile** new_grid = NULL;
+    new_grid = malloc( size_y * sizeof(_tile*) );
+    exit_if_null_pointer(new_grid);
 
-_tile** cree_grid(int size_x,int size_y) {                       //crée un tableau case 2D   ,pour la grille de jeu
+    for(int dy=0 ; dy<size_y ; dy++) {
+        new_grid[dy] = malloc( size_x * sizeof(_tile) );
+        exit_if_null_pointer(new_grid[dy]);
 
-	_tile** new_grid = NULL;
-	new_grid = malloc( size_y * sizeof(_tile*) );
-	exit_if_null_pointer(new_grid);
-
-	for(int dy=0 ; dy<size_y ; dy++) {
-		new_grid[dy] = malloc( size_x * sizeof(_tile) );
-		exit_if_null_pointer(new_grid[dy]);
-
-		for(int dx=0 ; dx<size_x ; dx++) {
-			new_grid[dy][dx] = cree_tile();
-			new_grid[dy][dx].value = 0;
-		}
-	}
-	return new_grid;
+        for(int dx=0 ; dx<size_x ; dx++) {
+            new_grid[dy][dx] = cree_tile();
+            new_grid[dy][dx].value = 0;
+        }
+    }
+    return new_grid;
 }
-
 
 _plateau cree_plateau(int new_id){ //crée un variable plateau
     _plateau new_plateau;
@@ -40,7 +37,6 @@ _plateau cree_plateau(int new_id){ //crée un variable plateau
     return new_plateau;
 }
 
-
 void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g){
     tab[0] = a;
     tab[1] = b;
@@ -50,8 +46,6 @@ void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g){
     tab[5] = f;
     tab[6] = g;
 }
-
-
 
 _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     _patient* patient = NULL;
@@ -99,9 +93,7 @@ _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     return patient;
 }
 
-
-
-_jeu creer_jeu(){
+static _jeu creer_jeu(){
     _jeu new_game;
     new_game.play = 0;
     new_game.player.tool.type = 0;
@@ -133,9 +125,7 @@ _jeu creer_jeu(){
     return new_game;
 }
 
-
-
-int* cree_tab(int size){//cree un tableau 
+static int* cree_tab(int size){//cree un tableau 
     //(temporaire)
     int* tab =NULL;
     tab = malloc(size*sizeof(int));
@@ -147,8 +137,7 @@ int* cree_tab(int size){//cree un tableau
     return tab;
 }
 
-
-_tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
+static _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
     _tile** new_grid = NULL;
     new_grid = cree_grid(max_size_x ,max_size_y);
     int string_ind = 0;
@@ -187,8 +176,7 @@ _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //
             }
             string_ind++;
             
-    	}
+        }
     }
     return new_grid;
-
 }
