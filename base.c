@@ -5,7 +5,11 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
     new_jeu.play = 0;
      //initialisation du joueur
 	new_jeu.player.tool.type = 0;
+	new_jeu.player.tool.clean = 0;
+	new_jeu.player.tool.used = 0;
 	new_jeu.player.glove.type = 0;
+	new_jeu.player.glove.clean = 0;
+	new_jeu.player.glove.used = 0;
     new_jeu.profit = 0.00f;
     
     //initialisation de la grille de jeu
@@ -31,18 +35,14 @@ _jeu creer_jeu(){  //creation de la variable jeu contenant les informations sur 
     new_jeu.patient_spawning_hapiness = 37*(new_jeu.nb_plateau);
     new_jeu.patient_hapiness_range = 7*(new_jeu.nb_plateau);
     new_jeu.next_patient_time = 13 + 0*(new_jeu.patient_minimum_spawn_intervalle + randint(0 ,new_jeu.patient_spawn_range));
-    
+    //----------
     new_jeu.nb_step = -1;
-    
+    //----------
     
     return new_jeu;
 }
 // la page menu
-
-
-
-
-
+//-----------------------------------------------------------
 int play_a_game(_jeu* game ,char* username){
 	if(game->play==1){
 		game->next_patient_time++;
@@ -51,11 +51,12 @@ int play_a_game(_jeu* game ,char* username){
     	game->play = 1;
     }
     
-    int playing = 1;//est cec que le joueur veut continuer la partie 
+    int playing = 1;//est ce que le joueur veut continuer la partie 
+    int game_over = 0;
     while(playing){
         game->nb_step++;
         //fin de jeu? + mettre à jour les patients
-        if(!update_patients(game->plateau_tab ,game->nb_plateau ,game->patient_minimum_spawn_intervalle ,game->patient_spawn_range ,&(game->next_patient_time) ,game->patient_spawning_hapiness+randint(0,game->patient_hapiness_range) ,&(game->profit) ,game->hummeur_tab)){
+        if(game_over || !update_patients(game->plateau_tab ,game->nb_plateau ,game->patient_minimum_spawn_intervalle ,game->patient_spawn_range ,&(game->next_patient_time) ,game->patient_spawning_hapiness+randint(0,game->patient_hapiness_range) ,&(game->profit) ,game->hummeur_tab)){
             color(250,30,30);//game over
             printf("\n\n");
             printf("------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -91,37 +92,49 @@ int play_a_game(_jeu* game ,char* username){
     	print_player_status(game->player ,game->profit);
     	print_total_patient(game->hummeur_tab);
     	//demande d'action
-    	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing);
+    	ask_to_do_player_action(game->grid,game->grid_size_x,game->grid_size_y,&(game->player),game->plateau_tab,game->nb_plateau,&(game->profit) ,game->hummeur_tab ,&playing ,&game_over);
     }
     return 1;//la partie n'est pas terminer et peut etre continuer
 } //return 0 <=> partie terminer    , return 1 <=> partie non terminer mais il est mis en pause 
+//-----------------------------------------------------------
 
 
 
 
-
-_menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
+_menu ask_menu(_jeu* current_game ,_menu current_menu ,const char* filename) {//selection de menu
+	FILE* file = NULL;
+	file = fopen(filename,"r");
+	exit_if_null_pointer(file);
+	int savefile = 0;
+	fscanf(file ,"savefile %d\n",&savefile);
+	fclose(file);
+	
 	char menu ;
 	int menu_choice_correct = 0;
 	int error = 0;
 	printf("    Veuillez choisir l'une des options suivantes\n\n");
 	if(current_menu == select_menu){
     	if(current_game->play==1){
-    	    printf("         |  save current game (press s)(not ready)  \n");
-    	    printf("         |  continue  current game(press d)  \n");
+    	    printf("         |  save current game (press s)\n");
+    	    printf("         |  continue  current game(press d)\n");
+    	}   
+    	
+    	if(savefile){
+    		printf("         |  load a saved game(press j)\n");
     	}
-    	printf("         |  play a new game  (press f)  \n");
-        printf("         |  scoreboard   (press g)(not complete)  \n");
+    	 
+    	printf("         |  play a new game  (press f)\n");
+        printf("         |  scoreboard   (press g)\n");
 	}
 	else{
-	    printf("         |  go to menu   (press q)  \n");
+	    printf("         |  go to menu   (press q)\n");
 	}
-    printf("         |  quit program (press h)  \n");
+    printf("         |  quit program (press h)\n");
     printf("\n\n\n\n");
 	do {
 		error = scanf(" %c",&menu);
 		// savoir si le choix de menu est correct en fonction du menu actuelle
-		menu_choice_correct = ((current_menu == select_menu)&&((((menu=='s')||(menu=='d'))&&(current_game->play==1))||(menu=='f')||(menu=='g')||(menu=='h'))) || ((current_menu != select_menu)&&((menu=='h')||(menu=='q')));  //savoir si le menu choisi est correct en fonction du menu actuel
+		menu_choice_correct = ((current_menu == select_menu)&&((	(((menu=='s')||(menu=='d'))&&(current_game->play==1))||((menu=='j')&&(savefile))	)||(menu=='f')||(menu=='g')||(menu=='h'))) || ((current_menu != select_menu)&&((menu=='h')||(menu=='q')));  //savoir si le menu choisi est correct en fonction du menu actuel
 		if(!error){
 		    printf("input went wrong,flushing scanf()\n");
 		    do{
@@ -145,6 +158,8 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu) {//selection de menu
     	    return new_jeu;
     	case 'g':
     		return scoreboard;
+    	case 'j':
+    		return load;
         case 'h':
     		return quit;
 	}
@@ -160,7 +175,7 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
     
     char* username = NULL;
     
-    const char* filename = "save_dat.bin";
+    const char* filename = "save_dat.txt";
     
     
     while(1){
@@ -190,7 +205,7 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
         //save_game(_jeu *jeu, const char *filename)
         //load_game(_jeu *jeu, const char *filename)
         else{
-		    current_menu = ask_menu(&current_game ,current_menu);
+		    current_menu = ask_menu(&current_game ,current_menu ,filename);
 		    switch(current_menu){
 		        default:
 		    		break;
@@ -198,33 +213,30 @@ void start(){ //affichage du menu principal et gere quelle est le menu active
 		        	current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
 		        	free_game(&current_game);
 		            current_game = creer_jeu();
-		            
-		            
-		        case continu:
-		        
-		        	if(current_menu != new_jeu){
-		        		printf("LOADING!!\n");
-		        		current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
-		        		free_game(&current_game);
-		        		load_game(&current_game ,filename);
-		        	}
-		        	
+		       case continu:
 		            if(!play_a_game(&current_game ,username)){
 		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
 		            };
-		            
-		    	    break;
+		            break;
+		        case load:
+		        	current_game = creer_jeu(); //assuré que current_game est bien initialisé avant le free_game
+		        	free_game(&current_game);
+		        	load_game(&current_game ,filename);
+		        	if(!play_a_game(&current_game ,username)){
+		                current_game = creer_jeu(); //si le jeu jouer est perdu => crée une nouvelle partie en attente d'être jouer    
+		            };
+		        	break;
 		        case scoreboard:
 		            print_scoreboard(); //(pas complet)
 		    	    break;
 		    	case save://sauvegarder une partie
 		    	    //  (rien pour le momment) 
-		    	    save_game(&current_game,filename) ;
+		    	    save_game(current_game ,filename) ;
 		    	    //free_game(&current_game) ;     
 		    	    break;
 		    	case quit://quitter le programme
 		    		free_game(&current_game);
-                              free(username);
+                    free(username);
 		    	    break;
 		    }
 		    if(current_menu == quit){
