@@ -1,5 +1,5 @@
-#ifndef  BASE_H
-  #define BASE_H
+#ifndef  SCOREBOARD_H
+  #define SCOREBOARD_H
 
 
 #include "structprojet.h"
