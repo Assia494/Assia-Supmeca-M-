@@ -85,7 +85,7 @@ void save_game(const _jeu *jeu, const char* filename){
 	fprintf(file ,"tool_used %d\n",jeu->player.tool.used);
 	fprintf(file ,"glove_type %d\n",jeu->player.glove.type);
 	fprintf(file ,"glove_used %d\n",jeu->player.glove.used);
-	jeu.player.pos = get_player_pos_from_grid(jeu->grid,jeu->grid_size_x,jeu->grid_size_y);
+	jeu->player.pos = get_player_pos_from_grid(jeu->grid,jeu->grid_size_x,jeu->grid_size_y);
 	fprintf(file ,"player_pos_x %d\n",jeu->player.pos.x);
 	fprintf(file ,"player_pos_y %d\n",jeu->player.pos.y);
 	
@@ -113,9 +113,9 @@ void save_game(const _jeu *jeu, const char* filename){
 	
 	//fprintf(file ,"\n\n");
 	// les informations sur les plateaux
-	fprintf(file ,"nb_plateau %d\n",jeu.nb_plateau);
+	fprintf(file ,"nb_plateau %d\n",jeu->nb_plateau);
 	
-	for(int plateau_ind=0;plateau_ind<jeu.nb_plateau;plateau_ind++){
+	for(int plateau_ind=0;plateau_ind<jeu->nb_plateau;plateau_ind++){
 		fprintf(file ,"plateau_id %d\n",jeu->plateau_tab[plateau_ind].id);
 		fprintf(file ,"plateau_tool");
 		for(int i=0;i<NB_TOOLS;i++){
@@ -128,7 +128,7 @@ void save_game(const _jeu *jeu, const char* filename){
 		}
 		fputc('\n',file);
 		fprintf(file ,"has_patient %d\n",jeu->plateau_tab[plateau_ind].patient != NULL);
-		if(jeu.plateau_tab[plateau_ind].patient != NULL){
+		if(jeu->plateau_tab[plateau_ind].patient != NULL){
 			fprintf(file ,"|hummeur %d\n",jeu->plateau_tab[plateau_ind].patient->hummeur);
 			fprintf(file ,"|etat %d\n",jeu->plateau_tab[plateau_ind].patient->etat);
 			fprintf(file ,"|maladie_type %d\n",jeu->plateau_tab[plateau_ind].patient->maladie.type);
