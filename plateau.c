@@ -12,8 +12,6 @@ _plateau cree_plateau(int new_id){ //crée un variable plateau
     return new_plateau;
 }
 
-
-
 int cure_if_got_tools(_plateau* plateau ,float* profit ,int* hummeur_tab){//soigner si les outils propre necessaire sont tous present sur le plateau
     _plateau plate;
     plate = *plateau;
