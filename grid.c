@@ -88,6 +88,42 @@ _coord get_player_pos_from_grid(_tile** grid,int size_x,int size_y);
 
 
 
+
+void move_player(_tile** grid,int size_x,int size_y,_movement movement) {               //déplace le joueur dans la grille de jeu en fonction du mouvement demandé(stocké dans movement) 
+	_coord initial_pos;
+	_coord final_pos;
+
+	initial_pos = get_player_pos_from_grid(grid,size_x,size_y);           //avoir la position du joueur
+	if((initial_pos.x<0)||(initial_pos.y<0)){
+        printf("player can't be found\n");
+        exit(2);
+    }
+    
+	if (inter_check(initial_pos.x,0,size_x)&&inter_check(initial_pos.y,0,size_y)) {
+        //calcule la position final en fonction de la position du joueur et du mouvement demandé
+		final_pos.x = initial_pos.x +(movement==RIGHT) -(movement==LEFT) ;              
+		final_pos.y = initial_pos.y -(movement==UP) +(movement==DOWN) ;
+
+		if (inter_check(final_pos.x,0,size_x)&&inter_check(final_pos.y,0,size_y)) { //vérifie si la position final est acceptable
+
+			if (can_move_at_pos(grid,size_x,size_y,final_pos.x,final_pos.y)) {
+			    //déplace le joueur
+				grid[initial_pos.y][initial_pos.x].player = 0;
+				grid[final_pos.y][final_pos.x].player = 1;
+
+			}
+			else{
+			    //printf("Couldn't move\n");
+			}
+
+
+		}
+	}
+
+}
+
+
+
 int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(x,y) est la position d'arriver du déplacement
 	int tile_value = 0;
 	_tile tile;
