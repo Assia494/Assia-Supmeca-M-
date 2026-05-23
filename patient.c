@@ -45,9 +45,7 @@ _patient* cree_patient(){ //cree un patient avec des paramètre par defaut
     
     return patient;
 }  //les profits ,outils necéssaire pour soigner sont paramétrés ici
-
-
-
+//-----------------------------------------------------------
 int get_a_patient(_plateau* plateau_tab ,int taille ,int initial_hapiness){//essaye d'avoir un patient si il y a un plateau libre
     exit_if_null_pointer(plateau_tab);
     int more_patient = 0;
@@ -80,9 +78,7 @@ int get_a_patient(_plateau* plateau_tab ,int taille ,int initial_hapiness){//ess
     }
     return 0;//si il y a aucun plateau libre
 }
-
-
-
+//-----------------------------------------------------------
 void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy ,int* full ,float* profit ,int* hummeur_tab ,int max_happiness){//mettre à jour la patient des patients
     int full_var = 1;
     for(int i=0;i<taille;i++){
@@ -116,9 +112,7 @@ void update_patients_hapiness(_plateau* plateau_tab ,int taille ,int* all_happy 
     *full = full_var; //remplie? (si il ne reste plus de plateau libre)
 }
 
-
-
-
+//-----------------------------------------------------------
 //pour l'arrivée des patients
 //si un patient n'a pas de place il attendera avant d'entrer dans la salle(1 patient en attentes au maximum)
 void patients_spawning_regulation(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int spawn_time_range ,int* current_patient_spawning_time ,int initial_hapiness){
@@ -131,9 +125,7 @@ void patients_spawning_regulation(_plateau* plateau_tab ,int taille ,int min_spa
 	    (*current_patient_spawning_time)--; //diminuer le temps avant le prochain patient restant
 	}
 }
-
-
-
+//-----------------------------------------------------------
 int update_patients(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int spawn_time_range ,int* current_patient_spawning_time ,int initial_hapiness ,float* profit ,int* hummeur_tab){//mettre à jour les patients
     int full = 0;
     int all_happy = 1;
@@ -147,3 +139,19 @@ int update_patients(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int s
     }
     return 1;
 }
+//si un patient n'a pas de place il attendera avant d'entrer dans la salle(1 patient en attentes au maximum)
+
+
+void patients_spawning_regulation(_plateau* plateau_tab ,int taille ,int min_spawn_time ,int spawn_time_range ,int* current_patient_spawning_time ,int initial_hapiness){
+    if(     (*current_patient_spawning_time) <= 0   ){ //si le temps restant avant le prochain patient est nulle -> essaye d'avoir un nouveau patient 
+		if(get_a_patient(plateau_tab ,taille ,initial_hapiness)){
+		    (*current_patient_spawning_time) = min_spawn_time + randint(0 ,spawn_time_range); //mettre à jour le temps avant le prochain patient restant
+        }
+	}
+	else{
+	    (*current_patient_spawning_time)--; //diminuer le temps avant le prochain patient restant
+	}
+}
+
+
+
