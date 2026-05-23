@@ -42,3 +42,11 @@ _tile cree_tile() {                                                       // cre
 	new_tile.player = 0;
 	return new_tile;
 }
+
+
+
+void decrease_if_to_much(int* var ,int min){//(fonction pas utile)  diminuer si la valeur de la variable est superieur à un seuil
+    if(*var > min){
+        *var--;
+    }    
+}
