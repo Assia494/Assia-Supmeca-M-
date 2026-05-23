@@ -1,8 +1,7 @@
-#ifndef  BASE_H
-  #define BASE_H
+#ifndef  PLATEAU_H
+  #define PLATEAU_H
 
 #include "structprojet.h"
-
 #include "grid.h"
 
 _plateau cree_plateau(int new_id); 
