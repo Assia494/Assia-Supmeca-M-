@@ -1,8 +1,12 @@
 #include "action_player.h"
 
-char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab){ //pour les actions autre que les déplacements
+char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab ,int* game_over){ //pour les actions autre que les déplacements
     _tile current_tile;
     int tile_value;
+    
+    int full = 1;
+    int angry_patient = 0;
+    *game_over = 0;
     
     player->pos = get_player_pos_from_grid(grid ,size_x ,size_y);
     if((player->pos.x<0)||(player->pos.y<0)){   //si le joueur se situe à (-1,-1) ,qui n'est pas possible => exit()
@@ -17,17 +21,14 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         player->glove.type = 'h';
         player->glove.clean = 0 ;
         player->glove.used = 0 ; 
-        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
-        printf("1.2$ du profit est dépensé pour avoir des gants\n");
+        fonction_gestion_argent_cabinet(profit ,'h'-'a'+1);
     }
     if(inter_check(tile_value,'a','g')&&(player->tool.type==0)){  //si la case d'action est la case d'action pour prendre des outils ,de plus si le joueur n'a pas d'outil en main
         //prendre un objet si le joueur n'a pas d'outil
         player->tool.type = tile_value;
         player->tool.clean = (player->glove.type=='h')&&(player->glove.used==0) ;
         player->tool.used = 0 ;
-        *profit -= 1.2;  //utilisée le profit pour prendre l'outil
-        printf("1.2$ du profit est dépensé pour avoir un outil\n");
-        
+        fonction_gestion_argent_cabinet(profit ,tile_value-'a'+1);
     }
     else if(tile_value=='i'){  //si la case d'action est la case d'action de la poubelle pour les outils sales non usées
         //mettre les outils dans la poubelle de recyclage
@@ -53,7 +54,12 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
         //pour les plateaux
         //on cherche le plateau
         for(int i=0;i<taille;i++){
+            if(plateau_tab[i].patient==NULL){
+            	full = 0;
+            }
             if(plateau_tab[i].id==tile_value){
+            	
+            
                 //mettre l'outil non sale au plateau si possible
                 if(     (player->tool.type!=0)&&(player->tool.clean==1)&&(  (plateau_tab[i].tools[(player->tool.type)-'a'] + plateau_tab[i].used_tools[(player->tool.type)-'a']) == 0)    ){
                     plateau_tab[i].tools[(player->tool.type)-'a'] = 1;
@@ -69,12 +75,13 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
                     break;
                 }
                 //si on tente de soigner un patient mais on n'a pas de gant ou des gants sales
-                else if(    ((player->glove.used==1)||(player->glove.type!='h'))&&(plateau_tab[i].patient!=NULL)&&(player->tool.type==0) ){
+                else if(    ((player->glove.type=='h')&&(player->glove.used==1))||((player->glove.type!='h')&&(plateau_tab[i].patient!=NULL)&&(player->tool.type==0)) ){
                     //le patient part
                     free(plateau_tab[i].patient);
                     plateau_tab[i].patient = NULL;
                     printf("Un patient est parti furieux par peur de contamination,\nil a contaminé les outils présents sur son plateau, il n'a rien donné\n");
                     hummeur_tab[2] ++;
+                    angry_patient = 1;
                     //les outils deviennent sales ,par la panique du patient ,par peur de contamination
                     for(int ind=0;ind<NB_TOOLS;ind++){
                         if(plateau_tab[i].tools[ind]==1){
@@ -84,7 +91,7 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
                     }
                     
                     
-                }    
+                }
                 else{
                     //prendre un outil sale du plateau si possible
                     //recherche d'un outil sale
@@ -101,14 +108,18 @@ char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau*
             }
         }
     }
+    //verification si la partie est terminé
+    if(angry_patient && full){
+    	*game_over = 1;
+    }
 } 
 //-----------------------------------------------------------
-void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ,int* playing) {//demande d'action de la part du joueur (déplacament ,action ,retourner vers le menu pricipal)
+void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab,int taille ,float* profit ,int* hummeur_tab ,int* playing ,int* game_over) {//demande d'action de la part du joueur (déplacament ,action ,retourner vers le menu pricipal)
 	char move ;
 	int error = 0;
 	printf("Veuillez saisir votre action-----\n\n");
 	printf("- type de déplacement\n");
-	printf(" |  z:vers le haut\n");
+printf(" |  z:vers le haut\n");
 	printf(" |  d:vers la droite\n");
 	printf(" |  s:vers le bas\n");
 	printf(" |  q:vers la gauche\n");
@@ -149,7 +160,7 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 		break;
 	
 	case 'g': //faire un action
-		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab);
+		try_do_action(grid,size_x,size_y,player,plateau_tab ,taille ,profit ,hummeur_tab ,game_over);
 		break;
 	case 'h': //retourner au menu principal
 		*playing = 0;
