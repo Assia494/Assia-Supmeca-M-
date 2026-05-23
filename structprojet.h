@@ -93,7 +93,8 @@ typedef struct { //structure qui stock les informations d'un partie de jeu
     int patient_spawning_hapiness ;        
     int patient_hapiness_range;            
     int next_patient_time ;                
-}
+};
+
 typedef struct {
 	int nb_step;
     int hummeur_tab[NB_hummeur];
