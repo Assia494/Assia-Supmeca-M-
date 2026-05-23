@@ -5,7 +5,7 @@ char* get_random_map_string(){// avoir la chaine de caractère de la map au choi
     char* map_string = NULL;
     map_string = malloc(MAX_map_string*sizeof(char));
     exit_if_null_pointer(map_string);
-    //choix aleratoire
+    //choix aleatoire
     switch(randint(0,4)){
         //avoir la chaine de caractère
         default:
