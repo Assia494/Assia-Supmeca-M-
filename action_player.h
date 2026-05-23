@@ -11,7 +11,6 @@
 #include "base.h"
 #include "plateau.h"
 #include "creer.h"
-#include "scoreboard.h"
 #include "action_player.h"
 
 char try_do_action(_tile** grid,int size_x,int size_y,_player* player ,_plateau* plateau_tab ,int taille ,float* profit ,int* hummeur_tab);  
