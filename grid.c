@@ -107,6 +107,36 @@ int can_move_at_pos(_tile** grid,int size_x,int size_y,int x,int y) {        //(
 
 
 
+void get_grid_size_from_string(char map_string[] ,int* size_x ,int* size_y){    //avoir la taille de la grille à partir de sa chaine de caractere représentative
+    int temp_size_x = 0;
+    int new_size_x = 0;
+    
+    int new_size_y = 0;
+    //for(int i=0;i<taille;i++){
+    int i = 0;
+    while(map_string[i] != '@'){ //tant que le caractere actuelle n'est pas le caractere de fin
+        if(map_string[i] == '_'){//si le caractere est un caractere de changement de ligne (on passe à la prochaine ligne)
+            if((temp_size_x > new_size_x)&&(new_size_y==0)){
+                new_size_x = temp_size_x;
+            }
+            else if((temp_size_x != new_size_x)&&(new_size_y!=0)){//si le nombre de caractere entre chaque caractere de changement de ligne n'est pas tous la même que la premiere intervalle  (  10010ahbh_djzdj_..._@     1er intervalle = 9,2eme intervalle = 5 => 1er intervalle != 2eme intervalle => format de la chaine de caractère est incorrect               )
+                printf("le string map a une forme irregulier x:%d!=%d && y=%d\n",temp_size_x,new_size_x,new_size_y);
+                exit(0);
+            }
+            new_size_y ++;//compter les lignes
+            temp_size_x=0;
+        }
+        else{
+            temp_size_x++;//compter les colones
+        }
+        i++;
+    }
+    //noter la taille
+    *size_x = new_size_x;
+    *size_y = new_size_y;
+}
+
+
 _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
     _tile** new_grid = NULL;
     new_grid = cree_grid(max_size_x ,max_size_y);
