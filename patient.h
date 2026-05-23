@@ -5,6 +5,7 @@
 #include "fonctionutile.h"
 #include "plateau.h"
 #include "grid.h"
+#include "sauvegarde.h"
 
 
 void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g);
