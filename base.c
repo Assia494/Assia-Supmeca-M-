@@ -138,7 +138,7 @@ _menu ask_menu(_jeu* current_game ,_menu current_menu ,const char* filename) {//
 		if(!error){
 		    printf("input went wrong,flushing scanf()\n");
 		    do{
-		    }while(!scanf("%c"),&menu);
+		    }while(!scanf("%d"),&menu);
 		}
 		if(!menu_choice_correct) {
 			printf("Le menu choisi est incorrect,veuillez recommencez\n");
