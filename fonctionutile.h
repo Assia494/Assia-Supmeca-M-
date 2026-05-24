@@ -4,6 +4,7 @@
 #include "structprojet.h"
 
 int randint(int a, int b);
+void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g);
 int inter_check(int nb, int a, int b);
 void exit_if_null_pointer(void* pointer);
 
