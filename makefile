@@ -1,14 +1,12 @@
-exec : base.o creer.o display.o fonctionutile.o  grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o economy.o
-	gcc base.o creer.o display.o fonctionutile.o grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o economy.o -o exec
+exec : base.o display.o fonctionutile.o  grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o economy.o
+	gcc base.o  display.o fonctionutile.o grid.o main.o map.o patient.o plateau.o sauvegarde.o scoreboard.o action_player.o economy.o -o exec
 	
 economy.o : economy.c economy.h structprojet.h sauvegarde.h fonctionutile.h 
 	gcc -c economy.c 
 
 base.o : base.c base.h structprojet.h fonctionutile.h map.h grid.h plateau.h patient.h sauvegarde.h scoreboard.h 
 	gcc -c base.c
-	
-creer.o : creer.h creer.c structprojet.h fonctionutile.h map.h grid.h plateau.h
-	gcc -c creer.c
+
 
 display.o : display.c display.h structprojet.h fonctionutile.h  
 	gcc -c display.c
