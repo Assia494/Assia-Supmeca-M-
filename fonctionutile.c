@@ -36,14 +36,6 @@ void exit_if_null_pointer(void* pointer) {                              // utile
 
 
 
-_tile cree_tile() {                                                       // creer une case de la grille avec des données par défaut                                    
-	_tile new_tile;  
-	new_tile.value = 0;
-	new_tile.player = 0;
-	return new_tile;
-}
-
-
 
 void decrease_if_to_much(int* var ,int min){//(fonction pas utile)  diminuer si la valeur de la variable est superieur à un seuil
     if(*var > min){
