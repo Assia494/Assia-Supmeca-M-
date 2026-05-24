@@ -16,7 +16,6 @@
 #include "patient.h"
 #include "base.h"
 #include "plateau.h"
-#include "creer.h"
 #include "scoreboard.h"
 #include "action_player.h"
 
