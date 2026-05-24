@@ -9,6 +9,7 @@
 #include "patient.h"
 #include "sauvegarde.h"
 #include "scoreboard.h"
+#include "action_player.h"
 
 _jeu creer_jeu();
 int play_a_game(_jeu* game ,char* username); 
