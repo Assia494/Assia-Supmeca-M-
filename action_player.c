@@ -119,13 +119,13 @@ void ask_to_do_player_action(_tile** grid,int size_x,int size_y,_player* player 
 	int error = 0;
 	printf("Veuillez saisir votre action-----\n\n");
 	printf("- type de déplacement\n");
-printf(" |  z:vers le haut\n");
+    printf(" |  z:vers le haut\n");
 	printf(" |  d:vers la droite\n");
 	printf(" |  s:vers le bas\n");
 	printf(" |  q:vers la gauche\n");
 	printf("- action\n");
-	printf(" |  g:faire un action (si aucun action est possible rien se passe)\n");
-	printf(" |  h:retour au menu principal (la partie n'est pas perdu)\n");
+	printf(" |  g:faire une action (si aucune action est possible, rien ne se passe)\n");
+	printf(" |  h:retour au menu principal (la partie n'est pas perdue)\n");
 	do {
 		error = scanf(" %c",&move);
 		if(!error){
@@ -134,7 +134,7 @@ printf(" |  z:vers le haut\n");
 		    }while(!scanf("%c",&move));
 		}
 		if((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')&&(move!='h')) {
-			printf("L'action saisi est incorrect,veuillez recommencez\n");
+			printf("L'action saisie est incorrecte ,veuillez recommencer\n");
 		}
 	} while((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')&&(move!='h'));
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
