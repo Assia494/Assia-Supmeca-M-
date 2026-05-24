@@ -36,5 +36,5 @@ sauvegarde.o : sauvegarde.c sauvegarde.h structprojet.h fonctionutile.h grid.h p
 scoreboard.o : scoreboard.c scoreboard.h sauvegarde.h fonctionutile.h display.h 
 	gcc -c scoreboard.c
 
-action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h sauvegarde.h fonctionutile.h economy.h patient.h base.h creer.h display.h
+action_player.o  : action_player.c action_player.h structprojet.h grid.h plateau.h sauvegarde.h fonctionutile.h economy.h patient.h base.h  display.h
 	gcc -c action_player.c
