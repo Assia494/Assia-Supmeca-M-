@@ -97,7 +97,7 @@ void print_scoreboard(){ //affichage des scores dont les meilleurs sont vers les
     error = scanf(" %c",&c);
     if(!error){
         do{
-        }while(!scanf("%c"),&c);
+        }while(!scanf("%c",&c));
 	}
 	free(score_tab);
 	
