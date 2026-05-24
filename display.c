@@ -42,7 +42,7 @@ void tile_print(_tile tile ,_plateau* plateau_tab ,int taille ,_player player) {
     		        printf(" %c",tile.value);
     		    }
     		    else if( inter_check(tile.value,'a','h')||inter_check(tile.value,'i','j') ){//si c'est des cases d'actions autre que celles des plateux
-    		        printf(" .",tile.value);
+    		        printf(" .");
     		    }
     		    else{
     		        printf("  ");
