@@ -1,17 +1,6 @@
 #include "creer.h"
 
 
-_plateau cree_plateau(int new_id){ //crée un variable plateau
-    _plateau new_plateau;
-    for(int i=0;i<NB_TOOLS;i++){
-        new_plateau.tools[i] = 0;       //pas d'outils propre
-        new_plateau.used_tools[i] = 0;  //pas d'outils usée
-    }
-    
-    new_plateau.patient = NULL;     //pas de patient <=> plateau.patient == NULL
-    new_plateau.id = new_id;        // le nom du plateau qui est dans l'intervalle [t,z]
-    return new_plateau;
-}
 
 
 void make_tool_tab(int tab[] ,int a,int b,int c,int d,int e,int f,int g){
