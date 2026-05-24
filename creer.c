@@ -107,20 +107,6 @@ _jeu creer_jeu(){
 }
 
 
-
-int* cree_tab(int size){//cree un tableau 
-    //(temporaire)
-    int* tab =NULL;
-    tab = malloc(size*sizeof(int));
-    exit_if_null_pointer(tab);
-    for(int i=0;i<size;i++){
-        tab[i] = randint(100,10000);  //initialisation des valeurs du tableau cree 
-    }
-    
-    return tab;
-}
-
-
 _tile** make_grid_from_string(char string[] ,int max_size_x ,int max_size_y){ //à partir d'une d'une chaine de caractère ,on construit la grille de jeu
     _tile** new_grid = NULL;
     new_grid = cree_grid(max_size_x ,max_size_y);
