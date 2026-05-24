@@ -131,7 +131,7 @@ printf(" |  z:vers le haut\n");
 		if(!error){
 		    printf("input went wrong,flushing scanf()\n");
 		    do{
-		    }while(!scanf("%c"),&move);
+		    }while(!scanf("%c",&move));
 		}
 		if((move!='z')&&(move!='d')&&(move!='s')&&(move!='q')&&(move!='g')&&(move!='h')) {
 			printf("L'action saisi est incorrect,veuillez recommencez\n");
